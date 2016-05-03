@@ -17,11 +17,7 @@ enum ContactTypes: UInt32 {
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var worldNode: SKNode!
     let motionManager: CMMotionManager = CMMotionManager()
-    var mellow: SKSpriteNode!
-    var direction: Orientation = .left
-    var leftjumpTextures = [SKTexture]()
-    var rightjumpTextures = [SKTexture]()
-    var isTouching = false
+    var mellow: MellowNode!
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
@@ -54,28 +50,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         
-        mellow = SKSpriteNode(imageNamed: "standing")
-        mellow.position = CGPoint(x: self.size.width / 2 , y: self.size.height / 2)
-        let physicsBodySize = CGSize(width: mellow.texture!.size().width, height: mellow.texture!.size().height * 0.93)
-        mellow.physicsBody = SKPhysicsBody(texture: mellow.texture!, size: physicsBodySize)
-        mellow.physicsBody!.restitution = 0
-        mellow.physicsBody!.mass = 1
-        mellow.name = "mellow"
+        mellow = MellowNode(imageNamed: "standing")
+        mellow.setup()
         self.addChild(mellow)
-        
-        for var i = 1; i <= 4; i += 1 {
-            rightjumpTextures.append(SKTexture(imageNamed: "rightjump\(i)"))
-        }
-        for var i = 4; i >= 1; i -= 1 {
-            rightjumpTextures.append(SKTexture(imageNamed: "rightjump\(i)"))
-        }
-        
-        for var i = 1; i <= 4; i += 1 {
-            leftjumpTextures.append(SKTexture(imageNamed: "leftjump\(i)"))
-        }
-        for var i = 4; i >= 1; i -= 1 {
-            leftjumpTextures.append(SKTexture(imageNamed: "leftjump\(i)"))
-        }
         
         motionManager.startAccelerometerUpdates()
     }
@@ -93,17 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let location = touch.locationInNode(self)
             if location.y > self.size.height / 2 {
                 mellow.physicsBody!.dynamic = true
-                let forceAction = SKAction.applyForce(CGVector(dx: 0, dy: 70000), duration: 0.01)
-                if (direction == .right) {
-                    let jumpAction = SKAction.animateWithTextures(rightjumpTextures, timePerFrame: 0.015, resize: true, restore: true)
-                    let actionSequence = SKAction.sequence([jumpAction, forceAction])
-                    mellow.runAction(actionSequence)
-                }
-                else {
-                    let jumpAction = SKAction.animateWithTextures(leftjumpTextures, timePerFrame: 0.015, resize: true, restore: true)
-                    let actionSequence = SKAction.sequence([jumpAction, forceAction])
-                    mellow.runAction(actionSequence)
-                }
+                mellow.jump()
             }
             else {
                 mellow.physicsBody!.dynamic = false
@@ -113,34 +80,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(currentTime: CFTimeInterval) {
         if let data = self.motionManager.accelerometerData {
-            if(fabs(data.acceleration.x) > 0.1) {
-                var trailingNum: Int = Int(fabs(data.acceleration.x) * 5.0 + 1.0)
-                if (trailingNum > 3) {
-                    trailingNum = 3
-                }
-                if(data.acceleration.x < 0) {
-                    if (!mellow.hasActions())
-                    {
-                        mellow.texture = SKTexture(imageNamed: "leftrun\(trailingNum)")
-                    }
-                    direction = .left
-                }
-                else {
-                    if (!mellow.hasActions())
-                    {
-                        mellow.texture = SKTexture(imageNamed: "rightrun\(trailingNum)")
-                    }
-                    direction = .right
-                }
-                mellow.physicsBody!.velocity.dx = CGFloat(data.acceleration.x) * 800.0 - 80
-            }
-            else {
-                mellow.physicsBody!.velocity.dx = 0
-                if (!mellow.hasActions())
-                {
-                    mellow.texture = SKTexture(imageNamed: "standing")
-                }
-            }
+            mellow.setdx(withAcceleration: data.acceleration.x)
         }
         
         if mellow.position.x < -mellow.frame.width / 3 {
