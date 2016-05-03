@@ -29,6 +29,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floor.position = CGPoint(x: self.size.width / 2, y: -floor.size.height / 3)
         floor.physicsBody = SKPhysicsBody(rectangleOfSize: floor.size)
         floor.physicsBody!.dynamic = false
+        floor.physicsBody!.categoryBitMask = CollisionTypes.Background.rawValue
+        floor.physicsBody!.contactTestBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.FallingBlock.rawValue
         floor.name = "floor"
         worldNode.addChild(floor)
         var counter = 1

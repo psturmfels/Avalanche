@@ -14,6 +14,14 @@ enum Orientation {
     case right
 }
 
+enum CollisionTypes: UInt32 {
+    case Mellow = 1
+    case Background = 2
+    case FallingBlock = 4
+}
+
+
+
 class MellowNode: SKSpriteNode {
     var leftjumpTextures = [SKTexture]()
     var rightjumpTextures = [SKTexture]()
@@ -35,8 +43,15 @@ class MellowNode: SKSpriteNode {
         self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsBodySize)
         self.physicsBody!.restitution = 0
         self.physicsBody!.mass = 1
+        self.physicsBody!.categoryBitMask = CollisionTypes.Mellow.rawValue
+        self.physicsBody!.contactTestBitMask = CollisionTypes.Background.rawValue | CollisionTypes.FallingBlock.rawValue
         self.name = "mellow"
         self.runAction(SKAction.rotateByAngle(CGFloat(M_PI_2), duration: 0.01))
+        /*I can't figure out why the above line is necessary,
+          but for some reason, when I put the mellow code in
+          a separate class, it ended up being horizontal! 
+          The line above rotates it to the right orientation.
+        */
     }
     
     func jump() {
