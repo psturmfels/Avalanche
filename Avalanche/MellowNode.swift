@@ -37,14 +37,14 @@ class MellowNode: SKSpriteNode {
         }
         
         self.position = CGPoint(x: 30 , y: self.size.height / 2)
-        let physicsBodySize = CGSize(width: self.texture!.size().width, height: self.texture!.size().height * 0.93)
+        let physicsBodySize = CGSize(width: self.texture!.size().width, height: self.texture!.size().height * 0.92)
         self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsBodySize)
         self.physicsBody!.restitution = 0
         self.physicsBody!.mass = 1
         self.physicsBody!.categoryBitMask = CollisionTypes.Mellow.rawValue
         self.physicsBody!.contactTestBitMask = CollisionTypes.Background.rawValue | CollisionTypes.FallingBlock.rawValue
         self.name = "mellow"
-        self.runAction(SKAction.rotateByAngle(CGFloat(M_PI_2), duration: 0.01)) {
+        self.runAction(SKAction.rotateByAngle(CGFloat(M_PI_2) - 0.01, duration: 0.01)) {
             self.physicsBody!.allowsRotation = false
         }
         /*I can't figure out why the above line is necessary,

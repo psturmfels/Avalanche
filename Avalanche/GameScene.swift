@@ -56,14 +56,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(mellow)
         
         
-        let roundedPath = UIBezierPath(roundedRect: CGRect(x: 128, y: 128, width: 100, height: 100), cornerRadius: 16).CGPath
-        let roundedBlock = SKShapeNode(path: roundedPath)
-        roundedBlock.fillColor = UIColor.redColor()
-        roundedBlock.strokeColor = UIColor.blackColor()
-        roundedBlock.lineWidth = 5
-        roundedBlock.physicsBody = SKPhysicsBody(edgeLoopFromPath: roundedPath)
+        let randomColor = RandomInt(min: 1, max: 6)
+        let roundedBlock = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
+        roundedBlock.setup()
         worldNode.addChild(roundedBlock)
-        
         
         motionManager.startAccelerometerUpdates()
     }
