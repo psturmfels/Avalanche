@@ -20,8 +20,6 @@ enum CollisionTypes: UInt32 {
     case FallingBlock = 4
 }
 
-
-
 class MellowNode: SKSpriteNode {
     var leftjumpTextures = [SKTexture]()
     var rightjumpTextures = [SKTexture]()
@@ -38,7 +36,7 @@ class MellowNode: SKSpriteNode {
             leftjumpTextures.append(SKTexture(imageNamed: "leftjump\(i)"))
         }
         
-        self.position = CGPoint(x: self.size.width / 2 , y: self.size.height / 2)
+        self.position = CGPoint(x: 30 , y: self.size.height / 2)
         let physicsBodySize = CGSize(width: self.texture!.size().width, height: self.texture!.size().height * 0.93)
         self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsBodySize)
         self.physicsBody!.restitution = 0
@@ -46,7 +44,9 @@ class MellowNode: SKSpriteNode {
         self.physicsBody!.categoryBitMask = CollisionTypes.Mellow.rawValue
         self.physicsBody!.contactTestBitMask = CollisionTypes.Background.rawValue | CollisionTypes.FallingBlock.rawValue
         self.name = "mellow"
-        self.runAction(SKAction.rotateByAngle(CGFloat(M_PI_2), duration: 0.01))
+        self.runAction(SKAction.rotateByAngle(CGFloat(M_PI_2), duration: 0.01)) {
+            self.physicsBody!.allowsRotation = false
+        }
         /*I can't figure out why the above line is necessary,
           but for some reason, when I put the mellow code in
           a separate class, it ended up being horizontal! 
