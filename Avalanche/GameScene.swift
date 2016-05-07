@@ -21,6 +21,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
+        
+        physicsWorld.contactDelegate = self
+        
         worldNode = SKNode()
         worldNode.position = self.position
         self.addChild(worldNode)
@@ -56,18 +59,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(mellow)
         
         
-        let randomColor = RandomInt(min: 1, max: 6)
+        var randomColor = RandomInt(min: 1, max: 6)
         let roundedBlock = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
         roundedBlock.setup()
         worldNode.addChild(roundedBlock)
+        randomColor = RandomInt(min: 1, max: 6)
+        let anotherBlock = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
+        anotherBlock.setup()
+        worldNode.addChild(anotherBlock)
         
         motionManager.startAccelerometerUpdates()
     }
     
     func didBeginContact(contact: SKPhysicsContact) {
+        print("\(contact.bodyA.node!.name!) began contact with \(contact.bodyB.node!.name!)")
     }
     
     func didEndContact(contact: SKPhysicsContact) {
+        print("\(contact.bodyA.node!.name!) ended contact with \(contact.bodyB.node!.name!)")
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {

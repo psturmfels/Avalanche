@@ -37,16 +37,18 @@ class MellowNode: SKSpriteNode {
         }
         
         self.position = CGPoint(x: 30 , y: self.size.height / 2)
-        let physicsBodySize = CGSize(width: self.texture!.size().width, height: self.texture!.size().height * 0.92)
+        let physicsBodySize = CGSize(width: self.texture!.size().width * 0.65, height: self.texture!.size().height * 0.92)
         self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsBodySize)
-        self.physicsBody!.restitution = 0
+        self.physicsBody!.restitution = 0.0
         self.physicsBody!.mass = 1
         self.physicsBody!.categoryBitMask = CollisionTypes.Mellow.rawValue
         self.physicsBody!.contactTestBitMask = CollisionTypes.Background.rawValue | CollisionTypes.FallingBlock.rawValue
         self.name = "mellow"
-        self.runAction(SKAction.rotateByAngle(CGFloat(M_PI_2) - 0.01, duration: 0.01)) {
+        self.runAction(SKAction.rotateToAngle(0.0, duration: 0.01)) {
+            self.physicsBody!.angularVelocity = 0
             self.physicsBody!.allowsRotation = false
         }
+        
         /*I can't figure out why the above line is necessary,
           but for some reason, when I put the mellow code in
           a separate class, it ended up being horizontal! 

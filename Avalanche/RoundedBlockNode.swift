@@ -14,10 +14,9 @@ class RoundedBlockNode: SKSpriteNode {
         let scale = CGFloat(RandomFloat(min: 0.5, max: 1.0))
         self.setScale(scale)
         
-        let textureSize = CGSize(width: self.frame.width * (scale - 0.24), height: self.frame.height * 0.97)
+        let physicsSize = CGSize(width: self.frame.width * 0.96, height: self.frame.height * 0.96)
         
-        
-        self.physicsBody = SKPhysicsBody(texture: self.texture!, size: textureSize)
+        self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsSize)
         self.physicsBody!.dynamic = false
         self.position = CGPoint(x: 256, y: 128)
         
@@ -25,8 +24,5 @@ class RoundedBlockNode: SKSpriteNode {
         
         self.physicsBody!.contactTestBitMask = CollisionTypes.Background.rawValue | CollisionTypes.Mellow.rawValue
         self.name = "fallingBlock"
-        
     }
-
-
 }
