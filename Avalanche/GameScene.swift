@@ -97,10 +97,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if firstBody.categoryBitMask == CollisionTypes.Background.rawValue {
                 print("Hello!")
                 if let block = secondBody.node as? RoundedBlockNode, background = firstBody.node as? RoundedBlockNode {
-                    print("Cast worked")
                     block.becomeBackground()
                     if contactPoint.y > (background.position.y + background.physicsSize.height * 0.4)
                         && contactPoint.y < (block.position.y - block.physicsSize.height * 0.4) {
+                        let heightDifference = (block.position.y - block.size.height) - (background.position.y - background.size.height)
+                        block.position.y -= heightDifference
                         block.becomeBackground()
                     }
                 }

@@ -10,6 +10,7 @@ import SpriteKit
 
 class RoundedBlockNode: SKSpriteNode {
     var physicsSize: CGSize!
+    var fallSpeed: CGFloat = -75.0
     
     func setup() {
         let scale = CGFloat(RandomFloat(min: 0.5, max: 1.0))
@@ -19,7 +20,10 @@ class RoundedBlockNode: SKSpriteNode {
         
         self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsSize)
         self.physicsBody!.restitution = 0.0
-        self.physicsBody!.dynamic = false
+        self.physicsBody!.affectedByGravity = false
+        self.physicsBody!.allowsRotation = false
+        self.physicsBody!.linearDamping = 0.0
+        self.physicsBody!.mass = 1000000.0
         
         self.position = CGPoint(x: 256, y: 300)
         
@@ -30,7 +34,6 @@ class RoundedBlockNode: SKSpriteNode {
     }
     
     func becomeBackground() {
-        self.removeAllActions()
         self.physicsBody!.categoryBitMask = CollisionTypes.Background.rawValue
         self.physicsBody!.dynamic = false
         let fadeAction = SKAction.colorizeWithColor(UIColor.blackColor(), colorBlendFactor: 1.0, duration: 0.5)
@@ -38,8 +41,7 @@ class RoundedBlockNode: SKSpriteNode {
     }
     
     func beginFalling() {
-        let fallAction = SKAction.moveBy(CGVector(dx: 0, dy: -100), duration: 1)
-        self.runAction(SKAction.repeatActionForever(fallAction))
+        self.physicsBody!.velocity.dy = fallSpeed
     }
     
 }
