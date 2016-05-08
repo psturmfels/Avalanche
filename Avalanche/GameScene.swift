@@ -28,11 +28,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         worldNode.position = self.position
         self.addChild(worldNode)
         
-        let floor = SKSpriteNode(color: UIColor.blackColor(), size: CGSize(width: 2 * self.size.width, height: self.size.height))
+        let floor = RoundedBlockNode(color: UIColor.blackColor(), size: CGSize(width: 2 * self.size.width, height: self.size.height))
         floor.position = CGPoint(x: self.size.width / 2, y: -floor.size.height / 3)
         floor.physicsBody = SKPhysicsBody(rectangleOfSize: floor.size)
         floor.physicsBody!.dynamic = false
+        floor.physicsBody!.restitution = 0.0
         floor.physicsBody!.categoryBitMask = CollisionTypes.Background.rawValue
+        floor.physicsSize = floor.frame.size
         floor.physicsBody!.contactTestBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.FallingBlock.rawValue
         floor.name = "floor"
         worldNode.addChild(floor)
@@ -58,40 +60,87 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         mellow.setup()
         self.addChild(mellow)
         
-        
-        var randomColor = RandomInt(min: 1, max: 6)
+        let randomColor = RandomInt(min: 1, max: 6)
         let roundedBlock = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
         roundedBlock.setup()
+        roundedBlock.beginFalling()
         worldNode.addChild(roundedBlock)
-        randomColor = RandomInt(min: 1, max: 6)
-        let anotherBlock = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
-        anotherBlock.setup()
-        worldNode.addChild(anotherBlock)
         
         motionManager.startAccelerometerUpdates()
     }
     
     func didBeginContact(contact: SKPhysicsContact) {
-        print("\(contact.bodyA.node!.name!) began contact with \(contact.bodyB.node!.name!)")
+        let contactPoint = contact.contactPoint
+        var firstBody: SKPhysicsBody
+        var secondBody: SKPhysicsBody
+        
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        }
+        else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+        
+        //Handle mellow landing on the background or a falling block
+        if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue {
+            if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.40)) {
+                if contactPoint.y > (secondBody.node!.position.y + secondBody.node!.frame.height * 0.4) {
+                    mellow.isTouchingGround = true
+                }
+            }
+        }
+        
+        //Handle a falling block landing on the background
+        if secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
+            if firstBody.categoryBitMask == CollisionTypes.Background.rawValue {
+                print("Hello!")
+                if let block = secondBody.node as? RoundedBlockNode, background = firstBody.node as? RoundedBlockNode {
+                    print("Cast worked")
+                    block.becomeBackground()
+                    if contactPoint.y > (background.position.y + background.physicsSize.height * 0.4)
+                        && contactPoint.y < (block.position.y - block.physicsSize.height * 0.4) {
+                        block.becomeBackground()
+                    }
+                }
+            }
+        }
     }
     
     func didEndContact(contact: SKPhysicsContact) {
-        print("\(contact.bodyA.node!.name!) ended contact with \(contact.bodyB.node!.name!)")
+        var firstBody: SKPhysicsBody
+        var secondBody: SKPhysicsBody
+        
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        }
+        else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+        
+        if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue {
+            let contactPoint = contact.contactPoint
+            if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.40)) {
+                if contactPoint.y > (secondBody.node!.position.y + secondBody.node!.frame.height * 0.4) {
+                    mellow.isTouchingGround = false
+                }
+            }
+        }
+        
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         /* Called when a touch begins */
         
-        for touch in touches {
-            let location = touch.locationInNode(self)
-            if location.y > self.size.height / 2 {
-                mellow.physicsBody!.dynamic = true
-                mellow.jump()
-            }
-            else {
-                mellow.physicsBody!.dynamic = false
-            }
+        //for touch in touches {
+        //let location = touch.locationInNode(self)
+        if  mellow.isTouchingGround {
+            mellow.jump()
         }
+        //}
     }
     
     override func update(currentTime: CFTimeInterval) {

@@ -24,7 +24,8 @@ class MellowNode: SKSpriteNode {
     var leftjumpTextures = [SKTexture]()
     var rightjumpTextures = [SKTexture]()
     var direction: Orientation = .left
-    var isTouchingGround = false
+    var isTouchingGround = true
+    var physicsSize: CGSize!
     
     func setup() {
         for var i = 1; i <= 4; i += 1 {
@@ -37,8 +38,9 @@ class MellowNode: SKSpriteNode {
         }
         
         self.position = CGPoint(x: 30 , y: self.size.height / 2)
-        let physicsBodySize = CGSize(width: self.texture!.size().width * 0.65, height: self.texture!.size().height * 0.92)
-        self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsBodySize)
+        
+        physicsSize = CGSize(width: self.texture!.size().width * 0.65, height: self.texture!.size().height * 0.92)
+        self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsSize)
         self.physicsBody!.restitution = 0.0
         self.physicsBody!.mass = 1
         self.physicsBody!.categoryBitMask = CollisionTypes.Mellow.rawValue
@@ -57,6 +59,7 @@ class MellowNode: SKSpriteNode {
     }
     
     func jump() {
+        isTouchingGround = false
         let forceAction = SKAction.applyForce(CGVector(dx: 0, dy: 70000), duration: 0.01)
         var jumpAction: SKAction
         if direction == .right {

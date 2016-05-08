@@ -1,11 +1,3 @@
-//
-//  Helper.swift
-//  Project11
-//
-//  Created by Hudzilla on 22/11/2014.
-//  Copyright (c) 2014 Hudzilla. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
