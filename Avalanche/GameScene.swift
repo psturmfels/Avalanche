@@ -105,13 +105,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             secondBody = contact.bodyA
         }
         
-        //Handle mellow landing on the background or a falling block
+        
         if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue {
+            //Handle mellow landing on the background or a falling block
             if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.2)) {
                 if abs(contactPoint.x - mellow.position.x) < mellow.physicsSize.width / 2.2 {
                     mellow.isTouchingGround = true
                 }
             }
+            //Handle the mellow getting crushed by a falling block
             else if mellow.isTouchingGround {
                 if contactPoint.y > (mellow.position.y + mellow.physicsSize.height * 0.4) {
                     if let block = secondBody.node as? RoundedBlockNode {
