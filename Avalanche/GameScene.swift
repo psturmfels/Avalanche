@@ -18,6 +18,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var worldNode: SKNode!
     let motionManager: CMMotionManager = CMMotionManager()
     var mellow: MellowNode!
+    var floor: RoundedBlockNode!
+    var bestSoFar: Int = 0
+    var bestLabel: SKLabelNode!
+    var currentLabel: SKLabelNode!
     
     func generateRandomBlock(prevPoint: CGPoint) -> CGPoint {
         let randomXVal = CGFloat(RandomDouble(min: 32.0, max: Double(self.size.width) - 32.0))
@@ -52,7 +56,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(worldNode)
         self.repeatGenerating(true, prevPoint: CGPoint(x: 0.0, y: self.size.height))
         
-        let floor = RoundedBlockNode(color: UIColor.blackColor(), size: CGSize(width: 2 * self.size.width, height: self.size.height))
+        floor = RoundedBlockNode(color: UIColor.blackColor(), size: CGSize(width: 2 * self.size.width, height: self.size.height))
         floor.position = CGPoint(x: self.size.width / 2, y: -floor.size.height / 3)
         floor.physicsBody = SKPhysicsBody(rectangleOfSize: floor.size)
         floor.physicsBody!.dynamic = false
@@ -66,6 +70,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         mellow = MellowNode(imageNamed: "standing")
         mellow.setup()
         self.addChild(mellow)
+        
+        bestLabel = SKLabelNode(fontNamed: "Arial")
+        bestLabel.text = "0 ft"
+        bestLabel.fontSize = 36.0
+        bestLabel.position = CGPoint(x: self.frame.width * 0.94, y: self.frame.height * 0.93)
+        bestLabel.zPosition = 30.0
+        bestLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
+        self.addChild(bestLabel)
+        
+        currentLabel = SKLabelNode(fontNamed: "Arial")
+        currentLabel.text = "0 ft"
+        currentLabel.fontSize = 30.0
+        currentLabel.position = CGPoint(x: self.frame.width * 0.94, y: self.frame.height * 0.88)
+        currentLabel.zPosition = 30.0
+        currentLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
+        self.addChild(currentLabel)
         
         motionManager.startAccelerometerUpdates()
     }
@@ -97,7 +117,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
             if firstBody.categoryBitMask == CollisionTypes.Background.rawValue {
                 if let block = secondBody.node as? RoundedBlockNode, background = firstBody.node as? RoundedBlockNode {
-                    let heightDifference = (block.position.y - block.size.height / 2.0) - (background.position.y + background.size.height / 2.0)
                     block.becomeBackground()
                 }
             }
@@ -140,6 +159,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func update(currentTime: CFTimeInterval) {
+        let distance = ((mellow.position.y - mellow.physicsSize.height / 2.0) - (worldNode.position.y)) / 5.0
+        currentLabel.text = "\(Int(distance)) ft"
+        if Int(distance) > bestSoFar {
+            bestSoFar = Int(distance)
+            bestLabel.text = "\(bestSoFar) ft"
+        }
+    
         if let data = self.motionManager.accelerometerData {
             mellow.setdx(withAcceleration: data.acceleration.x)
         }
