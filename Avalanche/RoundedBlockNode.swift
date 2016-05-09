@@ -34,8 +34,9 @@ class RoundedBlockNode: SKSpriteNode {
     }
     
     func becomeBackground() {
-        self.physicsBody!.categoryBitMask = CollisionTypes.Background.rawValue
         self.physicsBody!.dynamic = false
+        self.runAction(SKAction.moveBy(CGVector(dx: 0, dy: -2.0), duration: 0.0))
+        self.physicsBody!.categoryBitMask = CollisionTypes.Background.rawValue
         let fadeAction = SKAction.colorizeWithColor(UIColor.blackColor(), colorBlendFactor: 1.0, duration: 0.5)
         self.runAction(fadeAction)
     }
