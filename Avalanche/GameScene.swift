@@ -22,15 +22,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var bestSoFar: Int = 0
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
+    var shouldContinueSpawning = true
     
     func generateRandomBlock(prevPoint: CGPoint) -> CGPoint {
-        let randomXVal = CGFloat(RandomDouble(min: 32.0, max: Double(self.size.width) - 32.0))
+        let randomXVal = CGFloat(RandomDouble(min: 0.0, max: Double(self.size.width)))
         
         let randomColor = RandomInt(min: 1, max: 6)
         let roundedBlock = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
         roundedBlock.setup()
         roundedBlock.position.x = randomXVal
-        roundedBlock.position.y = self.size.height - worldNode.position.y
+        roundedBlock.position.y = 2.0 * self.size.height - worldNode.position.y
         roundedBlock.beginFalling()
         worldNode.addChild(roundedBlock)
         return CGPoint(x: randomXVal, y: self.size.height)
@@ -39,9 +40,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func repeatGenerating(shouldContinue: Bool, prevPoint: CGPoint) {
         if shouldContinue {
             let waitAction = SKAction.waitForDuration(1.0)
-            worldNode.runAction(waitAction, completion: { 
+            worldNode.runAction(waitAction, completion: {
                 let nextPoint = self.generateRandomBlock(prevPoint)
-                self.repeatGenerating(true, prevPoint: nextPoint)
+                self.repeatGenerating(self.shouldContinueSpawning, prevPoint: nextPoint)
             })
         }
     }
@@ -111,8 +112,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     mellow.isTouchingGround = true
                 }
             }
+            else if mellow.isTouchingGround {
+                if contactPoint.y > (mellow.position.y + mellow.physicsSize.height * 0.4) {
+                    if let block = secondBody.node as? RoundedBlockNode {
+                        if contactPoint.y < (block.position.y + worldNode.position.y - block.physicsSize.height * 0.4) {
+                            let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
+                            mellowCrushedExplosion.position = mellow.position
+                            self.addChild(mellowCrushedExplosion)
+                            mellow.removeFromParent()
+                            shouldContinueSpawning = false
+                        }
+                    }
+                }
+            }
         }
-        //Handle a falling block landing on the background
+            //Handle a falling block landing on the background
         else if secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
             if firstBody.categoryBitMask == CollisionTypes.Background.rawValue {
                 if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
@@ -140,7 +154,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let floorYPos = secondBody.node!.position.y + worldNode.position.y
             if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.2)) {
                 if contactPoint.y > (floorYPos + secondBody.node!.frame.height * 0.2) &&
-                abs(contactPoint.x - mellow.position.x) < mellow.physicsSize.width / 2.2 {
+                    abs(contactPoint.x - mellow.position.x) < mellow.physicsSize.width / 2.2 {
                     mellow.isTouchingGround = false
                 }
             }
@@ -165,7 +179,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bestSoFar = Int(distance)
             bestLabel.text = "\(bestSoFar) ft"
         }
-    
+        
         if let data = self.motionManager.accelerometerData {
             mellow.setdx(withAcceleration: data.acceleration.x)
         }

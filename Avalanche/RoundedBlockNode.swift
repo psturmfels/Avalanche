@@ -10,7 +10,7 @@ import SpriteKit
 
 class RoundedBlockNode: SKSpriteNode {
     var physicsSize: CGSize!
-    var fallSpeed: CGFloat = -125.0
+    var fallSpeed: CGFloat = -150.0
     
     func setup() {
         let scale = CGFloat(RandomFloat(min: 0.5, max: 1.5))
