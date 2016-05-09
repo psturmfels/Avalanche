@@ -38,7 +38,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func repeatGenerating(shouldContinue: Bool, prevPoint: CGPoint) {
         if shouldContinue {
-            let waitAction = SKAction.waitForDuration(2.0)
+            let waitAction = SKAction.waitForDuration(1.0)
             worldNode.runAction(waitAction, completion: { 
                 let nextPoint = self.generateRandomBlock(prevPoint)
                 self.repeatGenerating(true, prevPoint: nextPoint)
@@ -106,9 +106,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //Handle mellow landing on the background or a falling block
         if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue {
-            let floorYPos = secondBody.node!.position.y + worldNode.position.y
             if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.2)) {
-                if contactPoint.y > (floorYPos + secondBody.node!.frame.height * 0.2) {
+                if abs(contactPoint.x - mellow.position.x) < mellow.physicsSize.width / 2.2 {
                     mellow.isTouchingGround = true
                 }
             }
@@ -116,7 +115,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //Handle a falling block landing on the background
         else if secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
             if firstBody.categoryBitMask == CollisionTypes.Background.rawValue {
-                if let block = secondBody.node as? RoundedBlockNode, background = firstBody.node as? RoundedBlockNode {
+                if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
                     block.becomeBackground()
                 }
             }
@@ -140,7 +139,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let contactPoint = contact.contactPoint
             let floorYPos = secondBody.node!.position.y + worldNode.position.y
             if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.2)) {
-                if contactPoint.y > (floorYPos + secondBody.node!.frame.height * 0.2) {
+                if contactPoint.y > (floorYPos + secondBody.node!.frame.height * 0.2) &&
+                abs(contactPoint.x - mellow.position.x) < mellow.physicsSize.width / 2.2 {
                     mellow.isTouchingGround = false
                 }
             }
