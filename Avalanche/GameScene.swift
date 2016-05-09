@@ -113,16 +113,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     mellow.isTouchingGround = true
                 }
             }
-            //Handle the mellow getting crushed by a falling block
+                //Handle the mellow getting crushed by a falling block
             else if mellow.isTouchingGround {
                 if contactPoint.y > (mellow.position.y + mellow.physicsSize.height * 0.4) {
                     if let block = secondBody.node as? RoundedBlockNode {
                         if contactPoint.y < (block.position.y + worldNode.position.y - block.physicsSize.height * 0.4) {
-                            let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
-                            mellowCrushedExplosion.position = mellow.position
-                            self.addChild(mellowCrushedExplosion)
-                            mellow.removeFromParent()
-                            shouldContinueSpawning = false
+                            mellow.physicsBody = nil
+                            
+                            var crushedTextures = [SKTexture]()
+                            for i in 1...7 {
+                                crushedTextures.append(SKTexture(imageNamed: "crushed\(i)"))
+                            }
+                            let moveAction = SKAction.moveBy(CGVector(dx: 0, dy: -10), duration: 0.14)
+                            mellow.runAction(moveAction)
+                            let crushedAction = SKAction.animateWithTextures(crushedTextures, timePerFrame: 0.02)
+                            mellow.runAction(crushedAction, completion: {
+                                let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
+                                mellowCrushedExplosion.position = self.mellow.position
+                                self.addChild(mellowCrushedExplosion)
+                                self.mellow.removeFromParent()
+                                self.shouldContinueSpawning = false
+                            })
                         }
                     }
                 }
@@ -182,7 +193,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bestLabel.text = "\(bestSoFar) ft"
         }
         
-        if let data = self.motionManager.accelerometerData {
+        if let data = self.motionManager.accelerometerData where self.mellow.physicsBody != nil {
             mellow.setdx(withAcceleration: data.acceleration.x)
         }
         
