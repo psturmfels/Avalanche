@@ -108,16 +108,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue {
             //Handle mellow landing on the background or a falling block
-            if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.2)) {
-                if abs(contactPoint.x - mellow.position.x) < mellow.physicsSize.width / 2.2 {
-                    mellow.isTouchingGround = true
-                }
+            let floorYPos = secondBody.node!.position.y + worldNode.position.y
+            let block = secondBody.node! as! RoundedBlockNode
+            if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.3)) &&
+                contactPoint.y > (floorYPos + block.physicsSize.height * 0.3) {
+                mellow.isTouchingGround = true
+            }
+            else if contactPoint.x < (mellow.position.x - mellow.physicsSize.width * 0.4) &&
+                contactPoint.x > (block.position.x + block.physicsSize.width * 0.4)
+            {
+                mellow.leftSideInContact = true
+            }
+            else if contactPoint.x > (mellow.position.x + mellow.physicsSize.width * 0.4) &&
+                contactPoint.x < (block.position.x - block.physicsSize.width * 0.4) {
+                mellow.rightSideInContact = true
             }
                 //Handle the mellow getting crushed by a falling block
             else if mellow.isTouchingGround {
-                if contactPoint.y > (mellow.position.y + mellow.physicsSize.height * 0.4) {
-                    if let block = secondBody.node as? RoundedBlockNode {
-                        if contactPoint.y < (block.position.y + worldNode.position.y - block.physicsSize.height * 0.4) {
+                if contactPoint.y > (mellow.position.y + mellow.physicsSize.height * 0.35) {
+                    if let block = secondBody.node as? RoundedBlockNode where block.physicsBody!.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
+                        if contactPoint.y < (block.position.y + worldNode.position.y - block.physicsSize.height * 0.35) &&
+                            abs(mellow.physicsBody!.velocity.dy) < 10 {
                             mellow.physicsBody = nil
                             
                             var crushedTextures = [SKTexture]()
@@ -165,11 +176,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue {
             let contactPoint = contact.contactPoint
             let floorYPos = secondBody.node!.position.y + worldNode.position.y
-            if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.2)) {
-                if contactPoint.y > (floorYPos + secondBody.node!.frame.height * 0.2) &&
-                    abs(contactPoint.x - mellow.position.x) < mellow.physicsSize.width / 2.2 {
-                    mellow.isTouchingGround = false
-                }
+            let block = secondBody.node! as! RoundedBlockNode
+            if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.3)) &&
+                contactPoint.y > (floorYPos + secondBody.node!.frame.height * 0.3) &&
+                abs(contactPoint.x - mellow.position.x) < mellow.physicsSize.width / 2.2 {
+                mellow.isTouchingGround = false
+            }
+            else if contactPoint.x < (mellow.position.x - mellow.physicsSize.width * 0.4) &&
+                contactPoint.x > (block.position.x + block.physicsSize.width * 0.4)
+            {
+                mellow.leftSideInContact = true
+            }
+            else if contactPoint.x > (mellow.position.x + mellow.physicsSize.width * 0.4) &&
+                contactPoint.x < (block.position.x - block.physicsSize.width * 0.4) {
+                mellow.rightSideInContact = true
             }
         }
     }
@@ -179,18 +199,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //for touch in touches {
         //let location = touch.locationInNode(self)
-        if  mellow.isTouchingGround {
-            mellow.jump()
-        }
+        mellow.jump()
         //}
     }
     
     override func update(currentTime: CFTimeInterval) {
-        let distance = ((mellow.position.y - mellow.physicsSize.height / 2.0) - (worldNode.position.y)) / 5.0
+        let distance = ((mellow.position.y - mellow.physicsSize.height / 2.0) - (worldNode.position.y)) / 5.0 - 22.0
         currentLabel.text = "\(Int(distance)) ft"
         if Int(distance) > bestSoFar {
             bestSoFar = Int(distance)
             bestLabel.text = "\(bestSoFar) ft"
+        }
+        if mellow.physicsBody != nil {
+            print(mellow.physicsBody!.velocity.dy)
+            if mellow.physicsBody!.velocity.dy > 700 {
+                mellow.physicsBody!.velocity.dy *= 0.9
+            }
         }
         
         if let data = self.motionManager.accelerometerData where self.mellow.physicsBody != nil {
