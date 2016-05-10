@@ -185,11 +185,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else if contactPoint.x < (mellow.position.x - mellow.physicsSize.width * 0.4) &&
                 contactPoint.x > (block.position.x + block.physicsSize.width * 0.4)
             {
-                mellow.leftSideInContact = true
+                mellow.leftSideInContact = false
             }
             else if contactPoint.x > (mellow.position.x + mellow.physicsSize.width * 0.4) &&
                 contactPoint.x < (block.position.x - block.physicsSize.width * 0.4) {
-                mellow.rightSideInContact = true
+                mellow.rightSideInContact = false
             }
         }
     }
@@ -210,8 +210,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bestSoFar = Int(distance)
             bestLabel.text = "\(bestSoFar) ft"
         }
+        
         if mellow.physicsBody != nil {
-            print(mellow.physicsBody!.velocity.dy)
             if mellow.physicsBody!.velocity.dy > 700 {
                 mellow.physicsBody!.velocity.dy *= 0.9
             }
@@ -219,6 +219,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if let data = self.motionManager.accelerometerData where self.mellow.physicsBody != nil {
             mellow.setdx(withAcceleration: data.acceleration.x)
+        }
+        
+        if mellow.leftSideInContact {
+            print("leftSideInContact")
+            mellow.texture = SKTexture(imageNamed: "leftwallcling")
+        }
+        else if mellow.rightSideInContact {
+            print("rightSideInContact")
+            mellow.texture = SKTexture(imageNamed: "rightwallcling")
+        }
+        else {
+            print("not touching either")
         }
         
         if mellow.position.x < -mellow.frame.width / 3 {

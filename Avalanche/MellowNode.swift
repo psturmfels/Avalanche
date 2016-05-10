@@ -127,7 +127,7 @@ class MellowNode: SKSpriteNode {
             self.physicsBody!.velocity.dx = 0
             if (!self.hasActions())
             {
-                self.texture = SKTexture(imageNamed: "standing")
+                    self.texture = SKTexture(imageNamed: "standing")
             }
         }
     }

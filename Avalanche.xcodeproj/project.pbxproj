@@ -22,6 +22,7 @@
 		1AAFB4CF1CA07D6100E7472B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AAFB4CD1CA07D6100E7472B /* LaunchScreen.storyboard */; };
 		1AECBCA61CE11B7D007FDC94 /* crushed.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 1AECBCA51CE11B7D007FDC94 /* crushed.atlas */; };
 		1AF88CD41CD6B2EF00028E3D /* MellowNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF88CD31CD6B2EF00028E3D /* MellowNode.swift */; };
+		1AFC6CE41CE29F98003F70DC /* wall.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 1AFC6CE31CE29F98003F70DC /* wall.atlas */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		1AAFB4D01CA07D6100E7472B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AECBCA51CE11B7D007FDC94 /* crushed.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = crushed.atlas; sourceTree = "<group>"; };
 		1AF88CD31CD6B2EF00028E3D /* MellowNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MellowNode.swift; sourceTree = "<group>"; };
+		1AFC6CE31CE29F98003F70DC /* wall.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = wall.atlas; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 				1AAFB4CB1CA07D6100E7472B /* Assets.xcassets */,
 				1AAFB4CD1CA07D6100E7472B /* LaunchScreen.storyboard */,
 				1AAFB4D01CA07D6100E7472B /* Info.plist */,
+				1AFC6CE31CE29F98003F70DC /* wall.atlas */,
 				1AECBCA51CE11B7D007FDC94 /* crushed.atlas */,
 				1A0584E21CDD27C300B3DF8B /* RoundedBlock.atlas */,
 				1A739F771CD3181D00655C1F /* mellow.atlas */,
@@ -155,6 +158,7 @@
 				1AAFB4CF1CA07D6100E7472B /* LaunchScreen.storyboard in Resources */,
 				1A9017B31CD171EB00F31C1E /* GameScene.sks in Resources */,
 				1A739F781CD3181D00655C1F /* mellow.atlas in Resources */,
+				1AFC6CE41CE29F98003F70DC /* wall.atlas in Resources */,
 				1AAFB4CC1CA07D6100E7472B /* Assets.xcassets in Resources */,
 				1AAFB4CA1CA07D6100E7472B /* Main.storyboard in Resources */,
 				1AAB5D461CE0D6EF00F820F0 /* spark.png in Resources */,
