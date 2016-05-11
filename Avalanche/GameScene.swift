@@ -105,23 +105,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             secondBody = contact.bodyA
         }
         
-        
-        if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue {
+        if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
             //Handle mellow landing on the background or a falling block
-            let floorYPos = secondBody.node!.position.y + worldNode.position.y
             let block = secondBody.node! as! RoundedBlockNode
-            if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.3)) &&
-                contactPoint.y > (floorYPos + block.physicsSize.height * 0.3) {
+            let blockYPos: CGFloat = block.position.y + worldNode.position.y
+            let blockTopEdge: CGFloat = blockYPos + block.physicsSize.height * 0.4
+            let blockLeftEdge: CGFloat = block.position.x - block.physicsSize.width * 0.4
+            let blockRightEdge: CGFloat = block.position.x + block.physicsSize.width * 0.4
+            
+            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.4
+            let mellowRightEdge: CGFloat = mellow.position.x + mellow.physicsSize.width * 0.4
+            let mellowLeftEdge: CGFloat = mellow.position.x - mellow.physicsSize.width * 0.4
+            
+            let blockTopLessMellowBot: Bool = blockTopEdge < mellowBotEdge
+            let yPosDiff: CGFloat = abs(blockYPos - mellow.position.y)
+            let xPosDiff: CGFloat = abs(block.position.x - mellow.position.x)
+            let combinedHeights: CGFloat = block.physicsSize.height * 0.5 + mellow.physicsSize.height * 0.4
+            let combinedWidths: CGFloat = block.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
+            
+            //print("Started contact: \(contactPoint) with \(block.position)")
+            if !mellow.isTouchingGround && blockTopLessMellowBot && xPosDiff < combinedWidths {
                 mellow.isTouchingGround = true
             }
-            else if contactPoint.x < (mellow.position.x - mellow.physicsSize.width * 0.4) &&
-                contactPoint.x > (block.position.x + block.physicsSize.width * 0.4)
-            {
-                mellow.leftSideInContact = true
+            else if blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
+                mellow.leftSideInContact += 1
+                mellow.physicsBody!.velocity.dx = 0
             }
-            else if contactPoint.x > (mellow.position.x + mellow.physicsSize.width * 0.4) &&
-                contactPoint.x < (block.position.x - block.physicsSize.width * 0.4) {
-                mellow.rightSideInContact = true
+            else if mellowRightEdge < blockLeftEdge && yPosDiff < combinedHeights {
+                mellow.rightSideInContact += 1
+                mellow.physicsBody!.velocity.dx = 0
             }
                 //Handle the mellow getting crushed by a falling block
             else if mellow.isTouchingGround {
@@ -173,23 +185,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             secondBody = contact.bodyA
         }
         
-        if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue {
-            let contactPoint = contact.contactPoint
-            let floorYPos = secondBody.node!.position.y + worldNode.position.y
+        if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
             let block = secondBody.node! as! RoundedBlockNode
-            if contactPoint.y < (mellow.position.y - (mellow.physicsSize.height * 0.3)) &&
-                contactPoint.y > (floorYPos + secondBody.node!.frame.height * 0.3) &&
-                abs(contactPoint.x - mellow.position.x) < mellow.physicsSize.width / 2.2 {
+            let blockYPos: CGFloat = block.position.y + worldNode.position.y
+            let blockTopEdge: CGFloat = blockYPos + block.physicsSize.height * 0.4
+            let blockLeftEdge: CGFloat = block.position.x - block.physicsSize.width * 0.4
+            let blockRightEdge: CGFloat = block.position.x + block.physicsSize.width * 0.4
+            
+            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.4
+            let mellowRightEdge: CGFloat = mellow.position.x + mellow.physicsSize.width * 0.4
+            let mellowLeftEdge: CGFloat = mellow.position.x - mellow.physicsSize.width * 0.4
+            
+            let blockTopLessMellowBot: Bool = blockTopEdge < mellowBotEdge
+            let yPosDiff: CGFloat = abs(blockYPos - mellow.position.y)
+            let xPosDiff: CGFloat = abs(block.position.x - mellow.position.x)
+            let combinedHeights: CGFloat = block.physicsSize.height * 0.6 + mellow.physicsSize.height * 0.5
+            let combinedWidths: CGFloat = block.physicsSize.width * 0.6 + mellow.physicsSize.width * 0.5
+            
+            
+            //print("Ended contact: \(contactPoint) with \(block.position)")
+            if  mellow.isTouchingGround && blockTopLessMellowBot && xPosDiff < combinedWidths  {
                 mellow.isTouchingGround = false
             }
-            else if contactPoint.x < (mellow.position.x - mellow.physicsSize.width * 0.4) &&
-                contactPoint.x > (block.position.x + block.physicsSize.width * 0.4)
-            {
-                mellow.leftSideInContact = false
+            else if mellow.leftSideInContact > 0 && blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
+                mellow.leftSideInContact -= 1
             }
-            else if contactPoint.x > (mellow.position.x + mellow.physicsSize.width * 0.4) &&
-                contactPoint.x < (block.position.x - block.physicsSize.width * 0.4) {
-                mellow.rightSideInContact = false
+            else if mellow.rightSideInContact > 0 && mellowRightEdge < blockLeftEdge && yPosDiff < combinedHeights {
+                mellow.rightSideInContact -= 1
             }
         }
     }
@@ -220,17 +242,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if let data = self.motionManager.accelerometerData where self.mellow.physicsBody != nil {
             mellow.setdx(withAcceleration: data.acceleration.x)
         }
-        
-        if mellow.leftSideInContact {
-            print("leftSideInContact")
-            mellow.texture = SKTexture(imageNamed: "leftwallcling")
-        }
-        else if mellow.rightSideInContact {
-            print("rightSideInContact")
-            mellow.texture = SKTexture(imageNamed: "rightwallcling")
-        }
-        else {
-            print("not touching either")
+        if !mellow.isTouchingGround {
+            if mellow.leftSideInContact > 0 {
+                mellow.texture = SKTexture(imageNamed: "leftwallcling")
+            }
+            else if mellow.rightSideInContact > 0 {
+                mellow.texture = SKTexture(imageNamed: "rightwallcling")
+            }
         }
         
         if mellow.position.x < -mellow.frame.width / 3 {

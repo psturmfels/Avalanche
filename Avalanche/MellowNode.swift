@@ -25,8 +25,8 @@ class MellowNode: SKSpriteNode {
     var rightjumpTextures = [SKTexture]()
     var direction: Orientation = .left
     var isTouchingGround = true
-    var leftSideInContact = false
-    var rightSideInContact = false
+    var leftSideInContact: Int = 0
+    var rightSideInContact: Int = 0
     var physicsSize: CGSize!
     
     func setup() {
@@ -48,6 +48,7 @@ class MellowNode: SKSpriteNode {
         self.physicsBody!.categoryBitMask = CollisionTypes.Mellow.rawValue
         self.physicsBody!.contactTestBitMask = CollisionTypes.Background.rawValue | CollisionTypes.FallingBlock.rawValue
         self.physicsBody!.friction = 0.2
+        self.physicsBody!.usesPreciseCollisionDetection = true
         self.name = "mellow"
         self.runAction(SKAction.rotateToAngle(0.0, duration: 0.01)) {
             self.physicsBody!.angularVelocity = 0
@@ -77,17 +78,15 @@ class MellowNode: SKSpriteNode {
                 let actionSequence = SKAction.sequence([jumpAction, forceAction])
                 self.runAction(actionSequence)
             }
-            else if leftSideInContact && abs(self.physicsBody!.velocity.dx) < 10 {
-                leftSideInContact = false
+            else if leftSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
+                leftSideInContact = 0
                 isTouchingGround = false
                 self.physicsBody!.velocity.dy = 0
                 let forceAction = SKAction.applyForce(CGVector(dx: 60000, dy: 70000), duration: 0.01)
-                let delayAction = SKAction.waitForDuration(0.25)
-                let sequenceAction = SKAction.sequence([forceAction, delayAction])
                 self.runAction(forceAction)
             }
-            else if rightSideInContact && abs(self.physicsBody!.velocity.dx) < 10 {
-                rightSideInContact = false
+            else if rightSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
+                rightSideInContact = 0
                 isTouchingGround = false
                 self.physicsBody!.velocity.dy = 0
                 let forceAction = SKAction.applyForce(CGVector(dx: -60000, dy: 70000), duration: 0.01)
@@ -115,12 +114,20 @@ class MellowNode: SKSpriteNode {
                 }
                 direction = .right
             }
-            if self.physicsBody!.velocity.dx < CGFloat(accel) * 1000.0 {
+            
+            if self.physicsBody!.velocity.dx < CGFloat(accel) * 1000.0 && rightSideInContact == 0 {
                 self.physicsBody!.velocity.dx += 80
+                if leftSideInContact > 0 {
+                    leftSideInContact = 0
+                }
             }
-            else if self.physicsBody!.velocity.dx > CGFloat(accel) * 1000.0 {
+            else if self.physicsBody!.velocity.dx > CGFloat(accel) * 1000.0 && leftSideInContact == 0 {
                 self.physicsBody!.velocity.dx -= 80
+                if rightSideInContact > 0 {
+                    rightSideInContact = 0
+                }
             }
+            
             //self.physicsBody!.velocity.dx = CGFloat(accel) * 800.0 - 80
         }
         else {
