@@ -206,10 +206,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if  mellow.bottomSideInContact > 0 && blockTopLessMellowBot && xPosDiff < combinedWidths  {
                 mellow.bottomSideInContact -= 1
             }
-            else if mellow.leftSideInContact > 0 && blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
+            if mellow.leftSideInContact > 0 && blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
                 mellow.leftSideInContact -= 1
             }
-            else if mellow.rightSideInContact > 0 && mellowRightEdge < blockLeftEdge && yPosDiff < combinedHeights {
+            if mellow.rightSideInContact > 0 && mellowRightEdge < blockLeftEdge && yPosDiff < combinedHeights {
                 mellow.rightSideInContact -= 1
             }
         }
