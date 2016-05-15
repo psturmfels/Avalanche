@@ -21,22 +21,32 @@ enum CollisionTypes: UInt32 {
 }
 
 class MellowNode: SKSpriteNode {
-    var leftjumpTextures = [SKTexture]()
-    var rightjumpTextures = [SKTexture]()
+    var leftJumpTextures = [SKTexture]()
+    var rightJumpTextures = [SKTexture]()
+    var leftWallJumpTextures = [SKTexture]()
+    var rightWallJumpTextures = [SKTexture]()
+    
     var direction: Orientation = .left
-    var isTouchingGround = true
+    var bottomSideInContact: Int = 0
     var leftSideInContact: Int = 0
     var rightSideInContact: Int = 0
     var physicsSize: CGSize!
     
     func setup() {
-        for var i = 1; i <= 4; i += 1 {
-            rightjumpTextures.append(SKTexture(imageNamed: "rightjump\(i)"))
-            leftjumpTextures.append(SKTexture(imageNamed: "leftjump\(i)"))
+        var i = 1
+        while i <= 4 {
+            rightJumpTextures.append(SKTexture(imageNamed: "rightjump\(i)"))
+            leftJumpTextures.append(SKTexture(imageNamed: "leftjump\(i)"))
+            leftWallJumpTextures.append(SKTexture(imageNamed: "leftwalljump\(i)"))
+            rightWallJumpTextures.append(SKTexture(imageNamed: "rightwalljump\(i)"))
+            i += 1
         }
-        for var i = 4; i >= 1; i -= 1 {
-            rightjumpTextures.append(SKTexture(imageNamed: "rightjump\(i)"))
-            leftjumpTextures.append(SKTexture(imageNamed: "leftjump\(i)"))
+        while i > 1 {
+            i -= 1
+            rightJumpTextures.append(SKTexture(imageNamed: "rightjump\(i)"))
+            leftJumpTextures.append(SKTexture(imageNamed: "leftjump\(i)"))
+            leftWallJumpTextures.append(SKTexture(imageNamed: "leftwalljump\(i)"))
+            rightWallJumpTextures.append(SKTexture(imageNamed: "rightwalljump\(i)"))
         }
         
         self.position = CGPoint(x: 30 , y: self.size.height / 2)
@@ -64,15 +74,15 @@ class MellowNode: SKSpriteNode {
     
     func jump() {
         if self.physicsBody != nil {
-            if isTouchingGround && self.physicsBody!.velocity.dy < 10 {
-                isTouchingGround = false
+            if bottomSideInContact > 0 && self.physicsBody!.velocity.dy < 10 {
+                bottomSideInContact = 0
                 let forceAction = SKAction.applyForce(CGVector(dx: 0, dy: 70000), duration: 0.01)
                 var jumpAction: SKAction
                 if direction == .right {
-                    jumpAction = SKAction.animateWithTextures(rightjumpTextures, timePerFrame: 0.015, resize: true, restore: true)
+                    jumpAction = SKAction.animateWithTextures(rightJumpTextures, timePerFrame: 0.015, resize: true, restore: true)
                 }
                 else {
-                    jumpAction = SKAction.animateWithTextures(leftjumpTextures, timePerFrame: 0.015, resize: true, restore: true)
+                    jumpAction = SKAction.animateWithTextures(leftJumpTextures, timePerFrame: 0.015, resize: true, restore: true)
                 }
                 
                 let actionSequence = SKAction.sequence([jumpAction, forceAction])
@@ -80,17 +90,21 @@ class MellowNode: SKSpriteNode {
             }
             else if leftSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
                 leftSideInContact = 0
-                isTouchingGround = false
+                bottomSideInContact = 0
                 self.physicsBody!.velocity.dy = 0
+                let jumpAction = SKAction.animateWithTextures(leftWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
                 let forceAction = SKAction.applyForce(CGVector(dx: 60000, dy: 70000), duration: 0.01)
-                self.runAction(forceAction)
+                let actionSequence = SKAction.sequence([jumpAction, forceAction])
+                self.runAction(actionSequence)
             }
             else if rightSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
                 rightSideInContact = 0
-                isTouchingGround = false
+                bottomSideInContact = 0
                 self.physicsBody!.velocity.dy = 0
+                let jumpAction = SKAction.animateWithTextures(rightWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
                 let forceAction = SKAction.applyForce(CGVector(dx: -60000, dy: 70000), duration: 0.01)
-                self.runAction(forceAction)
+                let actionSequence = SKAction.sequence([jumpAction, forceAction])
+                self.runAction(actionSequence)
             }
         }
     }

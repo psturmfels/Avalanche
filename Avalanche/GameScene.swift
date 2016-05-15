@@ -123,9 +123,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let combinedHeights: CGFloat = block.physicsSize.height * 0.5 + mellow.physicsSize.height * 0.4
             let combinedWidths: CGFloat = block.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
             
-            //print("Started contact: \(contactPoint) with \(block.position)")
-            if !mellow.isTouchingGround && blockTopLessMellowBot && xPosDiff < combinedWidths {
-                mellow.isTouchingGround = true
+            if blockTopLessMellowBot && xPosDiff < combinedWidths {
+                mellow.bottomSideInContact += 1
             }
             else if blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
                 mellow.leftSideInContact += 1
@@ -136,7 +135,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 mellow.physicsBody!.velocity.dx = 0
             }
                 //Handle the mellow getting crushed by a falling block
-            else if mellow.isTouchingGround {
+            else if mellow.bottomSideInContact > 0 {
                 if contactPoint.y > (mellow.position.y + mellow.physicsSize.height * 0.35) {
                     if let block = secondBody.node as? RoundedBlockNode where block.physicsBody!.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
                         if contactPoint.y < (block.position.y + worldNode.position.y - block.physicsSize.height * 0.35) &&
@@ -204,8 +203,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             
             //print("Ended contact: \(contactPoint) with \(block.position)")
-            if  mellow.isTouchingGround && blockTopLessMellowBot && xPosDiff < combinedWidths  {
-                mellow.isTouchingGround = false
+            if  mellow.bottomSideInContact > 0 && blockTopLessMellowBot && xPosDiff < combinedWidths  {
+                mellow.bottomSideInContact -= 1
             }
             else if mellow.leftSideInContact > 0 && blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
                 mellow.leftSideInContact -= 1
@@ -242,7 +241,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if let data = self.motionManager.accelerometerData where self.mellow.physicsBody != nil {
             mellow.setdx(withAcceleration: data.acceleration.x)
         }
-        if !mellow.isTouchingGround {
+        if mellow.bottomSideInContact == 0 {
             if mellow.leftSideInContact > 0 {
                 mellow.texture = SKTexture(imageNamed: "leftwallcling")
             }
