@@ -18,6 +18,7 @@ enum CollisionTypes: UInt32 {
     case Mellow = 1
     case Background = 2
     case FallingBlock = 4
+    case Lava = 8
 }
 
 class MellowNode: SKSpriteNode {
@@ -56,6 +57,7 @@ class MellowNode: SKSpriteNode {
         self.physicsBody!.restitution = 0.0
         self.physicsBody!.mass = 1
         self.physicsBody!.categoryBitMask = CollisionTypes.Mellow.rawValue
+        self.physicsBody!.collisionBitMask = CollisionTypes.Background.rawValue | CollisionTypes.FallingBlock.rawValue
         self.physicsBody!.contactTestBitMask = CollisionTypes.Background.rawValue | CollisionTypes.FallingBlock.rawValue
         self.physicsBody!.friction = 0.2
         self.physicsBody!.usesPreciseCollisionDetection = true
@@ -79,10 +81,10 @@ class MellowNode: SKSpriteNode {
                 let forceAction = SKAction.applyForce(CGVector(dx: 0, dy: 70000), duration: 0.01)
                 var jumpAction: SKAction
                 if direction == .right {
-                    jumpAction = SKAction.animateWithTextures(rightJumpTextures, timePerFrame: 0.015, resize: true, restore: true)
+                    jumpAction = SKAction.animateWithTextures(rightJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
                 }
                 else {
-                    jumpAction = SKAction.animateWithTextures(leftJumpTextures, timePerFrame: 0.015, resize: true, restore: true)
+                    jumpAction = SKAction.animateWithTextures(leftJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
                 }
                 
                 let actionSequence = SKAction.sequence([jumpAction, forceAction])

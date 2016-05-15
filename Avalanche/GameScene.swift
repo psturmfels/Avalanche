@@ -9,16 +9,13 @@
 import SpriteKit
 import CoreMotion
 
-enum ContactTypes: UInt32 {
-    case Mellow = 1
-    case Block = 2
-}
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var worldNode: SKNode!
     let motionManager: CMMotionManager = CMMotionManager()
     var mellow: MellowNode!
     var floor: RoundedBlockNode!
+    var risingLava: SKSpriteNode!
     var bestSoFar: Int = 0
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
@@ -47,6 +44,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         
@@ -64,13 +62,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floor.physicsBody!.restitution = 0.0
         floor.physicsBody!.categoryBitMask = CollisionTypes.Background.rawValue
         floor.physicsSize = floor.frame.size
+        floor.physicsBody!.collisionBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.FallingBlock.rawValue
         floor.physicsBody!.contactTestBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.FallingBlock.rawValue
         floor.name = "floor"
         worldNode.addChild(floor)
         
+        
         mellow = MellowNode(imageNamed: "standing")
         mellow.setup()
         self.addChild(mellow)
+        
+        let lavaColor = UIColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 0.3)
+        let lavaSize = CGSize(width: self.size.width + mellow.physicsSize.width * 2.0, height: self.size.height + mellow.physicsSize.height)
+        risingLava = SKSpriteNode(color: lavaColor, size: lavaSize)
+        risingLava.position = CGPoint(x: lavaSize.width / 2.0, y: -lavaSize.height * 0.6)
+        risingLava.physicsBody = SKPhysicsBody(rectangleOfSize: lavaSize)
+        risingLava.physicsBody!.dynamic = true
+        risingLava.physicsBody!.affectedByGravity = false
+        risingLava.physicsBody!.allowsRotation = false
+        risingLava.physicsBody!.categoryBitMask = CollisionTypes.Lava.rawValue
+        risingLava.physicsBody!.collisionBitMask = 0x00000000
+        risingLava.physicsBody!.contactTestBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.Background.rawValue | CollisionTypes.FallingBlock.rawValue
+        risingLava.physicsBody!.velocity.dy = 30
+        risingLava.name = "lava"
+        worldNode.addChild(risingLava)
         
         bestLabel = SKLabelNode(fontNamed: "Arial")
         bestLabel.text = "0 ft"
@@ -152,6 +167,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                             mellow.runAction(crushedAction, completion: {
                                 let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
                                 mellowCrushedExplosion.position = self.mellow.position
+                                mellowCrushedExplosion.zPosition = 200
                                 self.addChild(mellowCrushedExplosion)
                                 self.mellow.removeFromParent()
                                 self.shouldContinueSpawning = false
@@ -160,6 +176,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     }
                 }
             }
+        }
+        else if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
+            mellow.physicsBody = nil
+            
+            var crushedTextures = [SKTexture]()
+            for i in 1...7 {
+                crushedTextures.append(SKTexture(imageNamed: "crushed\(i)"))
+            }
+            let moveAction = SKAction.moveBy(CGVector(dx: 0, dy: -10), duration: 0.14)
+            mellow.runAction(moveAction)
+            let crushedAction = SKAction.animateWithTextures(crushedTextures, timePerFrame: 0.02)
+            self.risingLava.physicsBody!.velocity.dy = 0
+            mellow.runAction(crushedAction, completion: {
+                let mellowBurned = SKEmitterNode(fileNamed: "MellowBurned")!
+                mellowBurned.zPosition = 200
+                mellowBurned.position = self.mellow.position
+                mellowBurned.position.y -= self.mellow.physicsSize.height * 0.3
+                self.addChild(mellowBurned)
+                self.mellow.removeFromParent()
+                self.shouldContinueSpawning = false
+            })
         }
             //Handle a falling block landing on the background
         else if secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
@@ -225,7 +262,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func update(currentTime: CFTimeInterval) {
-        let distance = ((mellow.position.y - mellow.physicsSize.height / 2.0) - (worldNode.position.y)) / 5.0 - 22.0
+        let distance = ((mellow.position.y - mellow.physicsSize.height / 2.0) - (worldNode.position.y)) / 10.0 - 11.0
         currentLabel.text = "\(Int(distance)) ft"
         if Int(distance) > bestSoFar {
             bestSoFar = Int(distance)
