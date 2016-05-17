@@ -44,7 +44,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         
@@ -67,7 +66,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floor.name = "floor"
         worldNode.addChild(floor)
         
-        
         mellow = MellowNode(imageNamed: "standing")
         mellow.setup()
         self.addChild(mellow)
@@ -75,11 +73,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let lavaColor = UIColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 0.3)
         let lavaSize = CGSize(width: self.size.width + mellow.physicsSize.width * 2.0, height: self.size.height + mellow.physicsSize.height)
         risingLava = SKSpriteNode(color: lavaColor, size: lavaSize)
-        risingLava.position = CGPoint(x: lavaSize.width / 2.0, y: -lavaSize.height * 0.6)
+        risingLava.position = CGPoint(x: lavaSize.width / 2.0, y: -lavaSize.height * 0.9)
         risingLava.physicsBody = SKPhysicsBody(rectangleOfSize: lavaSize)
         risingLava.physicsBody!.dynamic = true
         risingLava.physicsBody!.affectedByGravity = false
         risingLava.physicsBody!.allowsRotation = false
+        risingLava.physicsBody!.linearDamping = 0.0
         risingLava.physicsBody!.categoryBitMask = CollisionTypes.Lava.rawValue
         risingLava.physicsBody!.collisionBitMask = 0x00000000
         risingLava.physicsBody!.contactTestBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.Background.rawValue | CollisionTypes.FallingBlock.rawValue
@@ -250,6 +249,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 mellow.rightSideInContact -= 1
             }
         }
+        else if firstBody.categoryBitMask != CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
+            if let removeBlock = firstBody.node as? RoundedBlockNode where removeBlock.parent != nil {
+                removeBlock.removeFromParent()
+            }
+        }
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -267,6 +271,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if Int(distance) > bestSoFar {
             bestSoFar = Int(distance)
             bestLabel.text = "\(bestSoFar) ft"
+        }
+        
+        if risingLava.physicsBody != nil {
+            let lavaYPos = worldNode.position.y + risingLava.position.y
+            let distanceToLava = Double(mellow.position.y - lavaYPos - risingLava.frame.height * 0.5)
+            let newLavaRisingSpeed = 40.0 - 35.0 * pow(M_PI, -0.003 * distanceToLava)
+            risingLava.physicsBody!.velocity.dy = CGFloat(newLavaRisingSpeed)
         }
         
         if mellow.physicsBody != nil {
