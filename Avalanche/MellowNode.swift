@@ -33,7 +33,7 @@ class MellowNode: SKSpriteNode {
     var rightSideInContact: Int = 0
     var physicsSize: CGSize!
     
-    func setup() {
+    func setup(position: CGPoint) {
         var i = 1
         while i <= 4 {
             rightJumpTextures.append(SKTexture(imageNamed: "rightjump\(i)"))
@@ -50,7 +50,7 @@ class MellowNode: SKSpriteNode {
             rightWallJumpTextures.append(SKTexture(imageNamed: "rightwalljump\(i)"))
         }
         
-        self.position = CGPoint(x: 30 , y: self.size.height / 2)
+        self.position = position
         
         physicsSize = CGSize(width: self.texture!.size().width * 0.65, height: self.texture!.size().height * 0.92)
         self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsSize)

@@ -9,6 +9,16 @@
 import SpriteKit
 import CoreMotion
 
+enum GameStates: Int {
+    case GameInProgress = 1
+    case GameOver = 2
+}
+
+enum ButtonStates {
+    case Empty
+    case ReplayTapped
+    case MenuTapped
+}
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var worldNode: SKNode!
@@ -20,6 +30,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
     var shouldContinueSpawning = true
+    var currentGameState = GameStates.GameInProgress
+    var currentButtonState = ButtonStates.Empty
+    
+    func gameOver() {
+        currentGameState = .GameOver
+        let screenCenter = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
+        
+        let replayButton = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        replayButton.fontSize = 48.0
+        replayButton.fontColor = UIColor.whiteColor()
+        replayButton.text = "Replay"
+        replayButton.position = CGPoint(x: screenCenter.x, y: screenCenter.y + replayButton.frame.height)
+        replayButton.name = "Replay"
+        replayButton.zPosition = 300
+        
+        let menuButton = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        menuButton.fontSize = 48.0
+        menuButton.fontColor = UIColor.whiteColor()
+        menuButton.text = "Menu"
+        menuButton.position = CGPoint(x: screenCenter.x, y: screenCenter.y - menuButton.frame.height)
+        menuButton.name = "Menu"
+        menuButton.zPosition = 300
+        
+        self.addChild(replayButton)
+        self.addChild(menuButton)
+    }
     
     func generateRandomBlock(prevPoint: CGPoint) -> CGPoint {
         let randomXVal = CGFloat(RandomDouble(min: 0.0, max: Double(self.size.width)))
@@ -54,6 +90,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(worldNode)
         self.repeatGenerating(true, prevPoint: CGPoint(x: 0.0, y: self.size.height))
         
+        mellow = MellowNode(imageNamed: "standing")
+        let mellowPos = CGPoint(x: 30, y: self.size.height * 0.5 - 40.0)
+        mellow.setup(mellowPos)
+        self.addChild(mellow)
+        
         floor = RoundedBlockNode(color: UIColor.blackColor(), size: CGSize(width: 2 * self.size.width, height: self.size.height))
         floor.position = CGPoint(x: self.size.width / 2, y: -floor.size.height / 3)
         floor.physicsBody = SKPhysicsBody(rectangleOfSize: floor.size)
@@ -66,9 +107,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floor.name = "floor"
         worldNode.addChild(floor)
         
-        mellow = MellowNode(imageNamed: "standing")
-        mellow.setup()
-        self.addChild(mellow)
         
         let lavaColor = UIColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 0.3)
         let lavaSize = CGSize(width: self.size.width + mellow.physicsSize.width * 2.0, height: self.size.height + mellow.physicsSize.height)
@@ -171,6 +209,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                 self.mellow.removeFromParent()
                                 self.shouldContinueSpawning = false
                             })
+                            let gameOverAction = SKAction.waitForDuration(1.0)
+                            self.runAction(gameOverAction) {
+                                self.gameOver()
+                            }
                         }
                     }
                 }
@@ -196,6 +238,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.mellow.removeFromParent()
                 self.shouldContinueSpawning = false
             })
+            let gameOverAction = SKAction.waitForDuration(1.0)
+            self.runAction(gameOverAction) {
+                self.gameOver()
+            }
         }
             //Handle a falling block landing on the background
         else if secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
@@ -259,11 +305,78 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         /* Called when a touch begins */
         
-        //for touch in touches {
-        //let location = touch.locationInNode(self)
-        mellow.jump()
-        //}
+        
+        if currentGameState == .GameInProgress {
+            mellow.jump()
+        }
+        else {
+            currentButtonState = .Empty
+            for touch in touches {
+                let location = touch.locationInNode(self)
+                let objects = nodesAtPoint(location) as [SKNode]
+                for object in objects {
+                    if object.name == "Replay" {
+                        currentButtonState = .ReplayTapped
+                        break
+                    }
+                    if object.name == "Menu" {
+                        currentButtonState = .MenuTapped
+                        break
+                    }
+                }
+            }
+        }
     }
+    
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        if currentGameState == .GameOver {
+            currentButtonState = .Empty
+            for touch in touches {
+                let location = touch.locationInNode(self)
+                let objects = nodesAtPoint(location) as [SKNode]
+                for object in objects {
+                    if object.name == "Replay" {
+                        currentButtonState = .ReplayTapped
+                        break
+                    }
+                    if object.name == "Menu" {
+                        currentButtonState = .MenuTapped
+                        break
+                    }
+                }
+            }
+        }
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        if currentGameState == .GameOver {
+            switch currentButtonState {
+            case .ReplayTapped:
+                self.removeFromParent()
+                let gameScene = GameScene(fileNamed: "GameScene")!
+                gameScene.size = self.size
+                let transition = SKTransition.crossFadeWithDuration(0.5)
+                gameScene.scaleMode = .AspectFill
+                self.scene!.view!.presentScene(gameScene, transition: transition)
+            case .MenuTapped:
+                currentButtonState = .Empty
+                self.removeFromParent()
+                let menuScene = MenuScene(size: self.size)
+                menuScene.scaleMode = .AspectFill
+                let transition = SKTransition.crossFadeWithDuration(0.5)
+                self.scene!.view!.presentScene(menuScene, transition: transition)
+            case .Empty: break
+            }
+        }
+    }
+    
+    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+        if currentGameState == .GameOver {
+            currentButtonState = .Empty
+        }
+    }
+    
+    
     
     override func update(currentTime: CFTimeInterval) {
         let distance = ((mellow.position.y - mellow.physicsSize.height / 2.0) - (worldNode.position.y)) / 10.0 - 11.0
