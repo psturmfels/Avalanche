@@ -14,6 +14,7 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        //Load the menu scene on startup
         let scene = MenuScene(size: self.view.frame.size)
         let skView = self.view as! SKView
         skView.showsFPS = false

@@ -12,14 +12,22 @@ class MenuScene: SKScene {
     var playButton: SKLabelNode!
     var isTouchingPlay = false
     
+    //MARK: Button Methods
     func playTapped() {
+        
+        //Load the Game Scene
         let gameScene = GameScene(fileNamed: "GameScene")!
         gameScene.size = self.size
         let transition = SKTransition.crossFadeWithDuration(0.5)
+        
+        //Ensure that the entire screen is filled by choosing
+        //to expand on the smaller axis (x or y)
         gameScene.scaleMode = .AspectFill
         self.scene!.view!.presentScene(gameScene, transition: transition)
     }
     
+    
+    //MARK: View Methods
     override func didMoveToView(view: SKView) {
         let screenCenter = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
         
@@ -34,12 +42,15 @@ class MenuScene: SKScene {
         
     }
     
+    //MARK: Touch Methods
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         isTouchingPlay = false
         for touch in touches {
             let location = touch.locationInNode(self)
             let objects = nodesAtPoint(location) as [SKNode]
             
+            //If any of the touches begins at a play button,
+            //the user is then holding the play button down
             if objects.contains(playButton) {
                 isTouchingPlay = true
             }
@@ -47,20 +58,30 @@ class MenuScene: SKScene {
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        //Assume that the user moved the touch outside of the play button range to begin with
+        let copy = isTouchingPlay
         isTouchingPlay = false
-        for touch in touches {
-            let location = touch.locationInNode(self)
-            let objects = nodesAtPoint(location) as [SKNode]
-            
-            if objects.contains(playButton) {
-                isTouchingPlay = true
-                break
+        
+        //If the play button was held down before the move
+        if copy {
+            for touch in touches {
+                let location = touch.locationInNode(self)
+                let objects = nodesAtPoint(location) as [SKNode]
+                
+                if objects.contains(playButton) {
+                    //And if any of the touches remained on the play button,
+                    //the user is still holding the play button down
+                    isTouchingPlay = true
+                    break
+                }
             }
         }
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if isTouchingPlay {
+            //This is the "touch-up-inside" pattern:
+            //The play button is tapped if a touch began and ended inside the play button
             isTouchingPlay = false
             playTapped()
         }

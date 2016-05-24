@@ -12,6 +12,7 @@ class RoundedBlockNode: SKSpriteNode {
     var physicsSize: CGSize!
     var fallSpeed: CGFloat = -150.0
     
+    //MARK: Creation Method
     func setup() {
         let scale = CGFloat(RandomFloat(min: 0.5, max: 1.5))
         self.setScale(scale)
@@ -35,6 +36,7 @@ class RoundedBlockNode: SKSpriteNode {
         self.name = "fallingBlock"
     }
     
+    //MARK: Game Methods
     func becomeBackground() {
         self.physicsBody!.dynamic = false
         self.runAction(SKAction.moveBy(CGVector(dx: 0, dy: -2.0), duration: 0.0))
