@@ -520,13 +520,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let gameScene = GameScene(fileNamed: "GameScene")!
                 gameScene.size = self.size
                 let transition = SKTransition.crossFadeWithDuration(0.5)
-                gameScene.scaleMode = .AspectFill
+                gameScene.scaleMode = .ResizeFill
                 self.scene!.view!.presentScene(gameScene, transition: transition)
             case .MenuTapped:
                 currentButtonState = .Empty
                 self.removeFromParent()
                 let menuScene = MenuScene(size: self.size)
-                menuScene.scaleMode = .AspectFill
+                menuScene.scaleMode = .ResizeFill
                 let transition = SKTransition.crossFadeWithDuration(0.5)
                 self.scene!.view!.presentScene(menuScene, transition: transition)
             case .Empty: break

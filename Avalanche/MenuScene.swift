@@ -22,7 +22,7 @@ class MenuScene: SKScene {
         
         //Ensure that the entire screen is filled by choosing
         //to expand on the smaller axis (x or y)
-        gameScene.scaleMode = .AspectFill
+        gameScene.scaleMode = .ResizeFill
         self.scene!.view!.presentScene(gameScene, transition: transition)
     }
     
