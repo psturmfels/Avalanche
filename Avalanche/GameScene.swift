@@ -28,22 +28,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var floor: RoundedBlockNode!
     var risingLava: SKSpriteNode!
     
-    var bestSoFar: Int = 0
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
     
-    var shouldContinueSpawning = true
-    var currentGameState = GameStates.GameInProgress
-    var currentButtonState = ButtonStates.Empty
+    var bestSoFar: Int = 0 {
+        didSet {
+            bestLabel.text = "\(bestSoFar) ft"
+        }
+    }
+    var current: Int = 0 {
+        didSet {
+            currentLabel.text = "\(current) ft"
+        }
+    }
+    
+    var shouldContinueSpawning: Bool = true
+    var currentGameState: GameStates = GameStates.GameInProgress
+    var currentButtonState: ButtonStates = ButtonStates.Empty
     
     var backgroundMusic: SKAudioNode!
     
-    //MARK: Game Logistics Methods
+    //MARK: Game Termination Methods
     func gameOver() {
         currentGameState = .GameOver
-        let screenCenter = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
+        createReplayButton()
+        createMenuButton()
+    }
+    
+    func createReplayButton() {
+        let screenCenter: CGPoint = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
         
-        let replayButton = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        let replayButton: SKLabelNode = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         replayButton.fontSize = 48.0
         replayButton.fontColor = UIColor.whiteColor()
         replayButton.text = "Replay"
@@ -51,7 +66,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         replayButton.name = "Replay"
         replayButton.zPosition = 300
         
-        let menuButton = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        self.addChild(replayButton)
+    }
+    
+    func createMenuButton() {
+        let screenCenter = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
+        
+        let menuButton: SKLabelNode = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         menuButton.fontSize = 48.0
         menuButton.fontColor = UIColor.whiteColor()
         menuButton.text = "Menu"
@@ -59,19 +80,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         menuButton.name = "Menu"
         menuButton.zPosition = 300
         
-        self.addChild(replayButton)
         self.addChild(menuButton)
     }
     
-    //A method to generate a random block off the top edge of the screen
-    //At the moment, the parameter "prevPoint" does nothing,
-    //but in the future it may be used to generate blocks that are farther or closer
-    //away from each other
-    func generateRandomBlock(prevPoint: CGPoint) -> CGPoint {
+    
+    //MARK: Block Methods
+    func generateRandomBlock() {
         //Choose random paramters for the block
-        let randomXVal = CGFloat(RandomDouble(min: 0.0, max: Double(self.size.width)))
-        let randomColor = RandomInt(min: 1, max: 6)
-        let roundedBlock = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
+        let randomXVal: CGFloat = CGFloat(RandomDouble(min: 0.0, max: Double(self.size.width)))
+        let randomColor: Int = RandomInt(min: 1, max: 6)
+        let roundedBlock: RoundedBlockNode = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
         
         //Set the physics and scale of the block
         roundedBlock.setup()
@@ -84,51 +102,92 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         roundedBlock.beginFalling()
         
         worldNode.addChild(roundedBlock)
-        return CGPoint(x: randomXVal, y: self.size.height)
     }
     
-    //A tail recursive function to generate a block every second.
-    //In the future, I may generate blocks at random time intervals
-    func repeatGenerating(shouldContinue: Bool, prevPoint: CGPoint) {
-        if shouldContinue {
-            let waitAction = SKAction.waitForDuration(1.0)
-            worldNode.runAction(waitAction, completion: {
-                let nextPoint = self.generateRandomBlock(prevPoint)
-                self.repeatGenerating(self.shouldContinueSpawning, prevPoint: nextPoint)
-            })
-        }
-    }
-    
-    //Called once every frame
-    override func update(currentTime: CFTimeInterval) {
-        //Continually update the best and the current distance labels
-        let distance = ((mellow.position.y - mellow.physicsSize.height / 2.0) - (worldNode.position.y)) / 10.0 - 11.0
-        currentLabel.text = "\(Int(distance)) ft"
-        if Int(distance) > bestSoFar {
-            bestSoFar = Int(distance)
-            bestLabel.text = "\(bestSoFar) ft"
+    func initBlocks() {
+        let createBlock: SKAction = SKAction.runBlock { [unowned self] in
+            self.generateRandomBlock()
         }
         
-        //The lava's rising speed is an asymptotically growing function of the
-        //it's distance to the mellow
-        if risingLava.physicsBody != nil {
-            let lavaYPos = worldNode.position.y + risingLava.position.y
-            let distanceToLava = Double(mellow.position.y - lavaYPos - risingLava.frame.height * 0.5)
-            let newLavaRisingSpeed = 40.0 - 35.0 * pow(M_PI, -0.003 * distanceToLava)
-            risingLava.physicsBody!.velocity.dy = CGFloat(newLavaRisingSpeed)
+        let wait: SKAction = SKAction.waitForDuration(1.0, withRange: 0.5)
+        let sequence: SKAction = SKAction.sequence([createBlock, wait])
+        let repeatForever: SKAction = SKAction.repeatActionForever(sequence)
+        runAction(repeatForever, withKey: "genBlocks")
+    }
+    
+    
+    //MARK: Update Methods
+    override func update(currentTime: CFTimeInterval) {
+        updateLabels()
+        setLavaSpeed()
+        
+        guard mellow.physicsBody != nil else {
+            return
         }
         
         //I used to have a problem where the user could "double jump" occasionally.
-        //Although Ithink I've fixed the problem elsewhere,
+        //Although I think I've fixed the problem elsewhere,
         //this ensures that double jumping is not really a possibility
-        if mellow.physicsBody != nil {
-            if mellow.physicsBody!.velocity.dy > 700 {
-                mellow.physicsBody!.velocity.dy *= 0.9
-            }
+        if mellow.physicsBody!.velocity.dy > 700 {
+            mellow.physicsBody!.velocity.dy *= 0.9
         }
         
+        mellowAccel()
+        mellowContain()
+    }
+    
+    func updateLabels() {
+        //Continually update the best and the current distance
+        let mellowBot: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.5
+        let distance: CGFloat = mellowBot - worldNode.position.y
+        current = Int(distance / 10.0) - 11
+        if current > bestSoFar {
+            bestSoFar = current
+        }
+    }
+    
+    func setLavaSpeed() {
+        //The lava's rising speed is an arbitrary function of its distance to the mellow
+        if risingLava.physicsBody != nil {
+            let lavaYPos: CGFloat = worldNode.position.y + risingLava.position.y
+            let lavaYTop: CGFloat = lavaYPos + risingLava.frame.height * 0.5
+            let distanceToLava: CGFloat = mellow.position.y - lavaYTop
+            let newLavaRisingSpeed: CGFloat = 40.0 - 35.0 * pow(3.14159, -0.003 * distanceToLava)
+            risingLava.physicsBody!.velocity.dy = newLavaRisingSpeed
+        }
+    }
+    
+    func mellowContain() {
+        //Make the mellow "wrap-around" the screen
+        //if it goes off the horizontal edges
+        let mellowTwoThirds: CGFloat = (2.0 / 3.0) * mellow.frame.width
+        let mellowTwiceHeight: CGFloat = 2 * mellow.frame.height
+        
+        if mellow.position.x < -mellow.frame.width / 3 {
+            mellow.position.x += self.size.width + mellowTwoThirds
+        }
+        else if mellow.position.x > self.size.width + mellow.frame.width / 3 {
+            mellow.position.x -= self.size.width + mellowTwoThirds
+        }
+        
+        //If the mellow gets too close to the top or bottom of the screen,
+        //move the world as opposed to the mellow, ensuring that
+        //the mellow always stays on the screen.
+        if mellow.position.y > self.size.height - mellowTwiceHeight {
+            let difference = mellow.position.y - (self.size.height - mellowTwiceHeight)
+            mellow.position.y = self.size.height - mellowTwiceHeight
+            self.worldNode.position.y -= difference
+        }
+        else if mellow.position.y < mellowTwiceHeight {
+            let difference = mellowTwiceHeight - mellow.position.y
+            mellow.position.y = mellowTwiceHeight
+            self.worldNode.position.y += difference
+        }
+    }
+    
+    func mellowAccel() {
         //Make the mellow move to the left or right depending on the tilt of the screen
-        if let data = self.motionManager.accelerometerData where self.mellow.physicsBody != nil {
+        if let data = self.motionManager.accelerometerData {
             mellow.setdx(withAcceleration: data.acceleration.x)
         }
         if mellow.bottomSideInContact == 0 {
@@ -140,29 +199,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 mellow.texture = SKTexture(imageNamed: "rightwallcling")
             }
         }
-        
-        //Make the mellow "wrap-around" the screen
-        //if it goes off the horizontal edges
-        if mellow.position.x < -mellow.frame.width / 3 {
-            mellow.position.x += (self.size.width + (2.0 / 3.0) * mellow.frame.width )
-        }
-        else if mellow.position.x > self.size.width + mellow.frame.width / 3 {
-            mellow.position.x -= (self.size.width + (2.0 / 3.0) * mellow.frame.width)
-        }
-        
-        //If the mellow gets too close to the top or bottom of the screen,
-        //move the world as opposed to the mellow, ensuring that
-        //the mellow always stays on the screen.
-        if mellow.position.y > self.size.height - 2 * mellow.frame.height {
-            let difference = mellow.position.y - (self.size.height - 2 * mellow.frame.height)
-            mellow.position.y = self.size.height - 2 * mellow.frame.height
-            self.worldNode.position.y -= difference
-        }
-        else if mellow.position.y < 2 * mellow.frame.height {
-            let difference = 2 * mellow.frame.height - mellow.position.y
-            mellow.position.y = 2 * mellow.frame.height
-            self.worldNode.position.y += difference
-        }
     }
     
     //MARK: View Methods
@@ -172,41 +208,64 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //Let this object receive contact notifications
         physicsWorld.contactDelegate = self
         
-        
         //Create a "world node" that everything but the mellow belongs to.
         //Used to make it seem like the mellow is moving
         //when the mellow gets close to the top or bottom of the screen.
         worldNode = SKNode()
         worldNode.position = self.position
         self.addChild(worldNode)
-        self.repeatGenerating(true, prevPoint: CGPoint(x: 0.0, y: self.size.height))
+        self.initBlocks()
         
+        //Create stuff
+        createMellow()
+        createFloor()
+        createLava()
+        createLabels()
         
+        //Allows the game to read the tilt of the phone and react accordingly
+        motionManager.startAccelerometerUpdates()
+        
+        //Start the music!!!
+        runAction(SKAction.waitForDuration(0.5), completion: {
+            let bgcopy = SKAudioNode(fileNamed: "DreamsOfAbove.mp3")
+            self.addChild(bgcopy)
+            self.backgroundMusic = bgcopy
+        })
+    }
+    
+    func createMellow() {
         //Create the hero of the game!
         mellow = MellowNode(imageNamed: "standing")
-        let mellowPos = CGPoint(x: 30, y: self.size.height * 0.5 - 40.0)
+        let mellowPos: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 300.0)
         //Most of the initialization of the mellow is done in setup()
         mellow.setup(mellowPos)
         self.addChild(mellow)
-        
+    }
+    
+    func createFloor() {
         //Create the initial floor that all other bodies rest on. It must span more than the width of the screen.
-        floor = RoundedBlockNode(color: UIColor.blackColor(), size: CGSize(width: 2 * self.size.width, height: self.size.height))
-        floor.position = CGPoint(x: self.size.width / 2, y: -floor.size.height / 3)
-        floor.physicsBody = SKPhysicsBody(rectangleOfSize: floor.size)
+        let floorSize: CGSize = CGSize(width: 2 * self.size.width, height: self.size.height)
+        floor = RoundedBlockNode(color: UIColor.blackColor(), size: floorSize)
+        floor.position = CGPoint(x: self.size.width / 2, y: -floorSize.height / 3)
+        floor.physicsBody = SKPhysicsBody(rectangleOfSize: floorSize)
         floor.physicsBody!.dynamic = false
         floor.physicsBody!.restitution = 0.0
         floor.physicsBody!.categoryBitMask = CollisionTypes.Background.rawValue
-        floor.physicsSize = floor.frame.size
+        floor.physicsSize = floorSize
         
         //Make sure the floor collides with only falling blocks and mellows
         floor.physicsBody!.collisionBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.FallingBlock.rawValue
         floor.physicsBody!.contactTestBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.FallingBlock.rawValue
         floor.name = "floor"
         worldNode.addChild(floor)
-        
-        //Create the lava – a red semi-transparent rectangle that rises at constant speed
-        let lavaColor = UIColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 0.3)
-        let lavaSize = CGSize(width: self.size.width + mellow.physicsSize.width * 2.0, height: self.size.height + mellow.physicsSize.height)
+    }
+    
+    func createLava() {
+        //Create the lava – a red semi-transparent rectangle that rises at variable speed
+        let lavaColor: UIColor = UIColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 0.3)
+        let lavaWidth: CGFloat = self.size.width + mellow.physicsSize.width * 2.0
+        let lavaHeight: CGFloat = self.size.height + mellow.physicsSize.height
+        let lavaSize: CGSize = CGSize(width: lavaWidth, height: lavaHeight)
         risingLava = SKSpriteNode(color: lavaColor, size: lavaSize)
         risingLava.position = CGPoint(x: lavaSize.width / 2.0, y: -lavaSize.height * 0.9)
         risingLava.physicsBody = SKPhysicsBody(rectangleOfSize: lavaSize)
@@ -217,6 +276,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         risingLava.physicsBody!.allowsRotation = false
         risingLava.physicsBody!.linearDamping = 0.0
         risingLava.physicsBody!.categoryBitMask = CollisionTypes.Lava.rawValue
+        
         //The lava shouldn't physically collide with anything
         risingLava.physicsBody!.collisionBitMask = 0x00000000
         
@@ -225,8 +285,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         risingLava.physicsBody!.velocity.dy = 30
         risingLava.name = "lava"
         worldNode.addChild(risingLava)
-        
-        
+    }
+    
+    func createLabels() {
         //Displays highest height climbed so far
         bestLabel = SKLabelNode(fontNamed: "Arial")
         bestLabel.text = "0 ft"
@@ -236,7 +297,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bestLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
         self.addChild(bestLabel)
         
-        
         //Displays current height
         currentLabel = SKLabelNode(fontNamed: "Arial")
         currentLabel.text = "0 ft"
@@ -245,15 +305,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         currentLabel.zPosition = 30.0
         currentLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
         self.addChild(currentLabel)
-        
-        //Allows the game to read the tilt of the phone and react accordingly
-        motionManager.startAccelerometerUpdates()
-        
-        runAction(SKAction.waitForDuration(0.5), completion: {
-            let bgcopy = SKAudioNode(fileNamed: "DreamsOfAbove.mp3")
-            self.addChild(bgcopy)
-            self.backgroundMusic = bgcopy
-        })
     }
     
     //MARK: Contact Methods
@@ -271,7 +322,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             secondBody = contact.bodyA
         }
         //Now, the first body is guarenteed to have a smaller category bit mask
-        
         
         
         //If the first body was the mellow and the second body was the background or a falling block

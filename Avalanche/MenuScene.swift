@@ -10,27 +10,32 @@ import SpriteKit
 
 class MenuScene: SKScene {
     var playButton: SKLabelNode!
-    var isTouchingPlay = false
+    var isTouchingPlay: Bool = false
     
     //MARK: Button Methods
     func playTapped() {
+        guard self.scene != nil && self.scene?.view != nil else {
+            abort();
+        }
         
         //Load the Game Scene
-        let gameScene = GameScene(fileNamed: "GameScene")!
+        let gameScene: GameScene = GameScene(fileNamed: "GameScene")!
         gameScene.size = self.size
-        let transition = SKTransition.crossFadeWithDuration(0.5)
-        
-        //Ensure that the entire screen is filled by choosing
-        //to expand on the smaller axis (x or y)
         gameScene.scaleMode = .ResizeFill
+
+        let transition = SKTransition.crossFadeWithDuration(0.5)
         self.scene!.view!.presentScene(gameScene, transition: transition)
     }
     
     
     //MARK: View Methods
     override func didMoveToView(view: SKView) {
+        createPlayButton()
+    }
+    
+    //MARK: Creation Methods
+    func createPlayButton() {
         let screenCenter = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
-        
         isTouchingPlay = false
         
         playButton = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
