@@ -23,16 +23,20 @@ enum ButtonStates {
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var worldNode: SKNode!
     let motionManager: CMMotionManager = CMMotionManager()
+    
     var mellow: MellowNode!
     var floor: RoundedBlockNode!
     var risingLava: SKSpriteNode!
+    
     var bestSoFar: Int = 0
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
+    
     var shouldContinueSpawning = true
     var currentGameState = GameStates.GameInProgress
     var currentButtonState = ButtonStates.Empty
     
+    var backgroundMusic: SKAudioNode!
     
     //MARK: Game Logistics Methods
     func gameOver() {
@@ -244,6 +248,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //Allows the game to read the tilt of the phone and react accordingly
         motionManager.startAccelerometerUpdates()
+        
+        runAction(SKAction.waitForDuration(0.5), completion: {
+            let bgcopy = SKAudioNode(fileNamed: "DreamsOfAbove.mp3")
+            self.addChild(bgcopy)
+            self.backgroundMusic = bgcopy
+            print(self.backgroundMusic)
+        })
     }
     
     //MARK: Contact Methods
@@ -352,6 +363,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //While shifting the mellow down so it appears as though it is always touching the lava
             let moveAction = SKAction.moveBy(CGVector(dx: 0, dy: -10), duration: 0.14)
             mellow.runAction(moveAction)
+            
             let crushedAction = SKAction.animateWithTextures(crushedTextures, timePerFrame: 0.02)
             self.risingLava.physicsBody!.velocity.dy = 0
             mellow.runAction(crushedAction, completion: {

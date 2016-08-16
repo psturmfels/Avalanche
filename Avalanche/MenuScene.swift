@@ -39,7 +39,6 @@ class MenuScene: SKScene {
         playButton.fontSize = 64.0
         playButton.position = screenCenter
         self.addChild(playButton)
-        
     }
     
     //MARK: Touch Methods

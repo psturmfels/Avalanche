@@ -17,12 +17,14 @@ class GameViewController: UIViewController {
         //Load the menu scene on startup
         let scene = MenuScene(size: self.view.frame.size)
         let skView = self.view as! SKView
+        
+        skView.showsPhysics = false
         skView.showsFPS = false
         skView.showsNodeCount = false
         skView.ignoresSiblingOrder = true
         scene.scaleMode = .AspectFill
         skView.presentScene(scene)
-
+    
         /*
         if let scene = MenuScene(fileNamed:"MenuScene") {
             // Configure the view.
