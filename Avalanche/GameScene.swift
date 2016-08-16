@@ -20,6 +20,11 @@ enum ButtonStates {
     case MenuTapped
 }
 
+enum DeathTypes {
+    case Lava
+    case Crushed
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var worldNode: SKNode!
     let motionManager: CMMotionManager = CMMotionManager()
@@ -201,7 +206,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    //MARK: View Methods
+    //MARK: Initializing Methods
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         
@@ -236,7 +241,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func createMellow() {
         //Create the hero of the game!
         mellow = MellowNode(imageNamed: "standing")
-        let mellowPos: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 300.0)
+        let mellowPos: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
         //Most of the initialization of the mellow is done in setup()
         mellow.setup(mellowPos)
         self.addChild(mellow)
@@ -323,21 +328,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         //Now, the first body is guarenteed to have a smaller category bit mask
         
-        
         //If the first body was the mellow and the second body was the background or a falling block
         if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
             
             //Calculate the various physical aspects of the second body
-            let block = secondBody.node! as! RoundedBlockNode
+            let block: RoundedBlockNode = secondBody.node! as! RoundedBlockNode
             let blockYPos: CGFloat = block.position.y + worldNode.position.y
             let blockTopEdge: CGFloat = blockYPos + block.physicsSize.height * 0.4
             let blockLeftEdge: CGFloat = block.position.x - block.physicsSize.width * 0.4
             let blockRightEdge: CGFloat = block.position.x + block.physicsSize.width * 0.4
+            let blockBotEdge: CGFloat = blockYPos - block.physicsSize.height * 0.35
             
             //Calculate the various physical aspects of the mellow
             let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.4
             let mellowRightEdge: CGFloat = mellow.position.x + mellow.physicsSize.width * 0.4
             let mellowLeftEdge: CGFloat = mellow.position.x - mellow.physicsSize.width * 0.4
+            let mellowTopEdge: CGFloat = mellow.position.y + mellow.physicsSize.height * 0.35
             
             //Calculate differences between physical aspects of the two bodies
             let blockTopLessMellowBot: Bool = blockTopEdge < mellowBotEdge
@@ -363,41 +369,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 //If the mellow got crushed by a block
             else if mellow.bottomSideInContact > 0 {
-                if contactPoint.y > (mellow.position.y + mellow.physicsSize.height * 0.35) {
+                if contactPoint.y > mellowTopEdge {
                     if let block = secondBody.node as? RoundedBlockNode where block.physicsBody!.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
-                        if contactPoint.y < (block.position.y + worldNode.position.y - block.physicsSize.height * 0.35) {
+                        if contactPoint.y < blockBotEdge {
                             if abs(mellow.physicsBody!.velocity.dy) < 10 {
-                                //Remove the mellow's physicsBody so it doesn't slide
-                                mellow.physicsBody = nil
-                                
-                                //Animate through the crushed textures
-                                var crushedTextures = [SKTexture]()
-                                for i in 1...7 {
-                                    crushedTextures.append(SKTexture(imageNamed: "crushed\(i)"))
-                                }
-                                let moveAction = SKAction.moveBy(CGVector(dx: 0, dy: -10), duration: 0.14)
-                                mellow.runAction(moveAction)
-                                let crushedAction = SKAction.animateWithTextures(crushedTextures, timePerFrame: 0.02)
-                                mellow.runAction(crushedAction, completion: {
-                                    //Crushed sound effects
-                                    self.backgroundMusic.runAction(SKAction.stop())
-                                    self.backgroundMusic.removeFromParent()
-                                    self.runAction(SKAction.playSoundFileNamed("MellowCrushed.wav", waitForCompletion: false))
-                                    
-                                    //Add the explosion after the crush
-                                    let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
-                                    mellowCrushedExplosion.position = self.mellow.position
-                                    mellowCrushedExplosion.zPosition = 200
-                                    self.addChild(mellowCrushedExplosion)
-                                    self.mellow.removeFromParent()
-                                    //Stop spawning blocks
-                                    self.shouldContinueSpawning = false
-                                })
-                                //Run the game over function after a specified duration
-                                let gameOverAction = SKAction.waitForDuration(2.0)
-                                self.runAction(gameOverAction) {
-                                    self.gameOver()
-                                }
+                                mellowDestroyed(.Crushed)
                             }
                         }
                     }
@@ -406,20 +382,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
             //If the contact was between a mellow and the lava
         else if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
-            //Remove the mellow's physics body so it doesn't sink in to the lava
-            mellow.physicsBody = nil
-            
-            //Animate through the crushed textures
-            var crushedTextures = [SKTexture]()
-            for i in 1...7 {
-                crushedTextures.append(SKTexture(imageNamed: "crushed\(i)"))
+            mellowDestroyed(.Lava)
+        }
+            //If the contact was between a falling block and a piece of the background
+        else if secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
+            if firstBody.categoryBitMask == CollisionTypes.Background.rawValue {
+                if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
+                    //Make the falling block static and fade it to black
+                    block.becomeBackground()
+                }
             }
-            //While shifting the mellow down so it appears as though it is always touching the lava
-            let moveAction = SKAction.moveBy(CGVector(dx: 0, dy: -10), duration: 0.14)
-            mellow.runAction(moveAction)
-            
-            let crushedAction = SKAction.animateWithTextures(crushedTextures, timePerFrame: 0.02)
-            self.risingLava.physicsBody!.velocity.dy = 0
+        }
+    }
+    
+    func mellowDestroyed(by: DeathTypes) {
+        //Remove the mellow's physicsBody so it doesn't slide
+        mellow.physicsBody = nil
+        //Animate through the crushed textures
+        var crushedTextures: [SKTexture] = [SKTexture]()
+        for i in 1...7 {
+            crushedTextures.append(SKTexture(imageNamed: "crushed\(i)"))
+        }
+        let moveAction = SKAction.moveBy(CGVector(dx: 0, dy: -10), duration: 0.14)
+        mellow.runAction(moveAction)
+        let crushedAction = SKAction.animateWithTextures(crushedTextures, timePerFrame: 0.02)
+        self.risingLava.physicsBody!.velocity.dy = 0
+        
+        if by == .Crushed {
+            mellow.runAction(crushedAction, completion: {
+                //Crushed sound effects
+                self.backgroundMusic.runAction(SKAction.stop())
+                self.backgroundMusic.removeFromParent()
+                self.runAction(SKAction.playSoundFileNamed("MellowCrushed.wav", waitForCompletion: false))
+                
+                //Add the explosion after the crush
+                let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
+                mellowCrushedExplosion.position = self.mellow.position
+                mellowCrushedExplosion.zPosition = 200
+                self.addChild(mellowCrushedExplosion)
+                self.mellow.removeFromParent()
+            })
+        } else {
             self.runAction(SKAction.playSoundFileNamed("MellowBurned.wav", waitForCompletion: false))
             mellow.runAction(crushedAction, completion: {
                 //Burned Sound Effects
@@ -433,24 +436,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 mellowBurned.position.y -= self.mellow.physicsSize.height * 0.3
                 self.addChild(mellowBurned)
                 self.mellow.removeFromParent()
-                //Stop spwaning blocks
-                self.shouldContinueSpawning = false
             })
-            
-            //Run the game over function after a specified duration
-            let gameOverAction = SKAction.waitForDuration(2.0)
-            self.runAction(gameOverAction) {
-                self.gameOver()
-            }
         }
-            //If the contact was between a falling block and a piece of the background
-        else if secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
-            if firstBody.categoryBitMask == CollisionTypes.Background.rawValue {
-                if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
-                    //Make the falling block static and fade it to black
-                    block.becomeBackground()
-                }
-            }
+        
+        //Stop generating blocks
+        self.removeActionForKey("genBlocks")
+        
+        //Run the game over function after a specified duration
+        let gameOverAction = SKAction.waitForDuration(2.0)
+        self.runAction(gameOverAction) {
+            self.gameOver()
         }
     }
     
