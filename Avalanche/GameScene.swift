@@ -253,7 +253,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let bgcopy = SKAudioNode(fileNamed: "DreamsOfAbove.mp3")
             self.addChild(bgcopy)
             self.backgroundMusic = bgcopy
-            print(self.backgroundMusic)
         })
     }
     
@@ -330,6 +329,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                 mellow.runAction(moveAction)
                                 let crushedAction = SKAction.animateWithTextures(crushedTextures, timePerFrame: 0.02)
                                 mellow.runAction(crushedAction, completion: {
+                                    //Crushed sound effects
+                                    self.backgroundMusic.runAction(SKAction.stop())
+                                    self.backgroundMusic.removeFromParent()
+                                    self.runAction(SKAction.playSoundFileNamed("MellowCrushed.wav", waitForCompletion: false))
+                                    
                                     //Add the explosion after the crush
                                     let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
                                     mellowCrushedExplosion.position = self.mellow.position
@@ -350,7 +354,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-        //If the contact was between a mellow and the lava
+            //If the contact was between a mellow and the lava
         else if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
             //Remove the mellow's physics body so it doesn't sink in to the lava
             mellow.physicsBody = nil
@@ -366,7 +370,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             let crushedAction = SKAction.animateWithTextures(crushedTextures, timePerFrame: 0.02)
             self.risingLava.physicsBody!.velocity.dy = 0
+            self.runAction(SKAction.playSoundFileNamed("MellowBurned.wav", waitForCompletion: false))
             mellow.runAction(crushedAction, completion: {
+                //Burned Sound Effects
+                self.backgroundMusic.runAction(SKAction.stop())
+                self.backgroundMusic.removeFromParent()
+                
                 //Add the fire after getting crushed
                 let mellowBurned = SKEmitterNode(fileNamed: "MellowBurned")!
                 mellowBurned.zPosition = 200
@@ -384,7 +393,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.gameOver()
             }
         }
-        //If the contact was between a falling block and a piece of the background
+            //If the contact was between a falling block and a piece of the background
         else if secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
             if firstBody.categoryBitMask == CollisionTypes.Background.rawValue {
                 if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
@@ -442,8 +451,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 mellow.rightSideInContact -= 1
             }
         }
-        //If the rising lava and an object in the background lost contact, it means that that piece
-        //of the background will never be seen and should be removed from the scene
+            //If the rising lava and an object in the background lost contact, it means that that piece
+            //of the background will never be seen and should be removed from the scene
         else if firstBody.categoryBitMask != CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
             if let removeBlock = firstBody.node as? RoundedBlockNode where removeBlock.parent != nil {
                 removeBlock.removeFromParent()

@@ -26,11 +26,11 @@
 		1AF88CD41CD6B2EF00028E3D /* MellowNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF88CD31CD6B2EF00028E3D /* MellowNode.swift */; };
 		1AFC6CE41CE29F98003F70DC /* wall.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 1AFC6CE31CE29F98003F70DC /* wall.atlas */; };
 		1AFD037F1D63697F00A54640 /* DreamsOfAbove.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1AFD037E1D63697F00A54640 /* DreamsOfAbove.mp3 */; };
+		1AFD03831D636CA700A54640 /* MellowBurned.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1AFD03811D636CA700A54640 /* MellowBurned.wav */; };
+		1AFD03841D636CA700A54640 /* MellowCrushed.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1AFD03821D636CA700A54640 /* MellowCrushed.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1A04361E1D610DBE00C1C259 /* MellowBurned.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MellowBurned.caf; sourceTree = "<group>"; };
-		1A04361F1D610DBE00C1C259 /* MellowCrushed.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MellowCrushed.caf; sourceTree = "<group>"; };
 		1A0584E21CDD27C300B3DF8B /* RoundedBlock.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = RoundedBlock.atlas; sourceTree = "<group>"; };
 		1A0584E41CDD281E00B3DF8B /* RoundedBlockNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedBlockNode.swift; sourceTree = "<group>"; };
 		1A0584E61CDD288900B3DF8B /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
@@ -52,6 +52,8 @@
 		1AF88CD31CD6B2EF00028E3D /* MellowNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MellowNode.swift; sourceTree = "<group>"; };
 		1AFC6CE31CE29F98003F70DC /* wall.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = wall.atlas; sourceTree = "<group>"; };
 		1AFD037E1D63697F00A54640 /* DreamsOfAbove.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = DreamsOfAbove.mp3; sourceTree = "<group>"; };
+		1AFD03811D636CA700A54640 /* MellowBurned.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = MellowBurned.wav; sourceTree = "<group>"; };
+		1AFD03821D636CA700A54640 /* MellowCrushed.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = MellowCrushed.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,9 +86,7 @@
 		1AAFB4BF1CA07D6100E7472B /* Avalanche */ = {
 			isa = PBXGroup;
 			children = (
-				1A04361E1D610DBE00C1C259 /* MellowBurned.caf */,
-				1AFD037E1D63697F00A54640 /* DreamsOfAbove.mp3 */,
-				1A04361F1D610DBE00C1C259 /* MellowCrushed.caf */,
+				1AFD03801D636C5B00A54640 /* Audio */,
 				1AAFB4C01CA07D6100E7472B /* AppDelegate.swift */,
 				1AAFB4C61CA07D6100E7472B /* GameViewController.swift */,
 				1A5386FF1CF38A4700226092 /* MenuScene.swift */,
@@ -108,6 +108,16 @@
 				1A739F771CD3181D00655C1F /* mellow.atlas */,
 			);
 			path = Avalanche;
+			sourceTree = "<group>";
+		};
+		1AFD03801D636C5B00A54640 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				1AFD03811D636CA700A54640 /* MellowBurned.wav */,
+				1AFD03821D636CA700A54640 /* MellowCrushed.wav */,
+				1AFD037E1D63697F00A54640 /* DreamsOfAbove.mp3 */,
+			);
+			name = Audio;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -179,6 +189,8 @@
 				1A9017B31CD171EB00F31C1E /* GameScene.sks in Resources */,
 				1A739F781CD3181D00655C1F /* mellow.atlas in Resources */,
 				1AFC6CE41CE29F98003F70DC /* wall.atlas in Resources */,
+				1AFD03841D636CA700A54640 /* MellowCrushed.wav in Resources */,
+				1AFD03831D636CA700A54640 /* MellowBurned.wav in Resources */,
 				1AAFB4CC1CA07D6100E7472B /* Assets.xcassets in Resources */,
 				1AAFB4CA1CA07D6100E7472B /* Main.storyboard in Resources */,
 				1AAB5D461CE0D6EF00F820F0 /* spark.png in Resources */,
