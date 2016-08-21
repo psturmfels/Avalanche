@@ -56,7 +56,7 @@ class MellowNode: SKSpriteNode {
         physicsSize = CGSize(width: self.texture!.size().width * 0.65, height: self.texture!.size().height * 0.92)
         self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsSize)
         
-        //The mellow should not "bounce"
+        //The mellow should not bounce
         self.physicsBody!.restitution = 0.0
         
         //Mass is arbitrarily set
