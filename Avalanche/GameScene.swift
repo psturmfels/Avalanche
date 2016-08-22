@@ -52,6 +52,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var currentButtonState: ButtonStates = ButtonStates.Empty
     
     var backgroundMusic: SKAudioNode!
+    var backgroundGradient: SKSpriteNode!
     
     //MARK: Game Termination Methods
     func gameOver() {
@@ -69,7 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         replayButton.text = "Replay"
         replayButton.position = CGPoint(x: screenCenter.x, y: screenCenter.y + replayButton.frame.height)
         replayButton.name = "Replay"
-        replayButton.zPosition = 300
+        replayButton.zPosition = 30
         
         self.addChild(replayButton)
     }
@@ -83,7 +84,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         menuButton.text = "Menu"
         menuButton.position = CGPoint(x: screenCenter.x, y: screenCenter.y - menuButton.frame.height)
         menuButton.name = "Menu"
-        menuButton.zPosition = 300
+        menuButton.zPosition = 30
         
         self.addChild(menuButton)
     }
@@ -226,6 +227,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createFloor()
         createLava()
         createLabels()
+        createBackground()
         
         //Allows the game to read the tilt of the phone and react accordingly
         motionManager.startAccelerometerUpdates()
@@ -236,6 +238,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.addChild(bgcopy)
             self.backgroundMusic = bgcopy
         })
+    }
+    
+    func createBackground() {
+        let context: CIContext = CIContext(options: nil)
+        let filter: CIFilter = CIFilter(name: "CILinearGradient")!
+        let startVector: CIVector = CIVector(x: size.width * 0.5, y: 0)
+        let endVector: CIVector = CIVector(x: size.width * 0.5, y: size.height)
+        
+        filter.setDefaults()
+        
+        filter.setValue(startVector, forKey: "inputPoint0")
+        filter.setValue(endVector, forKey: "inputPoint1")
+        filter.setValue(CIColor(color: UIColor.whiteColor()), forKey: "inputColor0")
+        filter.setValue(CIColor(color: UIColor.blackColor()), forKey: "inputColor1")
+        let image = context.createCGImage(filter.outputImage!, fromRect: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        
+        let gradientTexture = SKTexture(CGImage: image)
+        
+        backgroundGradient = SKSpriteNode(texture: gradientTexture)
+        backgroundGradient.zPosition = -100;
+        backgroundGradient.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        
+        self.addChild(backgroundGradient)
     }
     
     func createMellow() {
@@ -418,7 +443,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 //Add the explosion after the crush
                 let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
                 mellowCrushedExplosion.position = self.mellow.position
-                mellowCrushedExplosion.zPosition = 200
+                mellowCrushedExplosion.zPosition = 20
                 self.addChild(mellowCrushedExplosion)
                 self.mellow.removeFromParent()
             })
@@ -431,7 +456,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 //Add the fire after getting crushed
                 let mellowBurned = SKEmitterNode(fileNamed: "MellowBurned")!
-                mellowBurned.zPosition = 200
+                mellowBurned.zPosition = 20
                 mellowBurned.position = self.mellow.position
                 mellowBurned.position.y -= self.mellow.physicsSize.height * 0.3
                 self.addChild(mellowBurned)

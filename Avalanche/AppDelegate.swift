@@ -44,6 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func authenticateLocalPlayer() {
         NSLog("authenticateLocalPlayer called")
+        
         let localPlayer = GKLocalPlayer.localPlayer()
         localPlayer.authenticateHandler = { (viewController: UIViewController?, error: NSError?) -> Void in
             if viewController != nil {
