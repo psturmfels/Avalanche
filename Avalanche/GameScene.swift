@@ -25,6 +25,13 @@ enum DeathTypes {
     case Crushed
 }
 
+enum CollisionTypes: UInt32 {
+    case Mellow = 1
+    case Background = 2
+    case FallingBlock = 4
+    case Lava = 8
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var worldNode: SKNode!
     let motionManager: CMMotionManager = CMMotionManager()
@@ -103,9 +110,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //Set the block's position
         roundedBlock.position.x = randomXVal
         roundedBlock.position.y = 2.0 * self.size.height - worldNode.position.y
-        
-        //Set the block to fall at a constant speed
-        roundedBlock.beginFalling()
         
         worldNode.addChild(roundedBlock)
     }
@@ -416,16 +420,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-            //If the contact was between a mellow and the lava
+        //If the contact was between a mellow and the lava
         else if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
             mellowDestroyed(.Lava)
         }
-            //If the contact was between a falling block and a piece of the background
-        else if secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
-            if firstBody.categoryBitMask == CollisionTypes.Background.rawValue {
-                if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
-                    //Make the falling block static and fade it to black
-                    block.becomeBackground()
+        //If the contact was between a falling block and a piece of the background
+        else if firstBody.categoryBitMask == CollisionTypes.Background.rawValue && secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
+            if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
+                //Make the falling block static and fade it to black
+                block.becomeBackground()
+            }
+        }
+        //If two falling blocks collide
+        else if firstBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue && secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
+            if let first = firstBody.node as? RoundedBlockNode, second = secondBody.node as? RoundedBlockNode {
+                print("Two falling blocks collided")
+                if first.fallSpeed > second.fallSpeed {
+                    first.fallSpeed = second.fallSpeed
+                } else {
+                    second.fallSpeed = first.fallSpeed
                 }
             }
         }

@@ -14,13 +14,6 @@ enum Orientation {
     case right
 }
 
-enum CollisionTypes: UInt32 {
-    case Mellow = 1
-    case Background = 2
-    case FallingBlock = 4
-    case Lava = 8
-}
-
 class MellowNode: SKSpriteNode {
     var leftJumpTextures = [SKTexture]()
     var rightJumpTextures = [SKTexture]()
