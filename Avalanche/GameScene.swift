@@ -142,6 +142,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         mellowContain()
     }
     
+    
     func updateLabels() {
         //Continually update the best and the current distance
         let mellowBot: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.5
@@ -149,6 +150,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         current = Int(distance / 10.0) - 11
         if current > bestSoFar {
             bestSoFar = current
+            
+            //Update the tint of the background
+            var newBlendFactor: CGFloat = CGFloat(min(bestSoFar, 1500))
+            newBlendFactor = newBlendFactor / 3000.0
+            
+            backgroundGradient.colorBlendFactor = newBlendFactor
         }
     }
     
@@ -252,13 +259,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         filter.setValue(endVector, forKey: "inputPoint1")
         filter.setValue(CIColor(color: UIColor.whiteColor()), forKey: "inputColor0")
         filter.setValue(CIColor(color: UIColor.blackColor()), forKey: "inputColor1")
-        let image = context.createCGImage(filter.outputImage!, fromRect: CGRect(x: 0, y: 0, width: size.width, height: size.height))
         
-        let gradientTexture = SKTexture(CGImage: image)
+        let imageFrame: CGRect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        let image: CGImage = context.createCGImage(filter.outputImage!, fromRect: imageFrame)
+        
+        let gradientTexture: SKTexture = SKTexture(CGImage: image)
         
         backgroundGradient = SKSpriteNode(texture: gradientTexture)
         backgroundGradient.zPosition = -100;
         backgroundGradient.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        backgroundGradient.color = UIColor.redColor()
+        backgroundGradient.colorBlendFactor = 0.0
         
         self.addChild(backgroundGradient)
     }
@@ -292,7 +303,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func createLava() {
         //Create the lava – a red semi-transparent rectangle that rises at variable speed
-        let lavaColor: UIColor = UIColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 0.3)
+        let lavaColor: UIColor = UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 0.3)
         let lavaWidth: CGFloat = self.size.width + mellow.physicsSize.width * 2.0
         let lavaHeight: CGFloat = self.size.height + mellow.physicsSize.height
         let lavaSize: CGSize = CGSize(width: lavaWidth, height: lavaHeight)
