@@ -9,11 +9,6 @@
 import UIKit
 import SpriteKit
 
-enum Orientation {
-    case left
-    case right
-}
-
 class MellowNode: SKSpriteNode {
     var leftJumpTextures = [SKTexture]()
     var rightJumpTextures = [SKTexture]()

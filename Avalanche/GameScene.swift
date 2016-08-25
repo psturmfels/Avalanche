@@ -9,29 +9,6 @@
 import SpriteKit
 import CoreMotion
 
-enum GameStates: Int {
-    case GameInProgress = 1
-    case GameOver = 2
-}
-
-enum ButtonStates {
-    case Empty
-    case ReplayTapped
-    case MenuTapped
-}
-
-enum DeathTypes {
-    case Lava
-    case Crushed
-}
-
-enum CollisionTypes: UInt32 {
-    case Mellow = 1
-    case Background = 2
-    case FallingBlock = 4
-    case Lava = 8
-}
-
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var worldNode: SKNode!
     let motionManager: CMMotionManager = CMMotionManager()
@@ -57,6 +34,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var shouldContinueSpawning: Bool = true
     var currentGameState: GameStates = GameStates.GameInProgress
     var currentButtonState: ButtonStates = ButtonStates.Empty
+    var currentDifficulty: Int = 0 {
+        didSet {
+            switch currentDifficulty {
+            case 0:
+                print("Difficulty Zero")
+            case 1:
+                print("Difficulty One")
+            case 2:
+                print("Difficulty Two")
+            case 3:
+                print("Difficulty Three")
+            case 4:
+                print("Difficulty Four")
+            default:
+                break;
+            }
+        }
+    }
+    
+    var lavaMaxSpeed: CGFloat = 40.0
     
     var backgroundMusic: SKAudioNode!
     var backgroundGradient: SKSpriteNode!
@@ -98,14 +95,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     //MARK: Block Methods
-    func generateRandomBlock() {
+    func generateRandomBlock(minFallSpeed: Float, maxFallSpeed: Float) {
         //Choose random paramters for the block
         let randomXVal: CGFloat = CGFloat(RandomDouble(min: 0.0, max: Double(self.size.width)))
         let randomColor: Int = RandomInt(min: 1, max: 6)
         let roundedBlock: RoundedBlockNode = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
         
         //Set the physics and scale of the block
-        roundedBlock.setup()
+        roundedBlock.setup(minFallSpeed, maxFallSpeed: maxFallSpeed)
         
         //Set the block's position
         roundedBlock.position.x = randomXVal
@@ -114,12 +111,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         worldNode.addChild(roundedBlock)
     }
     
-    func initBlocks() {
+    func initBlocks(sec: NSTimeInterval, withRange durationRange: NSTimeInterval, minFallSpeed: Float, maxFallSpeed: Float) {
         let createBlock: SKAction = SKAction.runBlock { [unowned self] in
-            self.generateRandomBlock()
+            self.generateRandomBlock(minFallSpeed, maxFallSpeed: maxFallSpeed)
         }
         
-        let wait: SKAction = SKAction.waitForDuration(1.0, withRange: 0.5)
+        let wait: SKAction = SKAction.waitForDuration(sec, withRange: durationRange)
         let sequence: SKAction = SKAction.sequence([createBlock, wait])
         let repeatForever: SKAction = SKAction.repeatActionForever(sequence)
         runAction(repeatForever, withKey: "genBlocks")
@@ -128,7 +125,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Update Methods
     override func update(currentTime: CFTimeInterval) {
-        updateLabels()
+        updateDistance()
         setLavaSpeed()
         
         guard mellow.physicsBody != nil else {
@@ -147,7 +144,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    func updateLabels() {
+    func updateDistance() {
         //Continually update the best and the current distance
         let mellowBot: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.5
         let distance: CGFloat = mellowBot - worldNode.position.y
@@ -160,6 +157,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             newBlendFactor = newBlendFactor / 3000.0
             
             backgroundGradient.colorBlendFactor = newBlendFactor
+            
+            currentDifficulty = min(bestSoFar / 300, 4)
         }
     }
     
@@ -169,7 +168,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let lavaYPos: CGFloat = worldNode.position.y + risingLava.position.y
             let lavaYTop: CGFloat = lavaYPos + risingLava.frame.height * 0.5
             let distanceToLava: CGFloat = mellow.position.y - lavaYTop
-            let newLavaRisingSpeed: CGFloat = 40.0 - 35.0 * pow(3.14159, -0.003 * distanceToLava)
+            let newLavaRisingSpeed: CGFloat = lavaMaxSpeed - (lavaMaxSpeed - 5) * pow(3.14159, -0.003 * distanceToLava)
             risingLava.physicsBody!.velocity.dy = newLavaRisingSpeed
         }
     }
@@ -231,7 +230,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         worldNode = SKNode()
         worldNode.position = self.position
         self.addChild(worldNode)
-        self.initBlocks()
+        self.initBlocks(1.0, withRange: 0.5, minFallSpeed: -180, maxFallSpeed: -120)
         
         //Create stuff
         createMellow()
@@ -372,14 +371,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
             mellowDestroyed(.Lava)
         }
-        //If the contact was between a falling block and a piece of the background
+            //If the contact was between a falling block and a piece of the background
         else if firstBody.categoryBitMask == CollisionTypes.Background.rawValue && secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
             if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
                 //Make the falling block static and fade it to black
                 block.becomeBackground()
             }
         }
-        //If two falling blocks collide
+            //If two falling blocks collide
         else if firstBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue && secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
             if let first = firstBody.node as? RoundedBlockNode, second = secondBody.node as? RoundedBlockNode {
                 if first.fallSpeed > second.fallSpeed {
@@ -389,7 +388,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-        //If the first body was the mellow and the second body was the background or a falling block
+            //If the first body was the mellow and the second body was the background or a falling block
         else if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
             
             //Calculate the various physical aspects of the second body

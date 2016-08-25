@@ -17,7 +17,7 @@ class RoundedBlockNode: SKSpriteNode {
     }
     
     //MARK: Creation Method
-    func setup() {
+    func setup(minFallSpeed: Float, maxFallSpeed: Float) {
         let scale = CGFloat(RandomFloat(min: 0.5, max: 1.5))
         self.setScale(scale)
         
@@ -39,7 +39,7 @@ class RoundedBlockNode: SKSpriteNode {
         self.physicsBody!.contactTestBitMask = CollisionTypes.Background.rawValue | CollisionTypes.Mellow.rawValue | CollisionTypes.FallingBlock.rawValue
         self.name = "fallingBlock"
         
-        fallSpeed = RandomCGFloat(min: -180, max: -120)
+        fallSpeed = RandomCGFloat(min: minFallSpeed, max: maxFallSpeed)
     }
     
     //MARK: Game Methods
