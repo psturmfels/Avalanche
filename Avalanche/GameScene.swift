@@ -368,8 +368,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         //Now, the first body is guarenteed to have a smaller category bit mask
         
+        //If the contact was between a mellow and the lava
+        if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
+            mellowDestroyed(.Lava)
+        }
+        //If the contact was between a falling block and a piece of the background
+        else if firstBody.categoryBitMask == CollisionTypes.Background.rawValue && secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
+            if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
+                //Make the falling block static and fade it to black
+                block.becomeBackground()
+            }
+        }
+        //If two falling blocks collide
+        else if firstBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue && secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
+            if let first = firstBody.node as? RoundedBlockNode, second = secondBody.node as? RoundedBlockNode {
+                if first.fallSpeed > second.fallSpeed {
+                    first.fallSpeed = second.fallSpeed
+                } else {
+                    second.fallSpeed = first.fallSpeed
+                }
+            }
+        }
         //If the first body was the mellow and the second body was the background or a falling block
-        if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
+        else if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
             
             //Calculate the various physical aspects of the second body
             let block: RoundedBlockNode = secondBody.node! as! RoundedBlockNode
@@ -417,28 +438,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                             }
                         }
                     }
-                }
-            }
-        }
-        //If the contact was between a mellow and the lava
-        else if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
-            mellowDestroyed(.Lava)
-        }
-        //If the contact was between a falling block and a piece of the background
-        else if firstBody.categoryBitMask == CollisionTypes.Background.rawValue && secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
-            if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
-                //Make the falling block static and fade it to black
-                block.becomeBackground()
-            }
-        }
-        //If two falling blocks collide
-        else if firstBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue && secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
-            if let first = firstBody.node as? RoundedBlockNode, second = secondBody.node as? RoundedBlockNode {
-                print("Two falling blocks collided")
-                if first.fallSpeed > second.fallSpeed {
-                    first.fallSpeed = second.fallSpeed
-                } else {
-                    second.fallSpeed = first.fallSpeed
                 }
             }
         }

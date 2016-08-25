@@ -140,13 +140,13 @@ class MellowNode: SKSpriteNode {
             
             //Set proper horizontal velocity depending on how tilted the screen is 
             //by linear growth per frame tilted up to a cutoff
-            if self.physicsBody?.velocity.dx < CGFloat(accel) * 1000.0 && rightSideInContact == 0 {
+            if self.physicsBody?.velocity.dx < CGFloat(accel) * 1000.0 {
                 self.physicsBody!.velocity.dx += 80
                 if leftSideInContact > 0 {
                     leftSideInContact = 0
                 }
             }
-            else if self.physicsBody?.velocity.dx > CGFloat(accel) * 1000.0 && leftSideInContact == 0 {
+            else if self.physicsBody?.velocity.dx > CGFloat(accel) * 1000.0 {
                 self.physicsBody!.velocity.dx -= 80
                 if rightSideInContact > 0 {
                     rightSideInContact = 0
