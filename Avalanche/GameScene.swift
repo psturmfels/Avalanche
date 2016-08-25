@@ -34,18 +34,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var shouldContinueSpawning: Bool = true
     var currentGameState: GameStates = GameStates.GameInProgress
     var currentButtonState: ButtonStates = ButtonStates.Empty
-    var currentDifficulty: Int = 0 {
+    var currentDifficulty: Int = -1 {
         didSet {
+            self.removeActionForKey("genBlocks")
             switch currentDifficulty {
             case 0:
+                self.initBlocks(1.1, withRange: 0.4, minFallSpeed: -170, maxFallSpeed: -110)
+                lavaMaxSpeed = 37.0
                 print("Difficulty Zero")
             case 1:
+                self.initBlocks(1.0, withRange: 0.4, minFallSpeed: -180, maxFallSpeed: -120)
+                lavaMaxSpeed = 40.0
                 print("Difficulty One")
             case 2:
+                self.initBlocks(0.9, withRange: 0.4, minFallSpeed: -190, maxFallSpeed: -130)
+                lavaMaxSpeed = 42.0
                 print("Difficulty Two")
             case 3:
+                self.initBlocks(0.8, withRange: 0.4, minFallSpeed: -200, maxFallSpeed: -140)
+                lavaMaxSpeed = 44.0
                 print("Difficulty Three")
             case 4:
+                self.initBlocks(0.7, withRange: 0.4, minFallSpeed: -210, maxFallSpeed: -150)
+                lavaMaxSpeed = 46.0
                 print("Difficulty Four")
             default:
                 break;
@@ -158,7 +169,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             backgroundGradient.colorBlendFactor = newBlendFactor
             
-            currentDifficulty = min(bestSoFar / 300, 4)
+            let nextDifficulty = min(bestSoFar / 300, 4)
+            if nextDifficulty > currentDifficulty {
+                currentDifficulty = nextDifficulty
+            }
         }
     }
     
@@ -230,7 +244,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         worldNode = SKNode()
         worldNode.position = self.position
         self.addChild(worldNode)
-        self.initBlocks(1.0, withRange: 0.5, minFallSpeed: -180, maxFallSpeed: -120)
         
         //Create stuff
         createMellow()
