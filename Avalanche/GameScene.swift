@@ -39,24 +39,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.removeActionForKey("genBlocks")
             switch currentDifficulty {
             case 0:
-                self.initBlocks(1.1, withRange: 0.4, minFallSpeed: -170, maxFallSpeed: -110)
-                lavaMaxSpeed = 37.0
+                self.initBlocks(1.1, withRange: 0.4, minFallSpeed: -180, maxFallSpeed: -120)
+                lavaMaxSpeed = 39.0
                 print("Difficulty Zero")
             case 1:
-                self.initBlocks(1.0, withRange: 0.4, minFallSpeed: -180, maxFallSpeed: -120)
-                lavaMaxSpeed = 40.0
+                self.initBlocks(1.0, withRange: 0.4, minFallSpeed: -190, maxFallSpeed: -130)
+                lavaMaxSpeed = 41.0
                 print("Difficulty One")
             case 2:
-                self.initBlocks(0.9, withRange: 0.4, minFallSpeed: -190, maxFallSpeed: -130)
-                lavaMaxSpeed = 42.0
+                self.initBlocks(0.9, withRange: 0.4, minFallSpeed: -200, maxFallSpeed: -140)
+                lavaMaxSpeed = 43.0
                 print("Difficulty Two")
             case 3:
-                self.initBlocks(0.8, withRange: 0.4, minFallSpeed: -200, maxFallSpeed: -140)
-                lavaMaxSpeed = 44.0
+                self.initBlocks(0.8, withRange: 0.4, minFallSpeed: -210, maxFallSpeed: -150)
+                lavaMaxSpeed = 45.0
                 print("Difficulty Three")
             case 4:
-                self.initBlocks(0.7, withRange: 0.4, minFallSpeed: -210, maxFallSpeed: -150)
-                lavaMaxSpeed = 46.0
+                self.initBlocks(0.7, withRange: 0.4, minFallSpeed: -220, maxFallSpeed: -160)
+                lavaMaxSpeed = 47.0
                 print("Difficulty Four")
             default:
                 break;
@@ -164,12 +164,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bestSoFar = current
             
             //Update the tint of the background
-            var newBlendFactor: CGFloat = CGFloat(min(bestSoFar, 1500))
-            newBlendFactor = newBlendFactor / 3000.0
+            var newBlendFactor: CGFloat = CGFloat(min(bestSoFar, 1250))
+            newBlendFactor = newBlendFactor / 2500.0
             
             backgroundGradient.colorBlendFactor = newBlendFactor
             
-            let nextDifficulty = min(bestSoFar / 300, 4)
+            let nextDifficulty = min(bestSoFar / 250, 4)
             if nextDifficulty > currentDifficulty {
                 currentDifficulty = nextDifficulty
             }
@@ -192,6 +192,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //if it goes off the horizontal edges
         let mellowTwoThirds: CGFloat = (2.0 / 3.0) * mellow.frame.width
         let mellowTwiceHeight: CGFloat = 2 * mellow.frame.height
+        let mellowThriceHeight: CGFloat = 3 * mellow.frame.height
         
         if mellow.position.x < -mellow.frame.width / 3 {
             mellow.position.x += self.size.width + mellowTwoThirds
@@ -203,9 +204,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //If the mellow gets too close to the top or bottom of the screen,
         //move the world as opposed to the mellow, ensuring that
         //the mellow always stays on the screen.
-        if mellow.position.y > self.size.height - mellowTwiceHeight {
-            let difference = mellow.position.y - (self.size.height - mellowTwiceHeight)
-            mellow.position.y = self.size.height - mellowTwiceHeight
+        if mellow.position.y > self.size.height - mellowThriceHeight {
+            let difference = mellow.position.y - (self.size.height - mellowThriceHeight)
+            mellow.position.y = self.size.height - mellowThriceHeight
             self.worldNode.position.y -= difference
         }
         else if mellow.position.y < mellowTwiceHeight {
@@ -403,6 +404,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
             //If the first body was the mellow and the second body was the background or a falling block
         else if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
+        
+             guard mellow.physicsBody != nil else {
+                return
+            }
             
             //Calculate the various physical aspects of the second body
             let block: RoundedBlockNode = secondBody.node! as! RoundedBlockNode

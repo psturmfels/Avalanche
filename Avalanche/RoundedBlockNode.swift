@@ -18,10 +18,10 @@ class RoundedBlockNode: SKSpriteNode {
     
     //MARK: Creation Method
     func setup(minFallSpeed: Float, maxFallSpeed: Float) {
-        let scale = CGFloat(RandomFloat(min: 0.5, max: 1.5))
+        let scale = CGFloat(RandomFloat(min: 0.5, max: 1.75))
         self.setScale(scale)
         
-        physicsSize = CGSize(width: self.frame.width * 0.96, height: self.frame.height * 0.96)
+        physicsSize = CGSize(width: self.frame.width * 0.90, height: self.frame.height * 0.90)
         
         self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsSize)
         self.physicsBody!.restitution = 0.0
