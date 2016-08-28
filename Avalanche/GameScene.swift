@@ -39,25 +39,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.removeActionForKey("genBlocks")
             switch currentDifficulty {
             case 0:
-                self.initBlocks(1.1, withRange: 0.4, minFallSpeed: -180, maxFallSpeed: -120)
-                lavaMaxSpeed = 39.0
-                print("Difficulty Zero")
-            case 1:
-                self.initBlocks(1.0, withRange: 0.4, minFallSpeed: -190, maxFallSpeed: -130)
-                lavaMaxSpeed = 41.0
-                print("Difficulty One")
-            case 2:
-                self.initBlocks(0.9, withRange: 0.4, minFallSpeed: -200, maxFallSpeed: -140)
+                self.initBlocks(0.8, withRange: 0.4, minFallSpeed: -250, maxFallSpeed: -170)
                 lavaMaxSpeed = 43.0
-                print("Difficulty Two")
-            case 3:
-                self.initBlocks(0.8, withRange: 0.4, minFallSpeed: -210, maxFallSpeed: -150)
-                lavaMaxSpeed = 45.0
-                print("Difficulty Three")
-            case 4:
-                self.initBlocks(0.7, withRange: 0.4, minFallSpeed: -220, maxFallSpeed: -160)
+            case 1:
+                self.initBlocks(0.7, withRange: 0.4, minFallSpeed: -260, maxFallSpeed: -180)
                 lavaMaxSpeed = 47.0
-                print("Difficulty Four")
+            case 2:
+                self.initBlocks(0.6, withRange: 0.4, minFallSpeed: -270, maxFallSpeed: -190)
+                lavaMaxSpeed = 50.0
+            case 3:
+                self.initBlocks(0.5, withRange: 0.4, minFallSpeed: -280, maxFallSpeed: -210)
+                lavaMaxSpeed = 53.0
+            case 4:
+                self.initBlocks(0.5, withRange: 0.4, minFallSpeed: -290, maxFallSpeed: -220)
+                lavaMaxSpeed = 56.0
+            case 5:
+                self.initBlocks(0.4, withRange: 0.3, minFallSpeed: -310, maxFallSpeed: -240)
+                lavaMaxSpeed = 59.0
             default:
                 break;
             }
@@ -109,7 +107,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func generateRandomBlock(minFallSpeed: Float, maxFallSpeed: Float) {
         //Choose random paramters for the block
         let randomXVal: CGFloat = CGFloat(RandomDouble(min: 0.0, max: Double(self.size.width)))
-        let randomColor: Int = RandomInt(min: 1, max: 6)
+        let randomColor: Int = RandomInt(min: 1, max: 8)
         let roundedBlock: RoundedBlockNode = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
         
         //Set the physics and scale of the block
@@ -169,7 +167,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             backgroundGradient.colorBlendFactor = newBlendFactor
             
-            let nextDifficulty = min(bestSoFar / 250, 4)
+            let nextDifficulty = min(bestSoFar / 200, 5)
             if nextDifficulty > currentDifficulty {
                 currentDifficulty = nextDifficulty
             }
@@ -283,7 +281,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let actionSequence = SKAction.sequence([waitFirst, moveRightAction, waitAction, moveLeftAction])
         
-        musicLabel.runAction(actionSequence) { 
+        musicLabel.runAction(actionSequence) {
             musicLabel.removeFromParent()
         }
     }
@@ -428,8 +426,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
             //If the first body was the mellow and the second body was the background or a falling block
         else if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
-        
-             guard mellow.physicsBody != nil else {
+            
+            guard mellow.physicsBody != nil else {
                 return
             }
             
