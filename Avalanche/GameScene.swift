@@ -262,6 +262,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.addChild(bgcopy)
             self.backgroundMusic = bgcopy
         })
+        scrollMusicLabel()
+    }
+    
+    func scrollMusicLabel() {
+        let musicLabel: SKSpriteNode = SKSpriteNode(imageNamed: "MusicTag")
+        
+        let xPos: CGFloat = -musicLabel.size.width * 0.5
+        let yPos: CGFloat = self.frame.height * 0.91
+        musicLabel.position = CGPoint(x: xPos, y: yPos)
+        musicLabel.zPosition = 30
+        
+        self.addChild(musicLabel)
+        
+        let waitFirst: SKAction = SKAction.waitForDuration(0.5)
+        let moveRightDist: CGFloat = musicLabel.size.width * 1.1
+        let moveRightAction: SKAction = SKAction.moveBy(CGVector(dx: moveRightDist, dy: 0), duration: 1)
+        let waitAction: SKAction = SKAction.waitForDuration(2)
+        let moveLeftAction: SKAction = SKAction.moveBy(CGVector(dx: -moveRightDist, dy: 0), duration: 1)
+        
+        let actionSequence = SKAction.sequence([waitFirst, moveRightAction, waitAction, moveLeftAction])
+        
+        musicLabel.runAction(actionSequence) { 
+            musicLabel.removeFromParent()
+        }
     }
     
     func createBackground() {
