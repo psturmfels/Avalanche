@@ -17,6 +17,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var floor: RoundedBlockNode!
     var risingLava: SKSpriteNode!
     
+    var controlButton: SKSpriteNode!
+    
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
     
@@ -134,6 +136,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Update Methods
     override func update(currentTime: CFTimeInterval) {
+        print("\(currentButtonState) – \(currentGameState)")
         updateDistance()
         setLavaSpeed()
         
@@ -250,6 +253,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createLava()
         createLabels()
         createBackground()
+        createControlButton()
         
         //Allows the game to read the tilt of the phone and react accordingly
         motionManager.startAccelerometerUpdates()
@@ -267,7 +271,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let musicLabel: SKSpriteNode = SKSpriteNode(imageNamed: "MusicTag")
         
         let xPos: CGFloat = -musicLabel.size.width * 0.5
-        let yPos: CGFloat = self.frame.height * 0.91
+        let yPos: CGFloat = self.frame.height * 0.09
         musicLabel.position = CGPoint(x: xPos, y: yPos)
         musicLabel.zPosition = 30
         
@@ -284,6 +288,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         musicLabel.runAction(actionSequence) {
             musicLabel.removeFromParent()
         }
+    }
+    
+    
+    func createControlButton() {
+        controlButton = SKSpriteNode(imageNamed: "pauseNormal")
+        controlButton.name = "Control"
+        
+        let xPos: CGFloat = controlButton.size.width * 0.5 + 20
+        let yPos: CGFloat = self.frame.height - xPos
+        controlButton.position = CGPoint(x: xPos, y: yPos)
+        
+        controlButton.zPosition = 30
+        
+        self.addChild(controlButton)
     }
     
     func createBackground() {
@@ -597,72 +615,111 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         /* Called when a touch begins */
         
-        //Jump if the game is in progress, otherwise handle button methods
-        if currentGameState == .GameInProgress {
-            mellow.jump()
-        }
-        else {
-            currentButtonState = .Empty
-            for touch in touches {
-                let location = touch.locationInNode(self)
-                let objects = nodesAtPoint(location) as [SKNode]
-                for object in objects {
-                    if object.name == "Replay" {
-                        currentButtonState = .ReplayTapped
-                        break
+        currentButtonState = .Empty
+        for touch in touches {
+            let location = touch.locationInNode(self)
+            let objects = nodesAtPoint(location) as [SKNode]
+            for object in objects {
+                if object.name == "Control" {
+                    currentButtonState = .ControlTapped
+                    if currentGameState == .GameInProgress {
+                        controlButton.texture = SKTexture(imageNamed: "pauseHighlighted")
                     }
-                    if object.name == "Menu" {
-                        currentButtonState = .MenuTapped
-                        break
+                    else if currentGameState == .GamePaused {
+                        controlButton.texture = SKTexture(imageNamed: "playHighlighted")
                     }
+                    break
                 }
+                else if object.name == "Replay" {
+                    currentButtonState = .ReplayTapped
+                    break
+                }
+                else if object.name == "Menu" {
+                    currentButtonState = .MenuTapped
+                    break
+                }
+            }
+        }
+        
+        //Jump if no buttons were tapped
+        if currentGameState == .GameInProgress {
+            if currentButtonState == .Empty {
+                mellow.jump()
             }
         }
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         //Generate "touch-up-inside" behavior for game-over buttons
-        if currentGameState == .GameOver {
-            let copy = currentButtonState
-            currentButtonState = .Empty
-            if copy != .Empty {
-                for touch in touches {
-                    let location = touch.locationInNode(self)
-                    let objects = nodesAtPoint(location) as [SKNode]
-                    for object in objects {
-                        if object.name == "Replay" {
-                            currentButtonState = .ReplayTapped
-                            break
-                        }
-                        if object.name == "Menu" {
-                            currentButtonState = .MenuTapped
-                            break
-                        }
+        let copy: ButtonStates = currentButtonState
+        currentButtonState = .Empty
+        if copy != .Empty {
+            for touch in touches {
+                let location = touch.locationInNode(self)
+                let objects = nodesAtPoint(location) as [SKNode]
+                for object in objects {
+                    if object.name == "Control" {
+                        currentButtonState = .ControlTapped
+                        break
                     }
+                    else if object.name == "Replay" {
+                        currentButtonState = .ReplayTapped
+                        break
+                    }
+                    else if object.name == "Menu" {
+                        currentButtonState = .MenuTapped
+                        break
+                    }
+                }
+            }
+            
+            if copy == .ControlTapped && currentButtonState == .Empty {
+                if currentGameState == .GameInProgress {
+                    controlButton.texture = SKTexture(imageNamed: "pauseNormal")
+                }
+                else if currentGameState == .GamePaused {
+                    controlButton.texture = SKTexture(imageNamed: "playNormal")
                 }
             }
         }
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        if currentGameState == .GameOver {
-            switch currentButtonState {
-            case .ReplayTapped:
-                self.removeFromParent()
-                let gameScene = GameScene(fileNamed: "GameScene")!
-                gameScene.size = self.size
-                let transition = SKTransition.crossFadeWithDuration(0.5)
-                gameScene.scaleMode = .ResizeFill
-                self.scene!.view!.presentScene(gameScene, transition: transition)
-            case .MenuTapped:
-                currentButtonState = .Empty
-                self.removeFromParent()
-                let menuScene = MenuScene(size: self.size)
-                menuScene.scaleMode = .ResizeFill
-                let transition = SKTransition.crossFadeWithDuration(0.5)
-                self.scene!.view!.presentScene(menuScene, transition: transition)
-            case .Empty: break
+        switch currentButtonState {
+        case .ControlTapped:
+            currentButtonState = .Empty
+            
+            if currentGameState == .GameInProgress {
+                backgroundMusic.runAction(SKAction.pause())
+                self.currentGameState = .GamePaused
+                self.controlButton.texture = SKTexture(imageNamed: "playNormal")
+                //SOMEHOW PAUSE THE GAME HERE
             }
+            else if currentGameState == .GamePaused {
+                self.currentGameState = .GameInProgress
+                self.controlButton.texture = SKTexture(imageNamed: "pauseNormal")
+                self.backgroundMusic.runAction(SKAction.play())
+            }
+        case .ReplayTapped:
+            currentButtonState = .Empty
+            
+            self.removeFromParent()
+            
+            let gameScene = GameScene(fileNamed: "GameScene")!
+            gameScene.size = self.size
+            let transition = SKTransition.crossFadeWithDuration(0.5)
+            gameScene.scaleMode = .ResizeFill
+            self.scene!.view!.presentScene(gameScene, transition: transition)
+        case .MenuTapped:
+            currentButtonState = .Empty
+            
+            self.removeFromParent()
+            
+            let menuScene = MenuScene(size: self.size)
+            menuScene.scaleMode = .ResizeFill
+            let transition = SKTransition.crossFadeWithDuration(0.5)
+            self.scene!.view!.presentScene(menuScene, transition: transition)
+        default: break
         }
     }
     

@@ -11,12 +11,14 @@ import SpriteKit
 enum GameStates: Int {
     case GameInProgress = 1
     case GameOver = 2
+    case GamePaused = 3
 }
 
 enum ButtonStates {
     case Empty
     case ReplayTapped
     case MenuTapped
+    case ControlTapped
 }
 
 enum DeathTypes {
