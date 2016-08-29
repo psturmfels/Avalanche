@@ -593,7 +593,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    //MARK: Touch Methods
+    //MARK: Touch Metnm   hods
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         /* Called when a touch begins */
         
