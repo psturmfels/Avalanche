@@ -136,7 +136,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Update Methods
     override func update(currentTime: CFTimeInterval) {
-        print("\(currentButtonState) – \(currentGameState)")
         updateDistance()
         setLavaSpeed()
         
@@ -693,12 +692,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 backgroundMusic.runAction(SKAction.pause())
                 self.currentGameState = .GamePaused
                 self.controlButton.texture = SKTexture(imageNamed: "playNormal")
-                //SOMEHOW PAUSE THE GAME HERE
+                
+                self.physicsWorld.speed = 0.0
+                currentDifficulty = -1
             }
             else if currentGameState == .GamePaused {
                 self.currentGameState = .GameInProgress
                 self.controlButton.texture = SKTexture(imageNamed: "pauseNormal")
                 self.backgroundMusic.runAction(SKAction.play())
+                
+                self.physicsWorld.speed = 1.0
             }
         case .ReplayTapped:
             currentButtonState = .Empty
