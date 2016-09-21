@@ -9,28 +9,28 @@
 import SpriteKit
 
 enum GameStates: Int {
-    case GameInProgress = 1
-    case GameOver = 2
-    case GamePaused = 3
+    case gameInProgress = 1
+    case gameOver = 2
+    case gamePaused = 3
 }
 
 enum ButtonStates {
-    case Empty
-    case ReplayTapped
-    case MenuTapped
-    case ControlTapped
+    case empty
+    case replayTapped
+    case menuTapped
+    case controlTapped
 }
 
 enum DeathTypes {
-    case Lava
-    case Crushed
+    case lava
+    case crushed
 }
 
 enum CollisionTypes: UInt32 {
-    case Mellow = 1
-    case Background = 2
-    case FallingBlock = 4
-    case Lava = 8
+    case mellow = 1
+    case background = 2
+    case fallingBlock = 4
+    case lava = 8
 }
 
 enum Orientation {

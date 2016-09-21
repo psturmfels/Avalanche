@@ -160,6 +160,7 @@
 					1AAFB4BC1CA07D6100E7472B = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = YCSFQ3X3F2;
+						LastSwiftMigration = 0800;
 						SystemCapabilities = {
 							com.apple.GameCenter = {
 								enabled = 1;
@@ -337,6 +338,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.fuzz.Avalanche;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -348,6 +350,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.fuzz.Avalanche;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

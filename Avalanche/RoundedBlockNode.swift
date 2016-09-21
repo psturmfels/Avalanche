@@ -17,11 +17,11 @@ class RoundedBlockNode: SKSpriteNode {
     }
     
     //MARK: Creation Method
-    func setup(minFallSpeed: Float, maxFallSpeed: Float) {
+    func setup(_ minFallSpeed: Float, maxFallSpeed: Float) {
         let scale = CGFloat(RandomFloat(min: 0.6, max: 1.8))
         self.setScale(scale)
         
-        physicsSize = CGSize(width: self.frame.width * 0.90, height: self.frame.height * 0.90)
+        physicsSize = CGSize(width: self.frame.width * 0.98, height: self.frame.height * 0.98)
         
         self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsSize)
         self.physicsBody!.restitution = 0.0
@@ -33,10 +33,10 @@ class RoundedBlockNode: SKSpriteNode {
         self.position = CGPoint(x: 256, y: 300)
         self.zPosition = 10.0
         
-        self.physicsBody!.categoryBitMask = CollisionTypes.FallingBlock.rawValue
+        self.physicsBody!.categoryBitMask = CollisionTypes.fallingBlock.rawValue
         
-        self.physicsBody!.collisionBitMask = CollisionTypes.Background.rawValue | CollisionTypes.Mellow.rawValue
-        self.physicsBody!.contactTestBitMask = CollisionTypes.Background.rawValue | CollisionTypes.Mellow.rawValue | CollisionTypes.FallingBlock.rawValue
+        self.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.mellow.rawValue
+        self.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.mellow.rawValue | CollisionTypes.fallingBlock.rawValue
         self.name = "fallingBlock"
         
         fallSpeed = RandomCGFloat(min: minFallSpeed, max: maxFallSpeed)
@@ -44,11 +44,11 @@ class RoundedBlockNode: SKSpriteNode {
     
     //MARK: Game Methods
     func becomeBackground() {
-        self.physicsBody!.dynamic = false
-        self.runAction(SKAction.moveBy(CGVector(dx: 0, dy: -2.0), duration: 0.0))
-        self.physicsBody!.categoryBitMask = CollisionTypes.Background.rawValue
-        let fadeAction = SKAction.colorizeWithColor(UIColor.blackColor(), colorBlendFactor: 1.0, duration: 0.5)
-        self.runAction(fadeAction)
+        self.physicsBody!.isDynamic = false
+        self.run(SKAction.move(by: CGVector(dx: 0, dy: -2.0), duration: 0.0))
+        self.physicsBody!.categoryBitMask = CollisionTypes.background.rawValue
+        let fadeAction = SKAction.colorize(with: UIColor.black, colorBlendFactor: 1.0, duration: 0.5)
+        self.run(fadeAction)
     }
     
 }

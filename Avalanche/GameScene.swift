@@ -34,11 +34,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     var shouldContinueSpawning: Bool = true
-    var currentGameState: GameStates = GameStates.GameInProgress
-    var currentButtonState: ButtonStates = ButtonStates.Empty
+    var currentGameState: GameStates = GameStates.gameInProgress
+    var currentButtonState: ButtonStates = ButtonStates.empty
     var currentDifficulty: Int = -1 {
         didSet {
-            self.removeActionForKey("genBlocks")
+            self.removeAction(forKey: "genBlocks")
             switch currentDifficulty {
             case 0:
                 self.initBlocks(0.8, withRange: 0.4, minFallSpeed: -250, maxFallSpeed: -170)
@@ -71,7 +71,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Game Termination Methods
     func gameOver() {
-        currentGameState = .GameOver
+        currentGameState = .gameOver
         createReplayButton()
         createMenuButton()
     }
@@ -81,7 +81,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let replayButton: SKLabelNode = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         replayButton.fontSize = 48.0
-        replayButton.fontColor = UIColor.whiteColor()
+        replayButton.fontColor = UIColor.white
         replayButton.text = "Replay"
         replayButton.position = CGPoint(x: screenCenter.x, y: screenCenter.y + replayButton.frame.height)
         replayButton.name = "Replay"
@@ -95,7 +95,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let menuButton: SKLabelNode = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         menuButton.fontSize = 48.0
-        menuButton.fontColor = UIColor.whiteColor()
+        menuButton.fontColor = UIColor.white
         menuButton.text = "Menu"
         menuButton.position = CGPoint(x: screenCenter.x, y: screenCenter.y - menuButton.frame.height)
         menuButton.name = "Menu"
@@ -106,7 +106,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     //MARK: Block Methods
-    func generateRandomBlock(minFallSpeed: Float, maxFallSpeed: Float) {
+    func generateRandomBlock(_ minFallSpeed: Float, maxFallSpeed: Float) {
         //Choose random paramters for the block
         let randomXVal: CGFloat = CGFloat(RandomDouble(min: 0.0, max: Double(self.size.width)))
         let randomColor: Int = RandomInt(min: 1, max: 8)
@@ -122,20 +122,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         worldNode.addChild(roundedBlock)
     }
     
-    func initBlocks(sec: NSTimeInterval, withRange durationRange: NSTimeInterval, minFallSpeed: Float, maxFallSpeed: Float) {
-        let createBlock: SKAction = SKAction.runBlock { [unowned self] in
+    func initBlocks(_ sec: TimeInterval, withRange durationRange: TimeInterval, minFallSpeed: Float, maxFallSpeed: Float) {
+        let createBlock: SKAction = SKAction.run { [unowned self] in
             self.generateRandomBlock(minFallSpeed, maxFallSpeed: maxFallSpeed)
         }
         
-        let wait: SKAction = SKAction.waitForDuration(sec, withRange: durationRange)
+        let wait: SKAction = SKAction.wait(forDuration: sec, withRange: durationRange)
         let sequence: SKAction = SKAction.sequence([createBlock, wait])
-        let repeatForever: SKAction = SKAction.repeatActionForever(sequence)
-        runAction(repeatForever, withKey: "genBlocks")
+        let repeatForever: SKAction = SKAction.repeatForever(sequence)
+        run(repeatForever, withKey: "genBlocks")
     }
     
     
     //MARK: Update Methods
-    override func update(currentTime: CFTimeInterval) {
+    override func update(_ currentTime: TimeInterval) {
         updateDistance()
         setLavaSpeed()
         
@@ -233,7 +233,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     //MARK: Initializing Methods
-    override func didMoveToView(view: SKView) {
+    override func didMove(to view: SKView) {
         /* Setup your scene here */
         
         //Let this object receive contact notifications
@@ -258,7 +258,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         motionManager.startAccelerometerUpdates()
         
         //Start the music!!!
-        runAction(SKAction.waitForDuration(0.5), completion: {
+        run(SKAction.wait(forDuration: 0.5), completion: {
             let bgcopy = SKAudioNode(fileNamed: "DreamsOfAbove.mp3")
             self.addChild(bgcopy)
             self.backgroundMusic = bgcopy
@@ -276,17 +276,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.addChild(musicLabel)
         
-        let waitFirst: SKAction = SKAction.waitForDuration(0.5)
+        let waitFirst: SKAction = SKAction.wait(forDuration: 0.5)
         let moveRightDist: CGFloat = musicLabel.size.width * 1.1
-        let moveRightAction: SKAction = SKAction.moveBy(CGVector(dx: moveRightDist, dy: 0), duration: 1)
-        let waitAction: SKAction = SKAction.waitForDuration(2)
-        let moveLeftAction: SKAction = SKAction.moveBy(CGVector(dx: -moveRightDist, dy: 0), duration: 1)
+        let moveRightAction: SKAction = SKAction.move(by: CGVector(dx: moveRightDist, dy: 0), duration: 1)
+        let waitAction: SKAction = SKAction.wait(forDuration: 2)
+        let moveLeftAction: SKAction = SKAction.move(by: CGVector(dx: -moveRightDist, dy: 0), duration: 1)
         
         let actionSequence = SKAction.sequence([waitFirst, moveRightAction, waitAction, moveLeftAction])
         
-        musicLabel.runAction(actionSequence) {
+        musicLabel.run(actionSequence, completion: {
             musicLabel.removeFromParent()
-        }
+        }) 
     }
     
     
@@ -313,18 +313,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         filter.setValue(startVector, forKey: "inputPoint0")
         filter.setValue(endVector, forKey: "inputPoint1")
-        filter.setValue(CIColor(color: UIColor.whiteColor()), forKey: "inputColor0")
-        filter.setValue(CIColor(color: UIColor.blackColor()), forKey: "inputColor1")
+        filter.setValue(CIColor(color: UIColor.white), forKey: "inputColor0")
+        filter.setValue(CIColor(color: UIColor.black), forKey: "inputColor1")
         
         let imageFrame: CGRect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-        let image: CGImage = context.createCGImage(filter.outputImage!, fromRect: imageFrame)
+        let image: CGImage = context.createCGImage(filter.outputImage!, from: imageFrame)!
         
-        let gradientTexture: SKTexture = SKTexture(CGImage: image)
+        let gradientTexture: SKTexture = SKTexture(cgImage: image)
         
         backgroundGradient = SKSpriteNode(texture: gradientTexture)
         backgroundGradient.zPosition = -100;
         backgroundGradient.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
-        backgroundGradient.color = UIColor.redColor()
+        backgroundGradient.color = UIColor.red
         backgroundGradient.colorBlendFactor = 0.0
         
         self.addChild(backgroundGradient)
@@ -342,17 +342,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func createFloor() {
         //Create the initial floor that all other bodies rest on. It must span more than the width of the screen.
         let floorSize: CGSize = CGSize(width: 2 * self.size.width, height: self.size.height)
-        floor = RoundedBlockNode(color: UIColor.blackColor(), size: floorSize)
+        floor = RoundedBlockNode(color: UIColor.black, size: floorSize)
         floor.position = CGPoint(x: self.size.width / 2, y: -floorSize.height / 3)
-        floor.physicsBody = SKPhysicsBody(rectangleOfSize: floorSize)
-        floor.physicsBody!.dynamic = false
+        floor.physicsBody = SKPhysicsBody(rectangleOf: floorSize)
+        floor.physicsBody!.isDynamic = false
         floor.physicsBody!.restitution = 0.0
-        floor.physicsBody!.categoryBitMask = CollisionTypes.Background.rawValue
+        floor.physicsBody!.categoryBitMask = CollisionTypes.background.rawValue
         floor.physicsSize = floorSize
         
         //Make sure the floor collides with only falling blocks and mellows
-        floor.physicsBody!.collisionBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.FallingBlock.rawValue
-        floor.physicsBody!.contactTestBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.FallingBlock.rawValue
+        floor.physicsBody!.collisionBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.fallingBlock.rawValue
+        floor.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.fallingBlock.rawValue
         floor.name = "floor"
         worldNode.addChild(floor)
     }
@@ -365,20 +365,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let lavaSize: CGSize = CGSize(width: lavaWidth, height: lavaHeight)
         risingLava = SKSpriteNode(color: lavaColor, size: lavaSize)
         risingLava.position = CGPoint(x: lavaSize.width / 2.0, y: -lavaSize.height * 0.9)
-        risingLava.physicsBody = SKPhysicsBody(rectangleOfSize: lavaSize)
+        risingLava.physicsBody = SKPhysicsBody(rectangleOf: lavaSize)
         
         //Unfortunately necessary to give the lava velocity
-        risingLava.physicsBody!.dynamic = true
+        risingLava.physicsBody!.isDynamic = true
         risingLava.physicsBody!.affectedByGravity = false
         risingLava.physicsBody!.allowsRotation = false
         risingLava.physicsBody!.linearDamping = 0.0
-        risingLava.physicsBody!.categoryBitMask = CollisionTypes.Lava.rawValue
+        risingLava.physicsBody!.categoryBitMask = CollisionTypes.lava.rawValue
         
         //The lava shouldn't physically collide with anything
         risingLava.physicsBody!.collisionBitMask = 0x00000000
         
         //But I should be notified if the lava touhes stuff
-        risingLava.physicsBody!.contactTestBitMask = CollisionTypes.Mellow.rawValue | CollisionTypes.Background.rawValue | CollisionTypes.FallingBlock.rawValue
+        risingLava.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue
         risingLava.physicsBody!.velocity.dy = 30
         risingLava.name = "lava"
         worldNode.addChild(risingLava)
@@ -391,7 +391,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bestLabel.fontSize = 36.0
         bestLabel.position = CGPoint(x: self.frame.width * 0.94, y: self.frame.height * 0.93)
         bestLabel.zPosition = 30.0
-        bestLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
+        bestLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
         self.addChild(bestLabel)
         
         //Displays current height
@@ -400,12 +400,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         currentLabel.fontSize = 30.0
         currentLabel.position = CGPoint(x: self.frame.width * 0.94, y: self.frame.height * 0.88)
         currentLabel.zPosition = 30.0
-        currentLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
+        currentLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
         self.addChild(currentLabel)
     }
     
     //MARK: Contact Methods
-    func didBeginContact(contact: SKPhysicsContact) {
+    func didBegin(_ contact: SKPhysicsContact) {
         let contactPoint = contact.contactPoint
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
@@ -421,19 +421,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //Now, the first body is guarenteed to have a smaller category bit mask
         
         //If the contact was between a mellow and the lava
-        if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
-            mellowDestroyed(.Lava)
+        if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.lava.rawValue {
+            mellowDestroyed(.lava)
         }
             //If the contact was between a falling block and a piece of the background
-        else if firstBody.categoryBitMask == CollisionTypes.Background.rawValue && secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
-            if let block = secondBody.node as? RoundedBlockNode, _ = firstBody.node as? RoundedBlockNode {
+        else if firstBody.categoryBitMask == CollisionTypes.background.rawValue && secondBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue {
+            if let block = secondBody.node as? RoundedBlockNode, let _ = firstBody.node as? RoundedBlockNode {
                 //Make the falling block static and fade it to black
                 block.becomeBackground()
             }
         }
             //If two falling blocks collide
-        else if firstBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue && secondBody.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
-            if let first = firstBody.node as? RoundedBlockNode, second = secondBody.node as? RoundedBlockNode {
+        else if firstBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue && secondBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue {
+            if let first = firstBody.node as? RoundedBlockNode, let second = secondBody.node as? RoundedBlockNode {
                 if first.fallSpeed > second.fallSpeed {
                     first.fallSpeed = second.fallSpeed
                 } else {
@@ -442,7 +442,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
             //If the first body was the mellow and the second body was the background or a falling block
-        else if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
+        else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
             
             guard mellow.physicsBody != nil else {
                 return
@@ -487,10 +487,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 //If the mellow got crushed by a block
             else if mellow.bottomSideInContact > 0 {
                 if contactPoint.y > mellowTopEdge {
-                    if let block = secondBody.node as? RoundedBlockNode where block.physicsBody!.categoryBitMask == CollisionTypes.FallingBlock.rawValue {
+                    if let block = secondBody.node as? RoundedBlockNode , block.physicsBody!.categoryBitMask == CollisionTypes.fallingBlock.rawValue {
                         if contactPoint.y < blockBotEdge {
                             if abs(mellow.physicsBody!.velocity.dy) < 10 {
-                                mellowDestroyed(.Crushed)
+                                mellowDestroyed(.crushed)
                             }
                         }
                     }
@@ -499,7 +499,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func mellowDestroyed(by: DeathTypes) {
+    func mellowDestroyed(_ by: DeathTypes) {
         //Remove the mellow's physicsBody so it doesn't slide
         mellow.physicsBody = nil
         //Animate through the crushed textures
@@ -507,17 +507,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for i in 1...7 {
             crushedTextures.append(SKTexture(imageNamed: "crushed\(i)"))
         }
-        let moveAction = SKAction.moveBy(CGVector(dx: 0, dy: -10), duration: 0.14)
-        mellow.runAction(moveAction)
-        let crushedAction = SKAction.animateWithTextures(crushedTextures, timePerFrame: 0.02)
+        let moveAction = SKAction.move(by: CGVector(dx: 0, dy: -10), duration: 0.14)
+        mellow.run(moveAction)
+        let crushedAction = SKAction.animate(with: crushedTextures, timePerFrame: 0.02)
         self.risingLava.physicsBody!.velocity.dy = 0
         
-        if by == .Crushed {
-            mellow.runAction(crushedAction, completion: {
+        if by == .crushed {
+            mellow.run(crushedAction, completion: {
                 //Crushed sound effects
-                self.backgroundMusic.runAction(SKAction.stop())
+                self.backgroundMusic.run(SKAction.stop())
                 self.backgroundMusic.removeFromParent()
-                self.runAction(SKAction.playSoundFileNamed("MellowCrushed.wav", waitForCompletion: false))
+                self.run(SKAction.playSoundFileNamed("MellowCrushed.wav", waitForCompletion: false))
                 
                 //Add the explosion after the crush
                 let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
@@ -527,10 +527,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.mellow.removeFromParent()
             })
         } else {
-            self.runAction(SKAction.playSoundFileNamed("MellowBurned.wav", waitForCompletion: false))
-            mellow.runAction(crushedAction, completion: {
+            self.run(SKAction.playSoundFileNamed("MellowBurned.wav", waitForCompletion: false))
+            mellow.run(crushedAction, completion: {
                 //Burned Sound Effects
-                self.backgroundMusic.runAction(SKAction.stop())
+                self.backgroundMusic.run(SKAction.stop())
                 self.backgroundMusic.removeFromParent()
                 
                 //Add the fire after getting crushed
@@ -544,16 +544,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         //Stop generating blocks
-        self.removeActionForKey("genBlocks")
+        self.removeAction(forKey: "genBlocks")
         
         //Run the game over function after a specified duration
-        let gameOverAction = SKAction.waitForDuration(2.0)
-        self.runAction(gameOverAction) {
+        let gameOverAction = SKAction.wait(forDuration: 2.0)
+        self.run(gameOverAction, completion: {
             self.gameOver()
-        }
+        }) 
     }
     
-    func didEndContact(contact: SKPhysicsContact) {
+    func didEnd(_ contact: SKPhysicsContact) {
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
         
@@ -569,7 +569,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         //If the mellow was the first body and the second was a piece of scenery
-        if firstBody.categoryBitMask == CollisionTypes.Mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
+        if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
             let block = secondBody.node! as! RoundedBlockNode
             let blockYPos: CGFloat = block.position.y + worldNode.position.y
             let blockTopEdge: CGFloat = blockYPos + block.physicsSize.height * 0.4
@@ -602,8 +602,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
             //If the rising lava and an object in the background lost contact, it means that that piece
             //of the background will never be seen and should be removed from the scene
-        else if firstBody.categoryBitMask != CollisionTypes.Mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.Lava.rawValue {
-            if let removeBlock = firstBody.node as? RoundedBlockNode where removeBlock.parent != nil {
+        else if firstBody.categoryBitMask != CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.lava.rawValue {
+            if let removeBlock = firstBody.node as? RoundedBlockNode , removeBlock.parent != nil {
                 removeBlock.removeFromParent()
             }
         }
@@ -611,124 +611,124 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     //MARK: Touch Metnm   hods
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         /* Called when a touch begins */
         
-        currentButtonState = .Empty
+        currentButtonState = .empty
         for touch in touches {
-            let location = touch.locationInNode(self)
-            let objects = nodesAtPoint(location) as [SKNode]
+            let location = touch.location(in: self)
+            let objects = nodes(at: location) as [SKNode]
             for object in objects {
                 if object.name == "Control" {
-                    currentButtonState = .ControlTapped
-                    if currentGameState == .GameInProgress {
+                    currentButtonState = .controlTapped
+                    if currentGameState == .gameInProgress {
                         controlButton.texture = SKTexture(imageNamed: "pauseHighlighted")
                     }
-                    else if currentGameState == .GamePaused {
+                    else if currentGameState == .gamePaused {
                         controlButton.texture = SKTexture(imageNamed: "playHighlighted")
                     }
                     break
                 }
                 else if object.name == "Replay" {
-                    currentButtonState = .ReplayTapped
+                    currentButtonState = .replayTapped
                     break
                 }
                 else if object.name == "Menu" {
-                    currentButtonState = .MenuTapped
+                    currentButtonState = .menuTapped
                     break
                 }
             }
         }
         
         //Jump if no buttons were tapped
-        if currentGameState == .GameInProgress {
-            if currentButtonState == .Empty {
+        if currentGameState == .gameInProgress {
+            if currentButtonState == .empty {
                 mellow.jump()
             }
         }
     }
     
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         //Generate "touch-up-inside" behavior for game-over buttons
         let copy: ButtonStates = currentButtonState
-        currentButtonState = .Empty
-        if copy != .Empty {
+        currentButtonState = .empty
+        if copy != .empty {
             for touch in touches {
-                let location = touch.locationInNode(self)
-                let objects = nodesAtPoint(location) as [SKNode]
+                let location = touch.location(in: self)
+                let objects = nodes(at: location) as [SKNode]
                 for object in objects {
                     if object.name == "Control" {
-                        currentButtonState = .ControlTapped
+                        currentButtonState = .controlTapped
                         break
                     }
                     else if object.name == "Replay" {
-                        currentButtonState = .ReplayTapped
+                        currentButtonState = .replayTapped
                         break
                     }
                     else if object.name == "Menu" {
-                        currentButtonState = .MenuTapped
+                        currentButtonState = .menuTapped
                         break
                     }
                 }
             }
             
-            if copy == .ControlTapped && currentButtonState == .Empty {
-                if currentGameState == .GameInProgress {
+            if copy == .controlTapped && currentButtonState == .empty {
+                if currentGameState == .gameInProgress {
                     controlButton.texture = SKTexture(imageNamed: "pauseNormal")
                 }
-                else if currentGameState == .GamePaused {
+                else if currentGameState == .gamePaused {
                     controlButton.texture = SKTexture(imageNamed: "playNormal")
                 }
             }
         }
     }
     
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         switch currentButtonState {
-        case .ControlTapped:
-            currentButtonState = .Empty
+        case .controlTapped:
+            currentButtonState = .empty
             
-            if currentGameState == .GameInProgress {
-                backgroundMusic.runAction(SKAction.pause())
-                self.currentGameState = .GamePaused
+            if currentGameState == .gameInProgress {
+                backgroundMusic.run(SKAction.pause())
+                self.currentGameState = .gamePaused
                 self.controlButton.texture = SKTexture(imageNamed: "playNormal")
                 
                 self.physicsWorld.speed = 0.0
                 currentDifficulty = -1
             }
-            else if currentGameState == .GamePaused {
-                self.currentGameState = .GameInProgress
+            else if currentGameState == .gamePaused {
+                self.currentGameState = .gameInProgress
                 self.controlButton.texture = SKTexture(imageNamed: "pauseNormal")
-                self.backgroundMusic.runAction(SKAction.play())
+                self.backgroundMusic.run(SKAction.play())
                 
                 self.physicsWorld.speed = 1.0
             }
-        case .ReplayTapped:
-            currentButtonState = .Empty
+        case .replayTapped:
+            currentButtonState = .empty
             
             self.removeFromParent()
             
             let gameScene = GameScene(fileNamed: "GameScene")!
             gameScene.size = self.size
-            let transition = SKTransition.crossFadeWithDuration(0.5)
-            gameScene.scaleMode = .ResizeFill
+            let transition = SKTransition.crossFade(withDuration: 0.5)
+            gameScene.scaleMode = .resizeFill
             self.scene!.view!.presentScene(gameScene, transition: transition)
-        case .MenuTapped:
-            currentButtonState = .Empty
+        case .menuTapped:
+            currentButtonState = .empty
             
             self.removeFromParent()
             
             let menuScene = MenuScene(size: self.size)
-            menuScene.scaleMode = .ResizeFill
-            let transition = SKTransition.crossFadeWithDuration(0.5)
+            menuScene.scaleMode = .resizeFill
+            let transition = SKTransition.crossFade(withDuration: 0.5)
             self.scene!.view!.presentScene(menuScene, transition: transition)
         default: break
         }
     }
     
-    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
-        if currentGameState == .GameOver {
-            currentButtonState = .Empty
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if currentGameState == .gameOver {
+            currentButtonState = .empty
         }
     }
 }
