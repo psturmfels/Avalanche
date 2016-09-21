@@ -34,8 +34,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     var shouldContinueSpawning: Bool = true
-    var currentGameState: GameStates = GameStates.gameInProgress
+    var currentGameState: GameStates = GameStates.gameInProgress {
+        didSet {
+            switch currentGameState {
+            case .gameInProgress:
+                self.controlButton.texture = SKTexture(imageNamed: "pauseNormal")
+                self.backgroundMusic.run(SKAction.play())
+                self.physicsWorld.speed = 1.0
+                if let action = self.action(forKey: "genBlocks") {
+                    action.speed = 1.0
+                }
+                
+            case .gameOver:
+                //Stop generating blocks
+                self.removeAction(forKey: "genBlocks")
+                
+                //Run the game over functions after a specified duration
+                let gameOverAction = SKAction.wait(forDuration: 2.0)
+                self.run(gameOverAction, completion: {
+                    self.createReplayButton()
+                    self.createMenuButton()
+                })
+                
+            case .gamePaused:
+                self.backgroundMusic.run(SKAction.pause())
+                self.controlButton.texture = SKTexture(imageNamed: "playNormal")
+                self.physicsWorld.speed = 0.0
+                if let action = self.action(forKey: "genBlocks") {
+                    action.speed = 0.0
+                }
+            }
+        }
+    }
+    
+    
     var currentButtonState: ButtonStates = ButtonStates.empty
+        
     var currentDifficulty: Int = -1 {
         didSet {
             self.removeAction(forKey: "genBlocks")
@@ -70,11 +104,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var backgroundGradient: SKSpriteNode!
     
     //MARK: Game Termination Methods
-    func gameOver() {
-        currentGameState = .gameOver
-        createReplayButton()
-        createMenuButton()
-    }
     
     func createReplayButton() {
         let screenCenter: CGPoint = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
@@ -136,6 +165,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Update Methods
     override func update(_ currentTime: TimeInterval) {
+        
         updateDistance()
         setLavaSpeed()
         
@@ -286,7 +316,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         musicLabel.run(actionSequence, completion: {
             musicLabel.removeFromParent()
-        }) 
+        })
     }
     
     
@@ -379,7 +409,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //But I should be notified if the lava touhes stuff
         risingLava.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue
-        risingLava.physicsBody!.velocity.dy = 30
         risingLava.name = "lava"
         worldNode.addChild(risingLava)
     }
@@ -451,22 +480,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //Calculate the various physical aspects of the second body
             let block: RoundedBlockNode = secondBody.node! as! RoundedBlockNode
             let blockYPos: CGFloat = block.position.y + worldNode.position.y
-            let blockTopEdge: CGFloat = blockYPos + block.physicsSize.height * 0.4
-            let blockLeftEdge: CGFloat = block.position.x - block.physicsSize.width * 0.4
-            let blockRightEdge: CGFloat = block.position.x + block.physicsSize.width * 0.4
+            let blockTopEdge: CGFloat = blockYPos + block.physicsSize.height * 0.35
+            let blockLeftEdge: CGFloat = block.position.x - block.physicsSize.width * 0.35
+            let blockRightEdge: CGFloat = block.position.x + block.physicsSize.width * 0.35
             let blockBotEdge: CGFloat = blockYPos - block.physicsSize.height * 0.35
             
             //Calculate the various physical aspects of the mellow
-            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.4
-            let mellowRightEdge: CGFloat = mellow.position.x + mellow.physicsSize.width * 0.4
-            let mellowLeftEdge: CGFloat = mellow.position.x - mellow.physicsSize.width * 0.4
+            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.35
+            let mellowRightEdge: CGFloat = mellow.position.x + mellow.physicsSize.width * 0.35
+            let mellowLeftEdge: CGFloat = mellow.position.x - mellow.physicsSize.width * 0.35
             let mellowTopEdge: CGFloat = mellow.position.y + mellow.physicsSize.height * 0.35
             
             //Calculate differences between physical aspects of the two bodies
             let blockTopLessMellowBot: Bool = blockTopEdge < mellowBotEdge
             let yPosDiff: CGFloat = abs(blockYPos - mellow.position.y)
             let xPosDiff: CGFloat = abs(block.position.x - mellow.position.x)
-            let combinedHeights: CGFloat = block.physicsSize.height * 0.5 + mellow.physicsSize.height * 0.4
+            let combinedHeights: CGFloat = block.physicsSize.height * 0.5 + mellow.physicsSize.height * 0.5
             let combinedWidths: CGFloat = block.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
             
             //If mellow landed on a piece of scenery
@@ -476,12 +505,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else if blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
                 //If the mellow's left edge touched a piece of scenery
                 mellow.leftSideInContact += 1
-                mellow.physicsBody!.velocity.dx = 0
             }
             else if mellowRightEdge < blockLeftEdge && yPosDiff < combinedHeights {
                 //If the mellow's right edge touched a piece of scenery
                 mellow.rightSideInContact += 1
-                mellow.physicsBody!.velocity.dx = 0
             }
                 
                 //If the mellow got crushed by a block
@@ -543,14 +570,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             })
         }
         
-        //Stop generating blocks
-        self.removeAction(forKey: "genBlocks")
-        
-        //Run the game over function after a specified duration
-        let gameOverAction = SKAction.wait(forDuration: 2.0)
-        self.run(gameOverAction, completion: {
-            self.gameOver()
-        }) 
+        self.currentGameState = .gameOver
     }
     
     func didEnd(_ contact: SKPhysicsContact) {
@@ -570,32 +590,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //If the mellow was the first body and the second was a piece of scenery
         if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
+            guard mellow.physicsBody != nil else {
+                return
+            }
+            
             let block = secondBody.node! as! RoundedBlockNode
             let blockYPos: CGFloat = block.position.y + worldNode.position.y
-            let blockTopEdge: CGFloat = blockYPos + block.physicsSize.height * 0.4
-            let blockLeftEdge: CGFloat = block.position.x - block.physicsSize.width * 0.4
-            let blockRightEdge: CGFloat = block.position.x + block.physicsSize.width * 0.4
+            let blockTopEdge: CGFloat = blockYPos + block.physicsSize.height * 0.35
+            let blockLeftEdge: CGFloat = block.position.x - block.physicsSize.width * 0.35
+            let blockRightEdge: CGFloat = block.position.x + block.physicsSize.width * 0.35
             
-            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.4
-            let mellowRightEdge: CGFloat = mellow.position.x + mellow.physicsSize.width * 0.4
-            let mellowLeftEdge: CGFloat = mellow.position.x - mellow.physicsSize.width * 0.4
+            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.35
+            let mellowRightEdge: CGFloat = mellow.position.x + mellow.physicsSize.width * 0.35
+            let mellowLeftEdge: CGFloat = mellow.position.x - mellow.physicsSize.width * 0.35
             
             let blockTopLessMellowBot: Bool = blockTopEdge < mellowBotEdge
             let yPosDiff: CGFloat = abs(blockYPos - mellow.position.y)
             let xPosDiff: CGFloat = abs(block.position.x - mellow.position.x)
-            let combinedHeights: CGFloat = block.physicsSize.height * 0.6 + mellow.physicsSize.height * 0.5
-            let combinedWidths: CGFloat = block.physicsSize.width * 0.6 + mellow.physicsSize.width * 0.5
+            let combinedHeights: CGFloat = block.physicsSize.height * 0.5 + mellow.physicsSize.height * 0.5
+            let combinedWidths: CGFloat = block.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
             
             
             //If the mellow and the ground lost a point of contact
             if  mellow.bottomSideInContact > 0 && blockTopLessMellowBot && xPosDiff < combinedWidths  {
                 mellow.bottomSideInContact -= 1
             }
-            if mellow.leftSideInContact > 0 && blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
+            else if mellow.leftSideInContact > 0 && blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
                 //If the mellow and the left wall lost a point of contact
                 mellow.leftSideInContact -= 1
             }
-            if mellow.rightSideInContact > 0 && mellowRightEdge < blockLeftEdge && yPosDiff < combinedHeights {
+            else if mellow.rightSideInContact > 0 && mellowRightEdge < blockLeftEdge && yPosDiff < combinedHeights {
                 //If the mellow and the right wall lost a point of contact
                 mellow.rightSideInContact -= 1
             }
@@ -689,19 +713,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             currentButtonState = .empty
             
             if currentGameState == .gameInProgress {
-                backgroundMusic.run(SKAction.pause())
                 self.currentGameState = .gamePaused
-                self.controlButton.texture = SKTexture(imageNamed: "playNormal")
                 
-                self.physicsWorld.speed = 0.0
-                currentDifficulty = -1
             }
             else if currentGameState == .gamePaused {
                 self.currentGameState = .gameInProgress
-                self.controlButton.texture = SKTexture(imageNamed: "pauseNormal")
-                self.backgroundMusic.run(SKAction.play())
-                
-                self.physicsWorld.speed = 1.0
             }
         case .replayTapped:
             currentButtonState = .empty
