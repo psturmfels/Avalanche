@@ -44,32 +44,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 if let action = self.action(forKey: "genBlocks") {
                     action.speed = 1.0
                 }
+                self.removeGrayScreen()
+                self.motionManager.startAccelerometerUpdates()
                 
             case .gameOver:
                 //Stop generating blocks
                 self.removeAction(forKey: "genBlocks")
+                self.motionManager.stopAccelerometerUpdates()
                 
                 //Run the game over functions after a specified duration
                 let gameOverAction = SKAction.wait(forDuration: 2.0)
                 self.run(gameOverAction, completion: {
                     self.createReplayButton()
                     self.createMenuButton()
+                    self.createGrayScreen()
+                    self.controlButton.removeFromParent()
                 })
+                
                 
             case .gamePaused:
                 self.backgroundMusic.run(SKAction.pause())
                 self.controlButton.texture = SKTexture(imageNamed: "playNormal")
+                
+                self.motionManager.stopAccelerometerUpdates()
+                
                 self.physicsWorld.speed = 0.0
                 if let action = self.action(forKey: "genBlocks") {
                     action.speed = 0.0
                 }
+                
+                self.createGrayScreen()
             }
         }
     }
     
-    
     var currentButtonState: ButtonStates = ButtonStates.empty
-        
+    
     var currentDifficulty: Int = -1 {
         didSet {
             self.removeAction(forKey: "genBlocks")
@@ -103,7 +113,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var backgroundMusic: SKAudioNode!
     var backgroundGradient: SKSpriteNode!
     
-    //MARK: Game Termination Methods
+    //MARK: Game Termination Methods, Pause Methods
+    func createGrayScreen() {
+        let grayScreen: SKShapeNode = SKShapeNode(rectOf: self.size)
+        grayScreen.fillColor = UIColor.gray
+        grayScreen.strokeColor = UIColor.gray
+        grayScreen.alpha = 0.5
+        grayScreen.zPosition = 25
+        grayScreen.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        grayScreen.name = "grayScreen"
+        self.addChild(grayScreen)
+    }
+    
+    func removeGrayScreen() {
+        if let grayScreen = self.childNode(withName: "grayScreen") as? SKShapeNode {
+            grayScreen.removeFromParent()
+        }
+    }
     
     func createReplayButton() {
         let screenCenter: CGPoint = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
@@ -634,7 +660,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    //MARK: Touch Metnm   hods
+    //MARK: Touch Methods
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         /* Called when a touch begins */
         
