@@ -39,7 +39,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             switch currentGameState {
             case .gameInProgress:
                 self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
-                self.backgroundMusic.run(SKAction.play())
+                
+                if let musicStart = self.action(forKey: "musicStart") {
+                    musicStart.speed = 1.0
+                } else {
+                    self.backgroundMusic.run(SKAction.play())
+                }
+                
                 self.physicsWorld.speed = 1.0
                 if let action = self.action(forKey: "genBlocks") {
                     action.speed = 1.0
@@ -60,7 +66,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 
             case .gamePaused:
-                self.backgroundMusic.run(SKAction.pause())
+                if let musicStart = self.action(forKey: "musicStart") {
+                    musicStart.speed = 0.0
+                } else {
+                    self.backgroundMusic.run(SKAction.pause())
+                }
+                
                 self.controlButton.updateTextureSet(withNormalTextureName: "playNormal", highlightedTextureName: "playHighlighted")
                 
                 self.motionManager.stopAccelerometerUpdates()
@@ -284,11 +295,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         motionManager.startAccelerometerUpdates()
         
         //Start the music!!!
-        run(SKAction.wait(forDuration: 0.5), completion: {
+        let waitAction: SKAction = SKAction.wait(forDuration: 0.5)
+        let musicAction: SKAction = SKAction.run {
             let bgcopy = SKAudioNode(fileNamed: "DreamsOfAbove.mp3")
             self.addChild(bgcopy)
             self.backgroundMusic = bgcopy
-        })
+        }
+        let sequence: SKAction = SKAction.sequence([waitAction, musicAction])
+        
+        self.run(sequence, withKey: "musicStart")
         scrollMusicLabel()
     }
     
