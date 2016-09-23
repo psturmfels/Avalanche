@@ -17,7 +17,7 @@ class ButtonNode: SKSpriteNode {
         self.texture = SKTexture(imageNamed: normalTextureName)
     
         self.position = position;
-        self.zPosition = 30
+        self.zPosition = 40
         self.name = name
         
         self.pressedTexture = SKTexture(imageNamed: highlightedTextureName)

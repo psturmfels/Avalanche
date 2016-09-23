@@ -18,6 +18,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var risingLava: SKSpriteNode!
     
     var controlButton: ButtonNode!
+    var leftMoveButton: ButtonNode!
+    var rightMoveButton: ButtonNode!
     
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
@@ -50,7 +52,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 if let action = self.action(forKey: "genBlocks") {
                     action.speed = 1.0
                 }
-                self.removeGrayScreen()
+                self.removePauseNode()
                 self.motionManager.startAccelerometerUpdates()
                 
             case .gameOver:
@@ -82,6 +84,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 
                 self.displayPauseNode()
+            }
+        }
+    }
+    var currentGameControls: ControlTypes = ControlTypes.tilt {
+        didSet {
+            switch self.currentGameControls {
+                case .tilt:
+                    break
+                case .buttons:
+                    break
             }
         }
     }
@@ -129,14 +141,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func displayPauseNode() {
-        let grayScreen: PauseNode = PauseNode(rectOf: self.size)
-        grayScreen.setup(atPosition: CGPoint(x: self.frame.midX, y: self.frame.midY))
+        let pauseScreen: PauseNode = PauseNode()
+        pauseScreen.setup(withSize: self.size, atPosition: CGPoint(x: self.frame.midX, y: self.frame.midY), withControls: currentGameControls)
         
-        self.addChild(grayScreen)
+        self.addChild(pauseScreen)
     }
     
-    func removeGrayScreen() {
-        if let grayScreen = self.childNode(withName: "grayScreen") as? SKShapeNode {
+    func removePauseNode() {
+        if let grayScreen = self.childNode(withName: "pauseNode") as? PauseNode {
             grayScreen.removeFromParent()
         }
     }
@@ -169,6 +181,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(repeatForever, withKey: "genBlocks")
     }
     
+    //MARK: Settings Methods
+    func createMoveButtons() {
+        rightMoveButton = ButtonNode(imageNamed: "rightButtonNormal")
+        leftMoveButton = ButtonNode(imageNamed: "leftButtonNormal")
+
+        let center: CGFloat = self.frame.midX
+        let leftX: CGFloat = center - leftMoveButton.size.width
+        let rightX: CGFloat = center + rightMoveButton.size.width
+        let yPos: CGFloat = rightMoveButton.size.height * 0.5 + 20
+        
+        let rightMovePos: CGPoint = CGPoint(x: rightX, y: yPos)
+        rightMoveButton.setup(atPosition: rightMovePos, withName: "rightMove", normalTextureName: "rightButtonNormal", highlightedTextureName: "rightButtonHighlighted")
+        
+        let leftMovePos: CGPoint = CGPoint(x: leftX, y: yPos)
+        leftMoveButton.setup(atPosition: leftMovePos, withName: "leftMove", normalTextureName: "leftButtonNormal", highlightedTextureName: "leftButtonHighlighted")
+    }
+    
+    func revealMoveButtons() {
+        self.addChild(rightMoveButton)
+        self.addChild(leftMoveButton)
+    }
+    
+    func removeMoveButtons() {
+        self.rightMoveButton.removeFromParent()
+        self.leftMoveButton.removeFromParent()
+    }
     
     //MARK: Update Methods
     override func update(_ currentTime: TimeInterval) {

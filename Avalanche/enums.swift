@@ -26,6 +26,11 @@ enum DeathTypes {
     case crushed
 }
 
+enum ControlTypes {
+    case tilt
+    case buttons
+}
+
 enum CollisionTypes: UInt32 {
     case mellow = 1
     case background = 2
