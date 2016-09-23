@@ -11,6 +11,8 @@
 		1A0584E51CDD281E00B3DF8B /* RoundedBlockNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0584E41CDD281E00B3DF8B /* RoundedBlockNode.swift */; };
 		1A0584E71CDD288900B3DF8B /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0584E61CDD288900B3DF8B /* Helper.swift */; };
 		1A0E90C81CE8E3BC00ED018E /* MellowBurned.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1A0E90C71CE8E3BC00ED018E /* MellowBurned.sks */; };
+		1A0F98D61D9465C600D5D551 /* SettingsNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0F98D51D9465C600D5D551 /* SettingsNode.swift */; };
+		1A0F98D81D94669B00D5D551 /* ButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0F98D71D94669B00D5D551 /* ButtonNode.swift */; };
 		1A51C6B61D722D8F005F6D1A /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A51C6B51D722D8F005F6D1A /* spark.png */; };
 		1A5387001CF38A4700226092 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5386FF1CF38A4700226092 /* MenuScene.swift */; };
 		1A739F781CD3181D00655C1F /* mellow.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 1A739F771CD3181D00655C1F /* mellow.atlas */; };
@@ -23,6 +25,8 @@
 		1AAFB4CC1CA07D6100E7472B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AAFB4CB1CA07D6100E7472B /* Assets.xcassets */; };
 		1AAFB4CF1CA07D6100E7472B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AAFB4CD1CA07D6100E7472B /* LaunchScreen.storyboard */; };
 		1AD4131D1D6F4EFD0051E10F /* enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4131C1D6F4EFD0051E10F /* enums.swift */; };
+		1AE976661D94A4F8002AEF97 /* PauseNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE976651D94A4F8002AEF97 /* PauseNode.swift */; };
+		1AE976681D94A7D9002AEF97 /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE976671D94A7D9002AEF97 /* GameOverScene.swift */; };
 		1AECBCA61CE11B7D007FDC94 /* crushed.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 1AECBCA51CE11B7D007FDC94 /* crushed.atlas */; };
 		1AF408BC1D6A4B8100539A7D /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF408BB1D6A4B8100539A7D /* GameKit.framework */; };
 		1AF88CD41CD6B2EF00028E3D /* MellowNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF88CD31CD6B2EF00028E3D /* MellowNode.swift */; };
@@ -37,6 +41,8 @@
 		1A0584E41CDD281E00B3DF8B /* RoundedBlockNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedBlockNode.swift; sourceTree = "<group>"; };
 		1A0584E61CDD288900B3DF8B /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		1A0E90C71CE8E3BC00ED018E /* MellowBurned.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MellowBurned.sks; sourceTree = "<group>"; };
+		1A0F98D51D9465C600D5D551 /* SettingsNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsNode.swift; sourceTree = "<group>"; };
+		1A0F98D71D94669B00D5D551 /* ButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonNode.swift; sourceTree = "<group>"; };
 		1A51C6B51D722D8F005F6D1A /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
 		1A5386FF1CF38A4700226092 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 		1A739F771CD3181D00655C1F /* mellow.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = mellow.atlas; sourceTree = "<group>"; };
@@ -51,6 +57,8 @@
 		1AAFB4CE1CA07D6100E7472B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1AAFB4D01CA07D6100E7472B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AD4131C1D6F4EFD0051E10F /* enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = enums.swift; sourceTree = "<group>"; };
+		1AE976651D94A4F8002AEF97 /* PauseNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseNode.swift; sourceTree = "<group>"; };
+		1AE976671D94A7D9002AEF97 /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
 		1AECBCA51CE11B7D007FDC94 /* crushed.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = crushed.atlas; sourceTree = "<group>"; };
 		1AF408BB1D6A4B8100539A7D /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		1AF88CD31CD6B2EF00028E3D /* MellowNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MellowNode.swift; sourceTree = "<group>"; };
@@ -97,7 +105,11 @@
 				1AAFB4C61CA07D6100E7472B /* GameViewController.swift */,
 				1A5386FF1CF38A4700226092 /* MenuScene.swift */,
 				1AD4131C1D6F4EFD0051E10F /* enums.swift */,
+				1A0F98D71D94669B00D5D551 /* ButtonNode.swift */,
+				1AE976651D94A4F8002AEF97 /* PauseNode.swift */,
+				1AE976671D94A7D9002AEF97 /* GameOverScene.swift */,
 				1AAFB4C41CA07D6100E7472B /* GameScene.swift */,
+				1A0F98D51D9465C600D5D551 /* SettingsNode.swift */,
 				1AF88CD31CD6B2EF00028E3D /* MellowNode.swift */,
 				1A0584E41CDD281E00B3DF8B /* RoundedBlockNode.swift */,
 				1A0584E61CDD288900B3DF8B /* Helper.swift */,
@@ -221,9 +233,13 @@
 				1AAFB4C71CA07D6100E7472B /* GameViewController.swift in Sources */,
 				1A5387001CF38A4700226092 /* MenuScene.swift in Sources */,
 				1A0584E51CDD281E00B3DF8B /* RoundedBlockNode.swift in Sources */,
+				1AE976681D94A7D9002AEF97 /* GameOverScene.swift in Sources */,
+				1AE976661D94A4F8002AEF97 /* PauseNode.swift in Sources */,
+				1A0F98D61D9465C600D5D551 /* SettingsNode.swift in Sources */,
 				1AAFB4C11CA07D6100E7472B /* AppDelegate.swift in Sources */,
 				1AD4131D1D6F4EFD0051E10F /* enums.swift in Sources */,
 				1A0584E71CDD288900B3DF8B /* Helper.swift in Sources */,
+				1A0F98D81D94669B00D5D551 /* ButtonNode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
