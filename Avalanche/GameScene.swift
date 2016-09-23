@@ -53,7 +53,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.motionManager.stopAccelerometerUpdates()
                 
                 //Run the game over functions after a specified duration
-                let gameOverAction = SKAction.wait(forDuration: 2.0)
+                let gameOverAction = SKAction.wait(forDuration: 4.0)
                 self.run(gameOverAction, completion: {
                     self.transitionToGameOverScene()
                 })
@@ -113,7 +113,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let gameOverScene = GameOverScene(size: self.size)
         gameOverScene.scaleMode = .resizeFill
         gameOverScene.highScore = bestSoFar
-        let transition = SKTransition.crossFade(withDuration: 0.5)
+        let transition = SKTransition.crossFade(withDuration: 1.0)
         self.scene!.view!.presentScene(gameOverScene, transition: transition)
     }
     
