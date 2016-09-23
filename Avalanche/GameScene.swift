@@ -17,6 +17,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var floor: RoundedBlockNode!
     var risingLava: SKSpriteNode!
     
+    var pauseScreen: PauseNode!
     var controlButton: ButtonNode!
     var leftMoveButton: ButtonNode!
     var rightMoveButton: ButtonNode!
@@ -90,10 +91,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var currentGameControls: ControlTypes = ControlTypes.tilt {
         didSet {
             switch self.currentGameControls {
-                case .tilt:
-                    break
-                case .buttons:
-                    break
+            case .tilt:
+                break
+            case .buttons:
+                break
             }
         }
     }
@@ -140,19 +141,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.scene!.view!.presentScene(gameOverScene, transition: transition)
     }
     
-    func displayPauseNode() {
-        let pauseScreen: PauseNode = PauseNode()
-        pauseScreen.setup(withSize: self.size, atPosition: CGPoint(x: self.frame.midX, y: self.frame.midY), withControls: currentGameControls)
-        
-        self.addChild(pauseScreen)
-    }
-    
-    func removePauseNode() {
-        if let grayScreen = self.childNode(withName: "pauseNode") as? PauseNode {
-            grayScreen.removeFromParent()
-        }
-    }
-    
     //MARK: Block Methods
     func generateRandomBlock(_ minFallSpeed: Float, maxFallSpeed: Float) {
         //Choose random paramters for the block
@@ -182,10 +170,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     //MARK: Settings Methods
+    func createPauseNode() {
+        pauseScreen = PauseNode()
+        pauseScreen.setup(withSize: self.size, atPosition: CGPoint(x: self.frame.midX, y: self.frame.midY), withControls: currentGameControls)
+    }
+    
+    func displayPauseNode() {
+        self.addChild(pauseScreen)
+    }
+    
+    func removePauseNode() {
+        pauseScreen.removeFromParent()
+    }
+    
     func createMoveButtons() {
         rightMoveButton = ButtonNode(imageNamed: "rightButtonNormal")
         leftMoveButton = ButtonNode(imageNamed: "leftButtonNormal")
-
+        
         let center: CGFloat = self.frame.midX
         let leftX: CGFloat = center - leftMoveButton.size.width
         let rightX: CGFloat = center + rightMoveButton.size.width
@@ -328,6 +329,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createLabels()
         createBackground()
         createControlButton()
+        createPauseNode()
         
         //Allows the game to read the tilt of the phone and react accordingly
         motionManager.startAccelerometerUpdates()
@@ -686,23 +688,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         /* Called when a touch begins */
         
-        var noButtonsTapped: Bool = true
-        for touch in touches {
-            let location = touch.location(in: self)
-            let objects = nodes(at: location) as [SKNode]
-            for object in objects {
-                if object.name == "Control" {
-                    controlButton.didPress()
-                    noButtonsTapped = false
-                    break
+        if currentGameState == .gameInProgress {
+            var noButtonsTapped: Bool = true
+            for touch in touches {
+                let location = touch.location(in: self)
+                let objects = nodes(at: location) as [SKNode]
+                for object in objects {
+                    if object.name == "Control" {
+                        controlButton.didPress()
+                        noButtonsTapped = false
+                        break
+                    }
                 }
             }
-        }
-        
-        //Jump if no buttons were tapped
-        if currentGameState == .gameInProgress {
+            
+            //Jump if no buttons were tapped
             if noButtonsTapped {
                 mellow.jump()
+            }
+        }
+        else if currentGameState == .gamePaused {
+            for touch in touches {
+                let location = touch.location(in: self)
+                let objects = nodes(at: location) as [SKNode]
+                for object in objects {
+                    if object.name == "Control" {
+                        controlButton.didPress()
+                    }
+                    else if object.name == "Button" {
+                        currentGameControls = .buttons
+                        pauseScreen.setCurrentGameControls(withNewControls: currentGameControls)
+                        break
+                    } else if object.name == "Tilt" {
+                        currentGameControls = .tilt
+                        pauseScreen.setCurrentGameControls(withNewControls: currentGameControls)
+                        break
+                    }
+                }
             }
         }
     }

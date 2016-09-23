@@ -30,8 +30,6 @@ class PauseNode: SKNode {
         grayScreen.position = center
         grayScreen.name = "grayScreen"
         
-        currentGameControls = controls
-        
         buttonsButton = ButtonNode(imageNamed: "buttonsButton")
         tiltButton = ButtonNode(imageNamed: "tiltButton")
         
@@ -43,16 +41,24 @@ class PauseNode: SKNode {
         tiltButton.setup(atPosition: center, withName: "Tilt", normalTextureName: "tiltButton", highlightedTextureName: "tiltButton")
         tiltButton.position.x += tiltButton.size.width * 0.5 + 10
         
-        switch currentGameControls {
-        case .tilt:
-            buttonsButton.alpha = 0.3
-        case .buttons:
-            tiltButton.alpha = 0.3
-            break
-        }
+        setCurrentGameControls(withNewControls: controls)
         
         self.addChild(grayScreen)
         self.addChild(buttonsButton)
         self.addChild(tiltButton)
     }
+    
+    func setCurrentGameControls(withNewControls controls: ControlTypes) {
+        currentGameControls = controls
+        switch currentGameControls {
+        case .tilt:
+            tiltButton.alpha = 1.0
+            buttonsButton.alpha = 0.3
+        case .buttons:
+            tiltButton.alpha = 0.3
+            buttonsButton.alpha = 1.0
+            break
+        }
+    }
+    
 }
