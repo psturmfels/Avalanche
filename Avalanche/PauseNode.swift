@@ -10,16 +10,16 @@ import SpriteKit
 
 class PauseNode: SKNode {
     
-    var buttonsButton: ButtonNode!
-    var tiltButton: ButtonNode!
     var grayScreen: SKShapeNode!
-    var currentGameControls: ControlTypes = ControlTypes.tilt
+    var audioLabel: SKLabelNode!
+    var audioButton: ButtonNode!
     
     //MARK: Initialization methods
-    func setup(withSize size: CGSize, atPosition position: CGPoint, withControls controls: ControlTypes) {
+    func setup(withSize size: CGSize, atPosition position: CGPoint) {
         self.name = "pauseNode"
         self.position = position
         var center: CGPoint = CGPoint.zero
+        
         
         grayScreen = SKShapeNode(rectOf: size)
         grayScreen.fillColor = UIColor.gray
@@ -30,35 +30,21 @@ class PauseNode: SKNode {
         grayScreen.position = center
         grayScreen.name = "grayScreen"
         
-        buttonsButton = ButtonNode(imageNamed: "buttonsButton")
-        tiltButton = ButtonNode(imageNamed: "tiltButton")
-        
         center.y += size.height * 0.3
-        
-        buttonsButton.setup(atPosition: center, withName: "Button", normalTextureName: "buttonsButton", highlightedTextureName: "buttonsButton")
-        buttonsButton.position.x -= buttonsButton.size.width * 0.5 + 10
-        
-        tiltButton.setup(atPosition: center, withName: "Tilt", normalTextureName: "tiltButton", highlightedTextureName: "tiltButton")
-        tiltButton.position.x += tiltButton.size.width * 0.5 + 10
-        
-        setCurrentGameControls(withNewControls: controls)
+        audioButton = ButtonNode(imageNamed: "audioButtonNormal")
+        audioButton.setup(atPosition: center, withName: "Audio", normalTextureName: "audioButtonNormal", highlightedTextureName: "audioButtonOff")
         
         self.addChild(grayScreen)
-        self.addChild(buttonsButton)
-        self.addChild(tiltButton)
+        self.addChild(audioButton)
     }
     
-    func setCurrentGameControls(withNewControls controls: ControlTypes) {
-        currentGameControls = controls
-        switch currentGameControls {
-        case .tilt:
-            tiltButton.alpha = 1.0
-            buttonsButton.alpha = 0.3
-        case .buttons:
-            tiltButton.alpha = 0.3
-            buttonsButton.alpha = 1.0
-            break
+    func toggleAudioButton() {
+        if audioButton.isPressed {
+            audioButton.alpha = 1.0
+            audioButton.didRelease()
+        } else {
+            audioButton.alpha = 0.5
+            audioButton.didPress()
         }
     }
-    
 }

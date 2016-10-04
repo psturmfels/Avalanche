@@ -55,9 +55,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 self.removePauseNode()
                 
-                if currentGameControls == .tilt {
-                    self.motionManager.startAccelerometerUpdates()
-                }
+                self.motionManager.startAccelerometerUpdates()
                 
             case .gameOver:
                 self.controlButton.didRelease()
@@ -82,9 +80,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 self.controlButton.updateTextureSet(withNormalTextureName: "playNormal", highlightedTextureName: "playHighlighted")
                 
-                if currentGameControls == .tilt {
-                    self.motionManager.stopAccelerometerUpdates()
-                }
+                self.motionManager.stopAccelerometerUpdates()
                 
                 self.physicsWorld.speed = 0.0
                 if let action = self.action(forKey: "genBlocks") {
@@ -92,17 +88,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 
                 self.displayPauseNode()
-            }
-        }
-    }
-    var currentGameControls: ControlTypes = ControlTypes.tilt {
-        didSet {
-            switch self.currentGameControls {
-            case .tilt:
-                self.removeMoveButtons()
-            case .buttons:
-                self.displayMoveButtons()
-                break
             }
         }
     }
@@ -180,7 +165,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //MARK: Settings Methods
     func createPauseNode() {
         pauseScreen = PauseNode()
-        pauseScreen.setup(withSize: self.size, atPosition: CGPoint(x: self.frame.midX, y: self.frame.midY), withControls: currentGameControls)
+        pauseScreen.setup(withSize: self.size, atPosition: CGPoint(x: self.frame.midX, y: self.frame.midY))
     }
     
     func displayPauseNode() {
@@ -309,17 +294,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func mellowAccel() {
         //Make the mellow move to the left or right depending on the tilt of the screen
         
-        switch currentGameControls {
-        case .tilt:
-            if let data = self.motionManager.accelerometerData {
-                mellow.setdx(withAcceleration: data.acceleration.x)
-            }
-        case .buttons:
-            if leftMoveButton.isPressed {
-                mellow.setdx(withAcceleration: -0.75)
-            } else if rightMoveButton.isPressed {
-                mellow.setdx(withAcceleration: 0.75)
-            }
+        if let data = self.motionManager.accelerometerData {
+            mellow.setdx(withAcceleration: data.acceleration.x)
         }
         
         if mellow.bottomSideInContact == 0 {
@@ -750,13 +726,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     if object.name == "Control" {
                         controlButton.didPress()
                     }
-                    else if object.name == "Button" {
-                        currentGameControls = .buttons
-                        pauseScreen.setCurrentGameControls(withNewControls: currentGameControls)
-                        break
-                    } else if object.name == "Tilt" {
-                        currentGameControls = .tilt
-                        pauseScreen.setCurrentGameControls(withNewControls: currentGameControls)
+                    else if object.name == "Audio" {
+                        pauseScreen.toggleAudioButton()
                         break
                     }
                 }
