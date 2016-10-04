@@ -54,9 +54,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     action.speed = 1.0
                 }
                 self.removePauseNode()
-                self.motionManager.startAccelerometerUpdates()
+                
+                if currentGameControls == .tilt {
+                    self.motionManager.startAccelerometerUpdates()
+                }
                 
             case .gameOver:
+                self.controlButton.didRelease()
+                
                 //Stop generating blocks
                 self.removeAction(forKey: "genBlocks")
                 self.motionManager.stopAccelerometerUpdates()
@@ -77,7 +82,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 self.controlButton.updateTextureSet(withNormalTextureName: "playNormal", highlightedTextureName: "playHighlighted")
                 
-                self.motionManager.stopAccelerometerUpdates()
+                if currentGameControls == .tilt {
+                    self.motionManager.stopAccelerometerUpdates()
+                }
                 
                 self.physicsWorld.speed = 0.0
                 if let action = self.action(forKey: "genBlocks") {
@@ -92,8 +99,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         didSet {
             switch self.currentGameControls {
             case .tilt:
-                break
+                self.removeMoveButtons()
             case .buttons:
+                self.displayMoveButtons()
                 break
             }
         }
@@ -188,18 +196,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         leftMoveButton = ButtonNode(imageNamed: "leftButtonNormal")
         
         let center: CGFloat = self.frame.midX
-        let leftX: CGFloat = center - leftMoveButton.size.width
-        let rightX: CGFloat = center + rightMoveButton.size.width
-        let yPos: CGFloat = rightMoveButton.size.height * 0.5 + 20
+        let leftX: CGFloat = center - leftMoveButton.size.width * 0.5 - 70
+        let rightX: CGFloat = center + rightMoveButton.size.width * 0.5 + 70
+        let yPos: CGFloat = rightMoveButton.size.height * 0.5 + 30
         
         let rightMovePos: CGPoint = CGPoint(x: rightX, y: yPos)
-        rightMoveButton.setup(atPosition: rightMovePos, withName: "rightMove", normalTextureName: "rightButtonNormal", highlightedTextureName: "rightButtonHighlighted")
+        rightMoveButton.setup(atPosition: rightMovePos, withName: "RightMove", normalTextureName: "rightButtonNormal", highlightedTextureName: "rightButtonHighlighted")
         
         let leftMovePos: CGPoint = CGPoint(x: leftX, y: yPos)
-        leftMoveButton.setup(atPosition: leftMovePos, withName: "leftMove", normalTextureName: "leftButtonNormal", highlightedTextureName: "leftButtonHighlighted")
+        leftMoveButton.setup(atPosition: leftMovePos, withName: "LeftMove", normalTextureName: "leftButtonNormal", highlightedTextureName: "leftButtonHighlighted")
+        
+        rightMoveButton.setScale(1.5)
+        leftMoveButton.setScale(1.5)
+        
+        rightMoveButton.alpha = 0.8
+        leftMoveButton.alpha = 0.8
     }
     
-    func revealMoveButtons() {
+    func displayMoveButtons() {
         self.addChild(rightMoveButton)
         self.addChild(leftMoveButton)
     }
@@ -294,9 +308,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func mellowAccel() {
         //Make the mellow move to the left or right depending on the tilt of the screen
-        if let data = self.motionManager.accelerometerData {
-            mellow.setdx(withAcceleration: data.acceleration.x)
+        
+        switch currentGameControls {
+        case .tilt:
+            if let data = self.motionManager.accelerometerData {
+                mellow.setdx(withAcceleration: data.acceleration.x)
+            }
+        case .buttons:
+            if leftMoveButton.isPressed {
+                mellow.setdx(withAcceleration: -0.75)
+            } else if rightMoveButton.isPressed {
+                mellow.setdx(withAcceleration: 0.75)
+            }
         }
+        
         if mellow.bottomSideInContact == 0 {
             //Add the wall-cling animations if the mellow is touching a wall and is off the ground
             if mellow.leftSideInContact > 0 {
@@ -330,6 +355,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createBackground()
         createControlButton()
         createPauseNode()
+        createMoveButtons()
         
         //Allows the game to read the tilt of the phone and react accordingly
         motionManager.startAccelerometerUpdates()
@@ -699,6 +725,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         noButtonsTapped = false
                         break
                     }
+                    else if object.name == "RightMove" {
+                        rightMoveButton.didPress()
+                        noButtonsTapped = false
+                        break
+                    } else if object.name == "LeftMove" {
+                        leftMoveButton.didPress()
+                        noButtonsTapped = false
+                        break
+                    }
                 }
             }
             
@@ -737,7 +772,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let location = touch.location(in: self)
             let objects = nodes(at: location) as [SKNode]
             for object in objects {
-                if object.name == "Control" {
+                if object.name == "Control" || object.name == "RightMove" || object.name == "LeftMove" {
                     movedOverButton = true
                     break
                 }
@@ -745,7 +780,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if !movedOverButton {
-            controlButton.didRelease()
+            if controlButton.isPressed {
+                controlButton.didRelease()
+            }
+            if leftMoveButton.isPressed {
+                leftMoveButton.didRelease()
+            }
+            if rightMoveButton.isPressed {
+                rightMoveButton.didRelease()
+            }
         }
     }
     
@@ -761,9 +804,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
             }
         }
+        else if leftMoveButton.isPressed {
+            leftMoveButton.didRelease()
+            mellow.setdx(withAcceleration: 0.0)
+        }
+        else if rightMoveButton.isPressed {
+            rightMoveButton.didRelease()
+            mellow.setdx(withAcceleration: 0.0)
+        }
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        controlButton.didRelease()
+        if controlButton.isPressed {
+            controlButton.didRelease()
+        }
+        if leftMoveButton.isPressed {
+            leftMoveButton.didRelease()
+        }
+        if rightMoveButton.isPressed {
+            rightMoveButton.didRelease()
+        }
     }
 }
