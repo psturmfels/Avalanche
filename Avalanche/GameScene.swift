@@ -19,8 +19,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var pauseScreen: PauseNode!
     var controlButton: ButtonNode!
-    var leftMoveButton: ButtonNode!
-    var rightMoveButton: ButtonNode!
     
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
@@ -43,10 +41,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             case .gameInProgress:
                 self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
                 
-                if let musicStart = self.action(forKey: "musicStart") {
-                    musicStart.speed = 1.0
-                } else {
-                    self.backgroundMusic.run(SKAction.play())
+                if audioIsOn {
+                    if let musicStart = self.action(forKey: "musicStart") {
+                        musicStart.speed = 1.0
+                    } else {
+                        self.backgroundMusic.run(SKAction.play())
+                    }
                 }
                 
                 self.physicsWorld.speed = 1.0
@@ -122,6 +122,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var lavaMaxSpeed: CGFloat = 40.0
     
+    var soundEffectsAreOn: Bool = true
+    var audioIsOn: Bool = true
     var backgroundMusic: SKAudioNode!
     var backgroundGradient: SKSpriteNode!
     
@@ -176,37 +178,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         pauseScreen.removeFromParent()
     }
     
-    func createMoveButtons() {
-        rightMoveButton = ButtonNode(imageNamed: "rightButtonNormal")
-        leftMoveButton = ButtonNode(imageNamed: "leftButtonNormal")
-        
-        let center: CGFloat = self.frame.midX
-        let leftX: CGFloat = center - leftMoveButton.size.width * 0.5 - 70
-        let rightX: CGFloat = center + rightMoveButton.size.width * 0.5 + 70
-        let yPos: CGFloat = rightMoveButton.size.height * 0.5 + 30
-        
-        let rightMovePos: CGPoint = CGPoint(x: rightX, y: yPos)
-        rightMoveButton.setup(atPosition: rightMovePos, withName: "RightMove", normalTextureName: "rightButtonNormal", highlightedTextureName: "rightButtonHighlighted")
-        
-        let leftMovePos: CGPoint = CGPoint(x: leftX, y: yPos)
-        leftMoveButton.setup(atPosition: leftMovePos, withName: "LeftMove", normalTextureName: "leftButtonNormal", highlightedTextureName: "leftButtonHighlighted")
-        
-        rightMoveButton.setScale(1.5)
-        leftMoveButton.setScale(1.5)
-        
-        rightMoveButton.alpha = 0.8
-        leftMoveButton.alpha = 0.8
+    //MARK: Audio Methods
+    func playSoundEffectNamed(_ name: String, waitForCompletion wait: Bool) {
+        if soundEffectsAreOn {
+            self.run(SKAction.playSoundFileNamed(name, waitForCompletion: wait))
+        }
     }
     
-    func displayMoveButtons() {
-        self.addChild(rightMoveButton)
-        self.addChild(leftMoveButton)
-    }
-    
-    func removeMoveButtons() {
-        self.rightMoveButton.removeFromParent()
-        self.leftMoveButton.removeFromParent()
-    }
     
     //MARK: Update Methods
     override func update(_ currentTime: TimeInterval) {
@@ -331,7 +309,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createBackground()
         createControlButton()
         createPauseNode()
-        createMoveButtons()
         
         //Allows the game to read the tilt of the phone and react accordingly
         motionManager.startAccelerometerUpdates()
@@ -596,7 +573,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 //Crushed sound effects
                 self.backgroundMusic.run(SKAction.stop())
                 self.backgroundMusic.removeFromParent()
-                self.run(SKAction.playSoundFileNamed("MellowCrushed.wav", waitForCompletion: false))
+                self.playSoundEffectNamed("MellowCrushed.wav", waitForCompletion: false)
                 
                 //Add the explosion after the crush
                 let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
@@ -606,7 +583,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.mellow.removeFromParent()
             })
         } else {
-            self.run(SKAction.playSoundFileNamed("MellowBurned.wav", waitForCompletion: false))
+            self.playSoundEffectNamed("MellowBurned.wav", waitForCompletion: false)
             mellow.run(crushedAction, completion: {
                 //Burned Sound Effects
                 self.backgroundMusic.run(SKAction.stop())
@@ -701,15 +678,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         noButtonsTapped = false
                         break
                     }
-                    else if object.name == "RightMove" {
-                        rightMoveButton.didPress()
-                        noButtonsTapped = false
-                        break
-                    } else if object.name == "LeftMove" {
-                        leftMoveButton.didPress()
-                        noButtonsTapped = false
-                        break
-                    }
                 }
             }
             
@@ -725,10 +693,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 for object in objects {
                     if object.name == "Control" {
                         controlButton.didPress()
+                        break
                     }
                     else if object.name == "Audio" {
-                        pauseScreen.toggleAudioButton()
+                        pauseScreen.toggleButton(object as! ButtonNode)
+                        audioIsOn = !audioIsOn
                         break
+                    } else if object.name == "SoundEffects" {
+                        pauseScreen.toggleButton(object as! ButtonNode)
+                        soundEffectsAreOn = !soundEffectsAreOn
                     }
                 }
             }
@@ -754,12 +727,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if controlButton.isPressed {
                 controlButton.didRelease()
             }
-            if leftMoveButton.isPressed {
-                leftMoveButton.didRelease()
-            }
-            if rightMoveButton.isPressed {
-                rightMoveButton.didRelease()
-            }
         }
     }
     
@@ -775,25 +742,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
             }
         }
-        else if leftMoveButton.isPressed {
-            leftMoveButton.didRelease()
-            mellow.setdx(withAcceleration: 0.0)
-        }
-        else if rightMoveButton.isPressed {
-            rightMoveButton.didRelease()
-            mellow.setdx(withAcceleration: 0.0)
-        }
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         if controlButton.isPressed {
             controlButton.didRelease()
-        }
-        if leftMoveButton.isPressed {
-            leftMoveButton.didRelease()
-        }
-        if rightMoveButton.isPressed {
-            rightMoveButton.didRelease()
         }
     }
 }
