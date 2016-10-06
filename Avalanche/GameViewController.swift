@@ -8,12 +8,25 @@
 
 import UIKit
 import SpriteKit
+import GameKit
 
-class GameViewController: UIViewController {
-
+class GameViewController: UIViewController, GKGameCenterControllerDelegate, UINavigationControllerDelegate {
+    var gameCenterViewController: GKGameCenterViewController!
+    var gameCenterIsAuthenticated: Bool = false {
+        didSet {
+            if gameCenterIsAuthenticated {
+                localPlayer = GKLocalPlayer.localPlayer()
+                loadGameCenterViewController()
+            }
+        }
+    }
+    var currentGameCenterViewControllerState: GKGameCenterViewControllerState = GKGameCenterViewControllerState.leaderboards
+    var localPlayer: GKLocalPlayer!
+    
+    //MARK: View Methods
     override func viewDidLoad() {
-        super.viewDidLoad()
-
+        self.view = SKView(frame: UIScreen.main.bounds)
+        
         //Load the menu scene on startup
         let scene = MenuScene(size: self.view.frame.size)
         let skView = self.view as! SKView
@@ -24,31 +37,12 @@ class GameViewController: UIViewController {
         skView.ignoresSiblingOrder = true
         scene.scaleMode = .resizeFill
         skView.presentScene(scene)
-    
-        /*
-        if let scene = MenuScene(fileNamed:"MenuScene") {
-            // Configure the view.
-            let skView = self.view as! SKView
-            skView.showsFPS = false
-            skView.showsNodeCount = true
-            
-            /* Sprite Kit applies additional optimizations to improve rendering performance */
-            skView.ignoresSiblingOrder = true
-            
-            /* Set the scale mode to scale to fit the window */
-            scene.scaleMode = .ResizeFill
-            scene.size = self.view.frame.size
-            
-            skView.presentScene(scene)
-        } else {
-            print("something went wrong")
-        }*/
     }
-
+    
     override var shouldAutorotate : Bool {
         return false
     }
-
+    
     override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
             return UIInterfaceOrientationMask.portrait
@@ -56,13 +50,44 @@ class GameViewController: UIViewController {
             return .all
         }
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
-
+    
     override var prefersStatusBarHidden : Bool {
         return true
     }
+    
+    //MARK: GKGameCenterControllerDelegate
+    func loadGameCenterViewController() {
+        if gameCenterIsAuthenticated && localPlayer.isAuthenticated {
+            localPlayer.loadDefaultLeaderboardIdentifier { (string, error) in
+                if error != nil {
+                    NSLog("Could not load leaderboard: \(error!)")
+                }
+                else if let identifier = string {
+                    //Load the gameCenterViewController
+                    self.gameCenterViewController = GKGameCenterViewController()
+                    self.gameCenterViewController.delegate = self
+                    self.gameCenterViewController.viewState = self.currentGameCenterViewControllerState
+                    self.gameCenterViewController.leaderboardTimeScope = GKLeaderboardTimeScope.week
+                    self.gameCenterViewController.leaderboardIdentifier = identifier
+                }
+            }
+        }
+    }
+    
+    func presentGameCenterViewController() {
+        if gameCenterIsAuthenticated && localPlayer.isAuthenticated {
+            self.present(gameCenterViewController, animated: true, completion: nil)
+        }
+    }
+    
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+        currentGameCenterViewControllerState = gameCenterViewController.viewState
+        gameCenterViewController.dismiss(animated: true, completion: nil)
+    }
+    
 }

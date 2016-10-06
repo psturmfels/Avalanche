@@ -258,12 +258,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //move the world as opposed to the mellow, ensuring that
         //the mellow always stays on the screen.
         if mellow.position.y > self.size.height - mellowThriceHeight {
-            let difference = mellow.position.y - (self.size.height - mellowThriceHeight)
+            let difference: CGFloat = mellow.position.y - (self.size.height - mellowThriceHeight)
             mellow.position.y = self.size.height - mellowThriceHeight
             self.worldNode.position.y -= difference
         }
         else if mellow.position.y < mellowTwiceHeight {
-            let difference = mellowTwiceHeight - mellow.position.y
+            let difference: CGFloat = mellowTwiceHeight - mellow.position.y
             mellow.position.y = mellowTwiceHeight
             self.worldNode.position.y += difference
         }
@@ -342,7 +342,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let waitAction: SKAction = SKAction.wait(forDuration: 2)
         let moveLeftAction: SKAction = SKAction.move(by: CGVector(dx: -moveRightDist, dy: 0), duration: 1)
         
-        let actionSequence = SKAction.sequence([waitFirst, moveRightAction, waitAction, moveLeftAction])
+        let actionSequence: SKAction = SKAction.sequence([waitFirst, moveRightAction, waitAction, moveLeftAction])
         
         musicLabel.run(actionSequence, completion: {
             musicLabel.removeFromParent()
@@ -702,6 +702,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     } else if object.name == "SoundEffects" {
                         pauseScreen.toggleButton(object as! ButtonNode)
                         soundEffectsAreOn = !soundEffectsAreOn
+                        break
                     }
                 }
             }

@@ -13,10 +13,18 @@ import GameKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+    var gameViewController: GameViewController!
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         authenticateLocalPlayer()
+        
+        gameViewController = GameViewController()
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        self.window!.backgroundColor = UIColor.black
+        self.window!.rootViewController = gameViewController
+        self.window!.makeKeyAndVisible()
+        
         return true
     }
     
@@ -53,6 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
             else if localPlayer.isAuthenticated {
+                self.gameViewController.gameCenterIsAuthenticated = true
                 NSLog("Player [\(localPlayer.displayName!)] is authenticated.")
                 localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
                     if error != nil {

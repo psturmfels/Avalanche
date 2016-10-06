@@ -21,7 +21,6 @@
 		1AAFB4C11CA07D6100E7472B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AAFB4C01CA07D6100E7472B /* AppDelegate.swift */; };
 		1AAFB4C51CA07D6100E7472B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AAFB4C41CA07D6100E7472B /* GameScene.swift */; };
 		1AAFB4C71CA07D6100E7472B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AAFB4C61CA07D6100E7472B /* GameViewController.swift */; };
-		1AAFB4CA1CA07D6100E7472B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AAFB4C81CA07D6100E7472B /* Main.storyboard */; };
 		1AAFB4CC1CA07D6100E7472B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AAFB4CB1CA07D6100E7472B /* Assets.xcassets */; };
 		1AAFB4CF1CA07D6100E7472B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AAFB4CD1CA07D6100E7472B /* LaunchScreen.storyboard */; };
 		1AD4131D1D6F4EFD0051E10F /* enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4131C1D6F4EFD0051E10F /* enums.swift */; };
@@ -52,7 +51,6 @@
 		1AAFB4C01CA07D6100E7472B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1AAFB4C41CA07D6100E7472B /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		1AAFB4C61CA07D6100E7472B /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		1AAFB4C91CA07D6100E7472B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1AAFB4CB1CA07D6100E7472B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1AAFB4CE1CA07D6100E7472B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1AAFB4D01CA07D6100E7472B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -116,7 +114,6 @@
 				1A9017B21CD171EB00F31C1E /* GameScene.sks */,
 				1AAB5D431CE0D6EF00F820F0 /* MellowCrushed.sks */,
 				1A0E90C71CE8E3BC00ED018E /* MellowBurned.sks */,
-				1AAFB4C81CA07D6100E7472B /* Main.storyboard */,
 				1A51C6B51D722D8F005F6D1A /* spark.png */,
 				1AAFB4CB1CA07D6100E7472B /* Assets.xcassets */,
 				1AAFB4CD1CA07D6100E7472B /* LaunchScreen.storyboard */,
@@ -213,7 +210,6 @@
 				1AFD03841D636CA700A54640 /* MellowCrushed.wav in Resources */,
 				1AFD03831D636CA700A54640 /* MellowBurned.wav in Resources */,
 				1AAFB4CC1CA07D6100E7472B /* Assets.xcassets in Resources */,
-				1AAFB4CA1CA07D6100E7472B /* Main.storyboard in Resources */,
 				1A0584E31CDD27C300B3DF8B /* RoundedBlock.atlas in Resources */,
 				1AFD037F1D63697F00A54640 /* DreamsOfAbove.mp3 in Resources */,
 				1AAB5D451CE0D6EF00F820F0 /* MellowCrushed.sks in Resources */,
@@ -246,14 +242,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		1AAFB4C81CA07D6100E7472B /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				1AAFB4C91CA07D6100E7472B /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		1AAFB4CD1CA07D6100E7472B /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

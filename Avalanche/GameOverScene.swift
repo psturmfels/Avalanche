@@ -50,9 +50,11 @@ class GameOverScene: SKScene {
             for object in objects {
                 if object.name == "Replay" {
                     replayButton.didPress()
+                    break
                 }
                 else if object.name == "Menu" {
                     menuButton.didPress()
+                    break
                 }
             }
         }
@@ -78,6 +80,7 @@ class GameOverScene: SKScene {
             for object in objects {
                 if object.name == "Replay" || object.name == "Menu" {
                     movedOverButton = true
+                    break
                 }
             }
         }

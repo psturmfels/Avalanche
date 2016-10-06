@@ -34,8 +34,8 @@ class PauseNode: SKNode {
         grayScreen.name = "grayScreen"
         
         center.y += size.height * 0.15
-        soundEffectsButton = ButtonNode(imageNamed: "audioButtonNormal")
-        soundEffectsButton.setup(atPosition: center, withName: "SoundEffects", normalTextureName: "audioButtonNormal", highlightedTextureName: "audioButtonOff")
+        soundEffectsButton = ButtonNode(imageNamed: "audioNormal")
+        soundEffectsButton.setup(atPosition: center, withName: "SoundEffects", normalTextureName: "audioNormal", highlightedTextureName: "audioOff")
         soundEffectsButton.position.x += soundEffectsButton.frame.width * 0.5 + 10
         
         soundEffectsLabel = LabelNode()
@@ -44,8 +44,8 @@ class PauseNode: SKNode {
         soundEffectsLabel.position.y -= soundEffectsLabel.frame.height * 0.5 - 5
         
         center.y += size.height * 0.15
-        audioButton = ButtonNode(imageNamed: "audioButtonNormal")
-        audioButton.setup(atPosition: center, withName: "Audio", normalTextureName: "audioButtonNormal", highlightedTextureName: "audioButtonOff")
+        audioButton = ButtonNode(imageNamed: "audioNormal")
+        audioButton.setup(atPosition: center, withName: "Audio", normalTextureName: "audioNormal", highlightedTextureName: "audioOff")
         audioButton.position.x += audioButton.frame.width * 0.5 + 10
         
         audioLabel = LabelNode()
