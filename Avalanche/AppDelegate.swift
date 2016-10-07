@@ -17,7 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        authenticateLocalPlayer()
+        DispatchQueue.main.async {
+            self.authenticateLocalPlayer()
+        }
         
         gameViewController = GameViewController()
         self.window = UIWindow(frame: UIScreen.main.bounds)
@@ -51,8 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func authenticateLocalPlayer() {
-        NSLog("authenticateLocalPlayer called")
-        
         let localPlayer = GKLocalPlayer.localPlayer()
         localPlayer.authenticateHandler = { (viewController: UIViewController?, error: Error?) -> Void in
             if viewController != nil {
@@ -62,15 +62,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             else if localPlayer.isAuthenticated {
                 self.gameViewController.gameCenterIsAuthenticated = true
-                NSLog("Player [\(localPlayer.displayName!)] is authenticated.")
-                localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
-                    if error != nil {
-                        NSLog("Could not load leaderboard: \(error!)")
-                    }
-                    else if let identifier = leaderboardIdentifier {
-                        NSLog("Leaderboard [\(identifier)] loaded")
-                    }
-                })
             }
             else {
                 NSLog("Game Center is unavailable; error: \(error)")

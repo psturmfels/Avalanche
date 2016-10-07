@@ -10,33 +10,41 @@ import UIKit
 import SpriteKit
 import GameKit
 
-class GameViewController: UIViewController, GKGameCenterControllerDelegate, UINavigationControllerDelegate {
-    var gameCenterViewController: GKGameCenterViewController!
+class GameViewController: UIViewController, GKGameCenterControllerDelegate {
+    var gameCenterVC: GKGameCenterViewController!
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
             if gameCenterIsAuthenticated {
                 localPlayer = GKLocalPlayer.localPlayer()
                 loadGameCenterViewController()
+                menuScene.gameCenterIsAuthenticated = true
             }
         }
     }
     var currentGameCenterViewControllerState: GKGameCenterViewControllerState = GKGameCenterViewControllerState.leaderboards
     var localPlayer: GKLocalPlayer!
+    var menuScene: MenuScene!
     
     //MARK: View Methods
     override func viewDidLoad() {
         self.view = SKView(frame: UIScreen.main.bounds)
         
         //Load the menu scene on startup
-        let scene = MenuScene(size: self.view.frame.size)
-        let skView = self.view as! SKView
+        menuScene = MenuScene(size: self.view.frame.size)
+        menuScene.scaleMode = .resizeFill
         
+        //Load the leaderboard
+        self.gameCenterVC = GKGameCenterViewController()
+        self.gameCenterVC.gameCenterDelegate = self
+        self.gameCenterVC.viewState = self.currentGameCenterViewControllerState
+        self.gameCenterVC.leaderboardTimeScope = GKLeaderboardTimeScope.week
+        
+        let skView = self.view as! SKView
         skView.showsPhysics = false
         skView.showsFPS = false
         skView.showsNodeCount = false
         skView.ignoresSiblingOrder = true
-        scene.scaleMode = .resizeFill
-        skView.presentScene(scene)
+        skView.presentScene(menuScene)
     }
     
     override var shouldAutorotate : Bool {
@@ -69,11 +77,7 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, UINa
                 }
                 else if let identifier = string {
                     //Load the gameCenterViewController
-                    self.gameCenterViewController = GKGameCenterViewController()
-                    self.gameCenterViewController.delegate = self
-                    self.gameCenterViewController.viewState = self.currentGameCenterViewControllerState
-                    self.gameCenterViewController.leaderboardTimeScope = GKLeaderboardTimeScope.week
-                    self.gameCenterViewController.leaderboardIdentifier = identifier
+                    self.gameCenterVC.leaderboardIdentifier = identifier
                 }
             }
         }
@@ -81,12 +85,13 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, UINa
     
     func presentGameCenterViewController() {
         if gameCenterIsAuthenticated && localPlayer.isAuthenticated {
-            self.present(gameCenterViewController, animated: true, completion: nil)
+            self.present(gameCenterVC, animated: true, completion: nil)
         }
     }
-    
+
     func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
         currentGameCenterViewControllerState = gameCenterViewController.viewState
+        
         gameCenterViewController.dismiss(animated: true, completion: nil)
     }
     

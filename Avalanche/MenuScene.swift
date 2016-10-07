@@ -7,13 +7,23 @@
 //
 
 import SpriteKit
+import GameKit
 
 class MenuScene: SKScene {
     var playButton: ButtonNode!
     var scoresButton: ButtonNode!
+    var gameCenterIsAuthenticated: Bool = false {
+        didSet {
+            if gameCenterIsAuthenticated {
+                scoresButton.alpha = 1.0
+            } else {
+                scoresButton.alpha = 0.5
+            }
+        }
+    }
     
     //MARK: Button Methods
-    func playTapped() {
+    func transitionToGame() {
         guard self.scene != nil && self.scene?.view != nil else {
             abort();
         }
@@ -27,14 +37,23 @@ class MenuScene: SKScene {
         self.scene!.view!.presentScene(gameScene, transition: transition)
     }
     
-    
     //MARK: View Methods
     override func didMove(to view: SKView) {
-        createPlayButton()
+        createMenuButtons()
+        
+        let localPlayer = GKLocalPlayer.localPlayer()
+        gameCenterIsAuthenticated = localPlayer.isAuthenticated
+        
+        if !gameCenterIsAuthenticated {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            DispatchQueue.main.async {
+                appDelegate.authenticateLocalPlayer()
+            }
+        }
     }
     
     //MARK: Creation Methods
-    func createPlayButton() {
+    func createMenuButtons() {
         let center: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.midY)
         
         playButton = ButtonNode(imageNamed: "playTextNormal")
@@ -44,6 +63,7 @@ class MenuScene: SKScene {
         scoresButton = ButtonNode(imageNamed: "scoresNormal")
         scoresButton.setup(atPosition: center, withName: "Scores", normalTextureName: "scoresNormal", highlightedTextureName: "scoresHighlighted")
         scoresButton.position.y -= scoresButton.frame.height * 0.5 + 10
+        scoresButton.alpha = 0.5
         
         self.addChild(playButton)
         self.addChild(scoresButton)
@@ -59,7 +79,7 @@ class MenuScene: SKScene {
                     playButton.didPress()
                     break
                 }
-                else if object.name == "Scores" {
+                else if object.name == "Scores" && gameCenterIsAuthenticated {
                     scoresButton.didPress()
                     break
                 }
@@ -90,9 +110,13 @@ class MenuScene: SKScene {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if playButton.isPressed {
             playButton.didRelease()
-            playTapped()
+            transitionToGame()
         } else if scoresButton.isPressed {
             scoresButton.didRelease()
+            if gameCenterIsAuthenticated {
+                let parentViewController = self.view!.window!.rootViewController as! GameViewController
+                parentViewController.presentGameCenterViewController()
+            }
         }
     }
     
