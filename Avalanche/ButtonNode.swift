@@ -15,7 +15,7 @@ class ButtonNode: SKSpriteNode {
     
     func setup(atPosition position: CGPoint, withName name: String, normalTextureName: String, highlightedTextureName: String) {
         self.texture = SKTexture(imageNamed: normalTextureName)
-    
+        
         self.position = position;
         self.zPosition = 40
         self.name = name
@@ -25,13 +25,17 @@ class ButtonNode: SKSpriteNode {
     }
     
     func didPress() {
-        isPressed = true
-        self.texture = pressedTexture
+        if !isPressed {
+            isPressed = true
+            self.texture = pressedTexture
+        }
     }
     
     func didRelease() {
-        isPressed = false
-        self.texture = relaxedTexture
+        if isPressed {
+            isPressed = false
+            self.texture = relaxedTexture
+        }
     }
     
     func updateTextureSet(withNormalTextureName normalTextureName: String, highlightedTextureName: String) {

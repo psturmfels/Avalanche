@@ -571,8 +571,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if by == .crushed {
             mellow.run(crushedAction, completion: {
                 //Crushed sound effects
-                self.backgroundMusic.run(SKAction.stop())
-                self.backgroundMusic.removeFromParent()
+                
+                if self.backgroundMusic != nil {
+                    self.backgroundMusic.run(SKAction.stop())
+                    self.backgroundMusic.removeFromParent()
+                }
+                
                 self.playSoundEffectNamed("MellowCrushed.wav", waitForCompletion: false)
                 
                 //Add the explosion after the crush
@@ -695,6 +699,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         controlButton.didPress()
                         break
                     }
+                    else if object.name == "SelfDestruct" {
+                        if let sdButton = object as? ButtonNode {
+                            sdButton.didPress()
+                        }
+                    }
                     else if object.name == "Audio" {
                         pauseScreen.toggleButton(object as! ButtonNode)
                         audioIsOn = !audioIsOn
@@ -717,7 +726,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let location = touch.location(in: self)
             let objects = nodes(at: location) as [SKNode]
             for object in objects {
-                if object.name == "Control" || object.name == "RightMove" || object.name == "LeftMove" {
+                if object.name == "Control" || object.name == "SelfDestruct" {
                     movedOverButton = true
                     break
                 }
@@ -725,9 +734,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if !movedOverButton {
-            if controlButton.isPressed {
-                controlButton.didRelease()
-            }
+            pauseScreen.selfDestructButtonLabel.buttonNode.didRelease()
+            controlButton.didRelease()
         }
     }
     
@@ -742,12 +750,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.currentGameState = .gameInProgress
                 self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
             }
+        } else if pauseScreen.selfDestructButtonLabel.buttonNode.isPressed {
+            pauseScreen.selfDestructButtonLabel.buttonNode.didRelease()
+            self.currentGameState = .gameInProgress
+            mellowDestroyed(.crushed)
         }
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if controlButton.isPressed {
-            controlButton.didRelease()
-        }
+        controlButton.didRelease()
+        pauseScreen.selfDestructButtonLabel.buttonNode.didRelease()
     }
 }

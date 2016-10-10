@@ -12,11 +12,9 @@ class PauseNode: SKNode {
     
     var grayScreen: SKShapeNode!
     
-    var audioLabel: LabelNode!
-    var audioButton: ButtonNode!
-    
-    var soundEffectsLabel: LabelNode!
-    var soundEffectsButton: ButtonNode!
+    var audioButtonLabel: ButtonLabelNode!
+    var soundEffectsButtonLabel: ButtonLabelNode!
+    var selfDestructButtonLabel: ButtonLabelNode!
     
     //MARK: Initialization methods
     func setup(withSize size: CGSize, atPosition position: CGPoint) {
@@ -32,36 +30,22 @@ class PauseNode: SKNode {
         
         grayScreen.position = center
         grayScreen.name = "grayScreen"
-        
-        center.y += size.height * 0.15
-        soundEffectsButton = ButtonNode(imageNamed: "audioNormal")
-        soundEffectsButton.setup(atPosition: center, withName: "SoundEffects", normalTextureName: "audioNormal", highlightedTextureName: "audioOff")
-        soundEffectsButton.position.x += soundEffectsButton.frame.width * 0.5 + 10
-        
-        soundEffectsLabel = LabelNode()
-        soundEffectsLabel.setup(withText: "Sound: ", withFontSize: 48.0, atPosition: center)
-        soundEffectsLabel.position.x -= soundEffectsLabel.frame.width * 0.5 + 10
-        soundEffectsLabel.position.y -= soundEffectsLabel.frame.height * 0.5 - 5
-        
-        center.y += size.height * 0.15
-        audioButton = ButtonNode(imageNamed: "audioNormal")
-        audioButton.setup(atPosition: center, withName: "Audio", normalTextureName: "audioNormal", highlightedTextureName: "audioOff")
-        audioButton.position.x += audioButton.frame.width * 0.5 + 10
-        
-        audioLabel = LabelNode()
-        audioLabel.setup(withText: "Music: ", withFontSize: 48.0, atPosition: center)
-        audioLabel.position.x -= audioLabel.frame.width * 0.5 + 10
-        audioLabel.position.y -= audioLabel.frame.height * 0.5 - 5
-        
-        centerTwoNodesRelatively(audioLabel, nodeB: audioButton, desiredCenter: center.x)
-        centerTwoNodesRelatively(soundEffectsLabel, nodeB: soundEffectsButton, desiredCenter: center.x)
-        
         self.addChild(grayScreen)
-        self.addChild(audioButton)
-        self.addChild(audioLabel)
         
-        self.addChild(soundEffectsButton)
-        self.addChild(soundEffectsLabel)
+        center.y += size.height * 0.15
+        soundEffectsButtonLabel = ButtonLabelNode()
+        soundEffectsButtonLabel.setup(withText: "Sound: ", withFontSize: 48.0, withButtonName: "SoundEffects", normalTextureName: "audioNormal", highlightedTextureName: "audioOff", atPosition: center)
+        self.addChild(soundEffectsButtonLabel)
+        
+        center.y += size.height * 0.15
+        audioButtonLabel = ButtonLabelNode()
+        audioButtonLabel.setup(withText: "Music: ", withFontSize: 48.0, withButtonName: "Audio", normalTextureName: "audioNormal", highlightedTextureName: "audioOff", atPosition: center)
+        self.addChild(audioButtonLabel)
+        
+        center.y -= size.height * 0.5
+        selfDestructButtonLabel = ButtonLabelNode()
+        selfDestructButtonLabel.setup(withText: "Explode: ", withFontSize: 40.0, withButtonName: "SelfDestruct", normalTextureName: "selfDestructNormal", highlightedTextureName: "selfDestructHighlighted", atPosition: center)
+        self.addChild(selfDestructButtonLabel)
     }
     
     func toggleButton(_ button: ButtonNode) {
@@ -72,12 +56,5 @@ class PauseNode: SKNode {
             button.alpha = 0.5
             button.didPress()
         }
-    }
-    
-    func centerTwoNodesRelatively(_ nodeA: SKNode, nodeB: SKNode, desiredCenter: CGFloat) {
-        let centerX: CGFloat = (nodeA.position.x + nodeB.position.x) * 0.5
-        let centerDifference: CGFloat = desiredCenter - centerX
-        nodeA.position.x += centerDifference
-        nodeB.position.x += centerDifference
     }
 }
