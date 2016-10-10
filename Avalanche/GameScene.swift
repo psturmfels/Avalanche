@@ -8,9 +8,10 @@
 
 import SpriteKit
 import CoreMotion
+import AVFoundation
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-
+    
     //MARK: Game Nodes
     var worldNode: SKNode!
     let motionManager: CMMotionManager = CMMotionManager()
@@ -126,8 +127,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var lavaMaxSpeed: CGFloat = 40.0
     
-    var soundEffectsAreOn: Bool = true
-    var audioIsOn: Bool = true
+    var soundEffectsAreOn: Bool = !AVAudioSession.sharedInstance().isOtherAudioPlaying
+    var audioIsOn: Bool = !AVAudioSession.sharedInstance().isOtherAudioPlaying
     var backgroundMusic: SKAudioNode!
     var backgroundGradient: SKSpriteNode!
     
@@ -141,6 +142,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func gameWillEnterBackground() {
+        if let musicStart = self.action(forKey: "musicStart") {
+            musicStart.speed = 0.0
+        } else {
+            self.backgroundMusic.run(SKAction.pause())
+        }
         if self.currentGameState == .gameInProgress {
             self.currentGameState = .gamePaused
         }
@@ -336,6 +342,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.backgroundMusic = bgcopy
         }
         let sequence: SKAction = SKAction.sequence([waitAction, musicAction])
+        
+        
+        if !audioIsOn {
+            sequence.speed = 0.0
+            pauseScreen.toggleButton(pauseScreen.audioButtonLabel.buttonNode)
+        }
+        
+        if !soundEffectsAreOn {
+            pauseScreen.toggleButton(pauseScreen.soundEffectsButtonLabel.buttonNode)
+        }
         
         self.run(sequence, withKey: "musicStart")
         scrollMusicLabel()
