@@ -124,6 +124,4 @@ class MenuScene: SKScene {
         playButton.didRelease()
         scoresButton.didRelease()
     }
-    
-    
 }

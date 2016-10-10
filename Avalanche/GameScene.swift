@@ -10,6 +10,8 @@ import SpriteKit
 import CoreMotion
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+
+    //MARK: Game Nodes
     var worldNode: SKNode!
     let motionManager: CMMotionManager = CMMotionManager()
     
@@ -23,6 +25,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
     
+    
+    //MARK: Game Properties
     var bestSoFar: Int = 0 {
         didSet {
             bestLabel.text = "\(bestSoFar) ft"
@@ -134,6 +138,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         gameOverScene.highScore = bestSoFar
         let transition = SKTransition.crossFade(withDuration: 1.0)
         self.scene!.view!.presentScene(gameOverScene, transition: transition)
+    }
+    
+    func gameWillEnterBackground() {
+        if self.currentGameState == .gameInProgress {
+            self.currentGameState = .gamePaused
+        }
+    }
+    
+    func gameDidEnterForeground() {
+        //self.currentGameState = .gameInProgress
     }
     
     //MARK: Block Methods
@@ -309,6 +323,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createBackground()
         createControlButton()
         createPauseNode()
+        createBackgroundNotifications()
         
         //Allows the game to read the tilt of the phone and react accordingly
         motionManager.startAccelerometerUpdates()
@@ -349,6 +364,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         })
     }
     
+    func createBackgroundNotifications() {
+        let notificationCenter: NotificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(self.gameWillEnterBackground), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(self.gameDidEnterForeground), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+    }
     
     func createControlButton() {
         controlButton = ButtonNode(imageNamed: "pauseNormal")
