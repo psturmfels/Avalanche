@@ -1,49 +1,51 @@
 {
   "images" : [
     {
-      "idiom" : "iphone",
       "size" : "20x20",
+      "idiom" : "iphone",
+      "filename" : "AvalancheAppIcon40.png",
       "scale" : "2x"
     },
     {
-      "idiom" : "iphone",
       "size" : "20x20",
+      "idiom" : "iphone",
+      "filename" : "AvalancheAppIcon60.png",
       "scale" : "3x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "avalancheIcon58.png",
+      "filename" : "AvalancheAppIcon58.png",
       "scale" : "2x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "avalancheIcon87.png",
+      "filename" : "AvalancheAppIcon87.png",
       "scale" : "3x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "avalancheIcon80.png",
+      "filename" : "AvalancheAppIcon80.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "avalancheIcon120.png",
+      "filename" : "AvalancheAppIcon120.png",
       "scale" : "3x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "avalancheIcon120-1.png",
+      "filename" : "AvalancheAppIcon120-1.png",
       "scale" : "2x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "avalancheIcon180.png",
+      "filename" : "AvalancheAppIcon180.png",
       "scale" : "3x"
     },
     {
@@ -57,15 +59,13 @@
       "scale" : "2x"
     },
     {
-      "size" : "32x32",
       "idiom" : "mac",
-      "filename" : "avalancheIcon32.png",
+      "size" : "32x32",
       "scale" : "1x"
     },
     {
-      "size" : "32x32",
       "idiom" : "mac",
-      "filename" : "avalancheIcon64.png",
+      "size" : "32x32",
       "scale" : "2x"
     },
     {
