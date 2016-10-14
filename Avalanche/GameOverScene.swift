@@ -10,8 +10,8 @@ import SpriteKit
 import GameKit
 
 class GameOverScene: SKScene {
-    var replayButton: ButtonNode!
-    var menuButton: ButtonNode!
+    var replayButton: ButtonLabelNode!
+    var menuButton: ButtonLabelNode!
     var highScore: Int!
     var highScoreLabel: SKLabelNode!
     
@@ -19,24 +19,22 @@ class GameOverScene: SKScene {
     //MARK: Initializing Methods
     override func didMove(to view: SKView) {
         /* Setup your scene here */
-        replayButton = ButtonNode()
-        menuButton = ButtonNode()
+        replayButton = ButtonLabelNode()
+        menuButton = ButtonLabelNode()
         
         let center: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.midY)
         
-        replayButton = ButtonNode(imageNamed: "replayNormal")
-        replayButton.setup(atPosition: center, withName: "Replay", normalTextureName: "replayNormal", highlightedTextureName: "replayHighlighted")
-        replayButton.position.y += replayButton.frame.height * 0.5 + 10
+        replayButton.setup(withText: "Replay: ", withFontSize: 48.0, withButtonName: "Replay", normalTextureName: "replayNormal", highlightedTextureName: "replayHighlighted", atPosition: center)
+        replayButton.position.y += replayButton.height * 0.5 + 10
         
-        menuButton = ButtonNode(imageNamed: "menuNormal")
-        menuButton.setup(atPosition: center, withName: "Menu", normalTextureName: "menuNormal", highlightedTextureName: "menuHighlighted")
-        menuButton.position.y -= menuButton.frame.height * 0.5 + 10
+        menuButton.setup(withText: "Menu: ", withFontSize: 48.0, withButtonName: "Menu", normalTextureName: "menuNormal", highlightedTextureName: "menuHighlighted", atPosition: center)
+        menuButton.position.y -= menuButton.height * 0.5 + 10
         
         highScoreLabel = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         highScoreLabel.fontSize = 42.0
         highScoreLabel.text = "Score: \(highScore!) ft"
         highScoreLabel.position = center
-        highScoreLabel.position.y += replayButton.frame.height + highScoreLabel.frame.height * 1.4
+        highScoreLabel.position.y += replayButton.height + highScoreLabel.frame.height * 1.4
         
         self.addChild(replayButton)
         self.addChild(menuButton)

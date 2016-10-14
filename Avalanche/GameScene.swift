@@ -770,7 +770,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if !movedOverButton {
-            pauseScreen.selfDestructButtonLabel.buttonNode.didRelease()
+            pauseScreen.selfDestructButtonLabel.didRelease()
             controlButton.didRelease()
         }
     }
@@ -786,8 +786,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.currentGameState = .gameInProgress
                 self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
             }
-        } else if pauseScreen.selfDestructButtonLabel.buttonNode.isPressed {
-            pauseScreen.selfDestructButtonLabel.buttonNode.didRelease()
+        } else if pauseScreen.selfDestructButtonLabel.isPressed {
+            pauseScreen.selfDestructButtonLabel.didRelease()
             self.currentGameState = .gameInProgress
             mellowDestroyed(.crushed)
         }
@@ -795,6 +795,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         controlButton.didRelease()
-        pauseScreen.selfDestructButtonLabel.buttonNode.didRelease()
+        pauseScreen.selfDestructButtonLabel.didRelease()
     }
 }

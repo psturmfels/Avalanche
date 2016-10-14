@@ -12,6 +12,26 @@ class ButtonLabelNode: SKNode {
     var labelNode: LabelNode!
     var buttonNode: ButtonNode!
     
+    var isPressed: Bool {
+        get {
+            return buttonNode.isPressed
+        }
+    }
+    
+    var height: CGFloat {
+        get {
+            return self.buttonNode.frame.height
+        }
+    }
+    
+    var width: CGFloat {
+        get {
+            let combinedHalfWidths: CGFloat = 0.5 * (self.buttonNode.frame.width + self.labelNode.frame.width)
+            let centerDistance: CGFloat = self.buttonNode.position.x - self.labelNode.position.x
+            return centerDistance + combinedHalfWidths
+        }
+    }
+    
     func setup(withText text: String, withFontSize fontSize: CGFloat, withButtonName name: String, normalTextureName: String, highlightedTextureName: String, atPosition nodePosition: CGPoint) {
         self.position = nodePosition
         
@@ -26,16 +46,33 @@ class ButtonLabelNode: SKNode {
         buttonNode.setup(atPosition: CGPoint.zero, withName: name, normalTextureName: normalTextureName, highlightedTextureName: highlightedTextureName)
         buttonNode.position.x += buttonNode.frame.width * 0.5 + 10
         
-        centerLabelButtonNodes(labelNode, buttonNode: buttonNode, desiredCenter: CGPoint.zero.x)
+        centerLabelButtonNodes(CGPoint.zero.x)
+        let screenWidth: CGFloat = UIScreen.main.bounds.width
+        extendLabelButtonNodes(byAmount: screenWidth * 0.35)
         
         self.addChild(labelNode)
         self.addChild(buttonNode)
     }
     
-    func centerLabelButtonNodes(_ labelNode: LabelNode, buttonNode: ButtonNode, desiredCenter: CGFloat) {
+    func centerLabelButtonNodes(_ desiredCenter: CGFloat) {
         let centerX: CGFloat = (labelNode.position.x + buttonNode.position.x) * 0.5
         let centerDifference: CGFloat = desiredCenter - centerX
         labelNode.position.x += centerDifference
         buttonNode.position.x += centerDifference
+    }
+    
+    func extendLabelButtonNodes(byAmount amount: CGFloat) {
+        let currentExtend: CGFloat = buttonNode.position.x + buttonNode.frame.width * 0.5
+        let extendDifference: CGFloat = amount - currentExtend
+        labelNode.position.x += extendDifference
+        buttonNode.position.x += extendDifference
+    }
+    
+    func didPress() {
+        self.buttonNode.didPress()
+    }
+    
+    func didRelease() {
+        self.buttonNode.didRelease()
     }
 }

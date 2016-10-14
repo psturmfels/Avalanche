@@ -10,8 +10,8 @@ import SpriteKit
 import GameKit
 
 class MenuScene: SKScene {
-    var playButton: ButtonNode!
-    var scoresButton: ButtonNode!
+    var playButton: ButtonLabelNode!
+    var scoresButton: ButtonLabelNode!
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
             if gameCenterIsAuthenticated {
@@ -56,13 +56,14 @@ class MenuScene: SKScene {
     func createMenuButtons() {
         let center: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.midY)
         
-        playButton = ButtonNode(imageNamed: "playTextNormal")
-        playButton.setup(atPosition: center, withName: "Play", normalTextureName: "playTextNormal", highlightedTextureName: "playTextHighlighted")
-        playButton.position.y += playButton.frame.height * 0.5 + 10
         
-        scoresButton = ButtonNode(imageNamed: "scoresNormal")
-        scoresButton.setup(atPosition: center, withName: "Scores", normalTextureName: "scoresNormal", highlightedTextureName: "scoresHighlighted")
-        scoresButton.position.y -= scoresButton.frame.height * 0.5 + 10
+        playButton = ButtonLabelNode()
+        playButton.setup(withText: "Classic: ", withFontSize: 48.0, withButtonName: "Play", normalTextureName: "playMenuNormal", highlightedTextureName: "playMenuHighlighted", atPosition: center)
+        playButton.position.y += playButton.height * 0.5 + 10
+ 
+        scoresButton = ButtonLabelNode()
+        scoresButton.setup(withText: "Scores: ", withFontSize: 48.0, withButtonName: "Scores", normalTextureName: "scoresNormal", highlightedTextureName: "scoresHighlighted", atPosition: center)
+        scoresButton.position.y -= scoresButton.height * 0.5 + 10
         scoresButton.alpha = 0.5
         
         self.addChild(playButton)
