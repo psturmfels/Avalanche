@@ -56,7 +56,6 @@ class MenuScene: SKScene {
     func createMenuButtons() {
         let center: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.midY)
         
-        
         playButton = ButtonLabelNode()
         playButton.setup(withText: "Classic: ", withFontSize: 48.0, withButtonName: "Play", normalTextureName: "playMenuNormal", highlightedTextureName: "playMenuHighlighted", atPosition: center)
         playButton.position.y += playButton.height * 0.5 + 10
