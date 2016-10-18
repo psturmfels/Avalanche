@@ -115,14 +115,14 @@ class GameOverScene: SKScene {
     
     //MARK: Transition Methods
     func transitionToMenu() {
-        let menuScene = MenuScene(size: self.size)
+        let menuScene: MenuScene = MenuScene(size: self.size)
         menuScene.scaleMode = .resizeFill
         let transition = SKTransition.crossFade(withDuration: 0.5)
         self.scene!.view!.presentScene(menuScene, transition: transition)
     }
     
     func transitionToReplay() {
-        let gameScene = GameScene(fileNamed: "GameScene")!
+        let gameScene: ClassicModeScene = ClassicModeScene(fileNamed: "GameScene")!
         gameScene.size = self.size
         let transition = SKTransition.crossFade(withDuration: 0.5)
         gameScene.scaleMode = .resizeFill

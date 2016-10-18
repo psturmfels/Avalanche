@@ -310,6 +310,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //MARK: Initializing Methods
     override func didMove(to view: SKView) {
         /* Setup your scene here */
+    }
+    
+    func createWorld() {
+        //Allows the game to read the tilt of the phone and react accordingly
+        motionManager.startAccelerometerUpdates()
         
         //Let this object receive contact notifications
         physicsWorld.contactDelegate = self
@@ -320,20 +325,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         worldNode = SKNode()
         worldNode.position = self.position
         self.addChild(worldNode)
-        
-        //Create stuff
-        createMellow()
-        createFloor()
-        createLava()
-        createLabels()
-        createBackground()
-        createControlButton()
-        createPauseNode()
-        createBackgroundNotifications()
-        
-        //Allows the game to read the tilt of the phone and react accordingly
-        motionManager.startAccelerometerUpdates()
-        
+    }
+    
+    func startMusic() {
         //Start the music!!!
         let waitAction: SKAction = SKAction.wait(forDuration: 0.5)
         let musicAction: SKAction = SKAction.run {
@@ -626,8 +620,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.playSoundEffectNamed("MellowBurned.wav", waitForCompletion: false)
             mellow.run(crushedAction, completion: {
                 //Burned Sound Effects
-                self.backgroundMusic.run(SKAction.stop())
-                self.backgroundMusic.removeFromParent()
+                if self.backgroundMusic != nil {
+                    self.backgroundMusic.run(SKAction.stop())
+                    self.backgroundMusic.removeFromParent()
+                }
                 
                 //Add the fire after getting crushed
                 let mellowBurned = SKEmitterNode(fileNamed: "MellowBurned")!

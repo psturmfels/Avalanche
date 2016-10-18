@@ -29,7 +29,7 @@ class MenuScene: SKScene {
         }
         
         //Load the Game Scene
-        let gameScene: GameScene = GameScene(fileNamed: "GameScene")!
+        let gameScene: ClassicModeScene = ClassicModeScene(fileNamed: "GameScene")!
         gameScene.size = self.size
         gameScene.scaleMode = .resizeFill
         
