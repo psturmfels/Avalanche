@@ -12,6 +12,7 @@ enum GameStates: Int {
     case gameInProgress = 1
     case gameOver = 2
     case gamePaused = 3
+    case tutorial = 4
 }
 
 enum ButtonStates {

@@ -26,7 +26,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
     
-    
     //MARK: Game Properties
     var bestSoFar: Int = 0 {
         didSet {
@@ -93,6 +92,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 
                 self.displayPauseNode()
+                
+            case .tutorial:
+                break
             }
         }
     }
@@ -208,10 +210,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Update Methods
     override func update(_ currentTime: TimeInterval) {
-        
-        updateDistance()
-        setLavaSpeed()
-        
+        guard mellow != nil else {
+            return
+        }
         guard mellow.physicsBody != nil else {
             return
         }
@@ -225,6 +226,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         mellowAccel()
         mellowContain()
+        
+        guard currentGameState != .tutorial else {
+            return
+        }
+        
+        updateDistance()
+        
+        guard risingLava != nil else {
+            return
+        }
+        setLavaSpeed()
     }
     
     
@@ -751,6 +763,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard currentGameState != .tutorial else {
+            return
+        }
+        
         //Generate "touch-up-inside" behavior for game-over buttons
         var movedOverButton: Bool = false
         
@@ -772,6 +788,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard currentGameState != .tutorial else {
+            return
+        }
+        
         if controlButton.isPressed {
             controlButton.didRelease()
             if currentGameState == .gameInProgress {
@@ -790,6 +810,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard currentGameState != .tutorial else {
+            return
+        }
+        
         controlButton.didRelease()
         pauseScreen.selfDestructButtonLabel.didRelease()
     }

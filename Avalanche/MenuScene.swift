@@ -12,6 +12,7 @@ import GameKit
 class MenuScene: SKScene {
     var playButton: ButtonLabelNode!
     var scoresButton: ButtonLabelNode!
+    var tutorialButton: ButtonNode!
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
             if gameCenterIsAuthenticated {
@@ -35,6 +36,20 @@ class MenuScene: SKScene {
         
         let transition = SKTransition.crossFade(withDuration: 0.5)
         self.scene!.view!.presentScene(gameScene, transition: transition)
+    }
+    
+    func transitionToTutorial() {
+        guard self.scene != nil && self.scene?.view != nil else {
+            abort();
+        }
+        
+        //Load the Tutorial Scene
+        let tutorialScene: TutorialScene = TutorialScene(fileNamed: "GameScene")!
+        tutorialScene.size = self.size
+        tutorialScene.scaleMode = .resizeFill
+        
+        let transition = SKTransition.crossFade(withDuration: 0.5)
+        self.scene!.view!.presentScene(tutorialScene, transition: transition)
     }
     
     //MARK: View Methods
@@ -65,8 +80,14 @@ class MenuScene: SKScene {
         scoresButton.position.y -= scoresButton.height * 0.5 + 10
         scoresButton.alpha = 0.5
         
+        tutorialButton = ButtonNode(imageNamed: "tutorialNormal")
+        let rightX: CGFloat = self.frame.width - tutorialButton.frame.width * 0.5 - 20
+        let botY: CGFloat = tutorialButton.frame.height * 0.5 + 20
+        tutorialButton.setup(atPosition: CGPoint(x: rightX, y: botY), withName: "Tutorial", normalTextureName: "tutorialNormal", highlightedTextureName: "tutorialHighlighted")
+        
         self.addChild(playButton)
         self.addChild(scoresButton)
+        self.addChild(tutorialButton)
     }
     
     //MARK: Touch Methods
@@ -78,6 +99,9 @@ class MenuScene: SKScene {
                 if object.name == "Play" {
                     playButton.didPress()
                     break
+                }
+                else if object.name == "Tutorial" {
+                    tutorialButton.didPress()
                 }
                 else if object.name == "Scores" && gameCenterIsAuthenticated {
                     scoresButton.didPress()
@@ -104,6 +128,7 @@ class MenuScene: SKScene {
         if !movedOverButton {
             playButton.didRelease()
             scoresButton.didRelease()
+            tutorialButton.didRelease()
         }
     }
     
@@ -117,11 +142,15 @@ class MenuScene: SKScene {
                 let parentViewController = self.view!.window!.rootViewController as! GameViewController
                 parentViewController.presentGameCenterViewController()
             }
+        } else if tutorialButton.isPressed {
+            tutorialButton.didRelease()
+            transitionToTutorial()
         }
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         playButton.didRelease()
         scoresButton.didRelease()
+        tutorialButton.didRelease()
     }
 }

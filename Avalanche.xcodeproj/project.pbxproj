@@ -35,6 +35,8 @@
 		1AFD03831D636CA700A54640 /* MellowBurned.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1AFD03811D636CA700A54640 /* MellowBurned.wav */; };
 		1AFD03841D636CA700A54640 /* MellowCrushed.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1AFD03821D636CA700A54640 /* MellowCrushed.wav */; };
 		1AFE715A1DB67C2800E217EC /* ClassicModeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AFE71591DB67C2800E217EC /* ClassicModeScene.swift */; };
+		1AFE715C1DB6835C00E217EC /* TutorialScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AFE715B1DB6835C00E217EC /* TutorialScene.swift */; };
+		1AFE715E1DB684D900E217EC /* SKLabelNodeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AFE715D1DB684D900E217EC /* SKLabelNodeExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +70,8 @@
 		1AFD03811D636CA700A54640 /* MellowBurned.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = MellowBurned.wav; sourceTree = "<group>"; };
 		1AFD03821D636CA700A54640 /* MellowCrushed.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = MellowCrushed.wav; sourceTree = "<group>"; };
 		1AFE71591DB67C2800E217EC /* ClassicModeScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassicModeScene.swift; sourceTree = "<group>"; };
+		1AFE715B1DB6835C00E217EC /* TutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialScene.swift; sourceTree = "<group>"; };
+		1AFE715D1DB684D900E217EC /* SKLabelNodeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKLabelNodeExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +151,7 @@
 				1AAFB4C41CA07D6100E7472B /* GameScene.swift */,
 				1A9017B21CD171EB00F31C1E /* GameScene.sks */,
 				1A5386FF1CF38A4700226092 /* MenuScene.swift */,
+				1AFE715B1DB6835C00E217EC /* TutorialScene.swift */,
 			);
 			name = Scenes;
 			sourceTree = "<group>";
@@ -175,6 +180,7 @@
 			isa = PBXGroup;
 			children = (
 				1AD4131C1D6F4EFD0051E10F /* enums.swift */,
+				1AFE715D1DB684D900E217EC /* SKLabelNodeExtension.swift */,
 				1A0584E61CDD288900B3DF8B /* Helper.swift */,
 			);
 			name = Helpers;
@@ -282,7 +288,9 @@
 				1AF88CD41CD6B2EF00028E3D /* MellowNode.swift in Sources */,
 				1AAFB4C71CA07D6100E7472B /* GameViewController.swift in Sources */,
 				1A5387001CF38A4700226092 /* MenuScene.swift in Sources */,
+				1AFE715C1DB6835C00E217EC /* TutorialScene.swift in Sources */,
 				1A0584E51CDD281E00B3DF8B /* RoundedBlockNode.swift in Sources */,
+				1AFE715E1DB684D900E217EC /* SKLabelNodeExtension.swift in Sources */,
 				1AE976681D94A7D9002AEF97 /* GameOverScene.swift in Sources */,
 				1AEEF1F21DAB1CF4009A11CF /* ButtonLabelNode.swift in Sources */,
 				1AE976661D94A4F8002AEF97 /* PauseNode.swift in Sources */,

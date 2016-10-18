@@ -14,7 +14,7 @@ class GameOverScene: SKScene {
     var menuButton: ButtonLabelNode!
     var highScore: Int!
     var highScoreLabel: SKLabelNode!
-    
+    var scoreLabel: SKLabelNode!
     
     //MARK: Initializing Methods
     override func didMove(to view: SKView) {
@@ -31,14 +31,22 @@ class GameOverScene: SKScene {
         menuButton.position.y -= menuButton.height * 0.5 + 10
         
         highScoreLabel = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
-        highScoreLabel.fontSize = 42.0
-        highScoreLabel.text = "Score: \(highScore!) ft"
+        highScoreLabel.fontSize = 64.0
+        highScoreLabel.text = "\(highScore!) ft"
         highScoreLabel.position = center
         highScoreLabel.position.y += replayButton.height + highScoreLabel.frame.height * 1.4
+        
+        scoreLabel = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        scoreLabel.fontSize = 64.0
+        scoreLabel.text = "Score:"
+        scoreLabel.position = highScoreLabel.position
+        scoreLabel.position.y += scoreLabel.frame.height + highScoreLabel.frame.height * 0.5
+        
         
         self.addChild(replayButton)
         self.addChild(menuButton)
         self.addChild(highScoreLabel)
+        self.addChild(scoreLabel)
         
         let localPlayer = GKLocalPlayer.localPlayer()
         if localPlayer.isAuthenticated {
