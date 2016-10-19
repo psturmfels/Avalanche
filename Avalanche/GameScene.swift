@@ -159,6 +159,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     //MARK: Block Methods
+    func turnToBackground(_ block: RoundedBlockNode) {
+        block.becomeBackground()
+    }
+    
     func generateRandomBlock(_ minFallSpeed: Float, maxFallSpeed: Float) {
         //Choose random paramters for the block
         let randomXVal: CGFloat = CGFloat(RandomDouble(min: 0.0, max: Double(self.size.width)))
@@ -528,7 +532,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if firstBody.categoryBitMask == CollisionTypes.background.rawValue && secondBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue {
             if let block = secondBody.node as? RoundedBlockNode, let _ = firstBody.node as? RoundedBlockNode {
                 //Make the falling block static and fade it to black
-                block.becomeBackground()
+                turnToBackground(block)
             }
         }
             //If two falling blocks collide

@@ -49,9 +49,23 @@ class TutorialScene: GameScene {
         //        createPauseNode()
         //        createBackgroundNotifications()
         //        startMusic()
+        createTapToContinue()
     }
     
     //MARK: Initialization Methods
+    func createTapToContinue() {
+        let tapToContinue: SKLabelNode = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        tapToContinue.fontSize = 16.0
+        tapToContinue.text = "(tap to continue)"
+        tapToContinue.name = "tapToContinue"
+        tapToContinue.position = scrollingText.position
+        tapToContinue.position.y -= 3 * tapToContinue.frame.height
+        
+        runBlink(onNode: tapToContinue)
+        
+        self.addChild(tapToContinue)
+    }
+    
     func createMenuButton() {
         menuButton = ButtonNode(imageNamed: "pauseNormal")
         
@@ -69,6 +83,19 @@ class TutorialScene: GameScene {
         mellowCrushedExplosion.position = point
         mellowCrushedExplosion.zPosition = 20
         self.addChild(mellowCrushedExplosion)
+    }
+    
+    func createCenterBlock(_ minFallSpeed: Float, maxFallSpeed: Float) {
+        let centerX: CGFloat = self.frame.midX
+        let randomColor: Int = RandomInt(min: 1, max: 8)
+        let roundedBlock: RoundedBlockNode = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
+        
+        roundedBlock.setup(minFallSpeed, maxFallSpeed: maxFallSpeed)
+        
+        roundedBlock.position.x = centerX
+        roundedBlock.position.y = 1.5 * self.size.height - worldNode.position.y
+        
+        worldNode.addChild(roundedBlock)
     }
     
     //MARK: Scrolling Text Methods
@@ -118,6 +145,10 @@ class TutorialScene: GameScene {
     
     //MARK: Task Methods
     func didCompleteCurrentTask() {
+        if let tapToContinue = self.childNode(withName: "tapToContinue") {
+            tapToContinue.removeFromParent()
+        }
+        
         switch tutorialIndex {
         case 0:
             createMellow()
@@ -125,6 +156,13 @@ class TutorialScene: GameScene {
         case 2:
             createExplosion(atPoint: self.mellow.position)
         case 3:
+            createExplosion(atPoint: self.mellow.position)
+        case 4:
+            if tutorialProgress < -1 {
+                createMellow()
+                createExplosion(atPoint: self.mellow.position)
+            }
+        case 5:
             createExplosion(atPoint: self.mellow.position)
         default:
             break
@@ -134,6 +172,12 @@ class TutorialScene: GameScene {
     }
     
     func newTaskBegan() {
+        if tutorialIndex == 4 && tutorialProgress > 4 {
+            createTapToContinue()
+            tutorialProgress = -10
+            return
+        }
+        
         self.tutorialIndex += 1
         self.tutorialProgress = 1
         switch tutorialIndex {
@@ -144,20 +188,23 @@ class TutorialScene: GameScene {
             rightMove.position = CGPoint(x: self.frame.width - rightMove.frame.width * 0.5 - 20, y: self.frame.midY)
             leftMove.position = CGPoint(x: leftMove.frame.width * 0.5 + 20, y: self.frame.midY)
             
-            let fadeOut: SKAction = SKAction.fadeAlpha(to: 0.5, duration: 0.3)
-            let fadeIn: SKAction = SKAction.fadeAlpha(to: 1.0, duration: 0.3)
-            let waitAction: SKAction = SKAction.wait(forDuration: 0.7)
-            let sequence: SKAction = SKAction.sequence([fadeOut, fadeIn, waitAction])
-            let blinkForever: SKAction = SKAction.repeatForever(sequence)
-            
-            rightMove.run(blinkForever)
-            leftMove.run(blinkForever)
+            runBlink(onNode: rightMove)
+            runBlink(onNode: leftMove)
             
             rightMove.name = "rightMove"
             leftMove.name = "leftMove"
             
             self.addChild(rightMove)
             self.addChild(leftMove)
+        case 4:
+            let blockAction: SKAction = SKAction.run {
+                self.createCenterBlock(-250, maxFallSpeed: -250)
+            }
+            let waitAction: SKAction = SKAction.wait(forDuration: 1.0)
+            
+            let sequence: SKAction = SKAction.sequence([blockAction, waitAction, blockAction, waitAction, blockAction])
+            self.run(sequence)
+            
         default:
             break
         }
@@ -179,16 +226,32 @@ class TutorialScene: GameScene {
             }
         }
         
-        if tutorialIndex == 0 {
+        if tutorialIndex == 0 && tutorialProgress == 1 {
+            tutorialProgress = 2
             didCompleteCurrentTask()
         }
         
+        if tutorialIndex == 4 && tutorialProgress < -1 {
+            didCompleteCurrentTask()
+            tutorialProgress = 1
+        }
+        
         if noButtonsTapped && tutorialIndex >= 3 {
-            mellow.jump()
             if tutorialIndex == 3 && tutorialProgress == 1 {
                 didCompleteCurrentTask()
                 tutorialProgress = 2
             }
+            
+            let mellowOnLeftWall: Bool = mellow.leftSideInContact > 0 && abs(mellow.physicsBody!.velocity.dx) < 10
+            let mellowOnRightWall: Bool = mellow.rightSideInContact > 0 && abs(mellow.physicsBody!.velocity.dx) < 10
+            let mellowOnWall: Bool = mellowOnLeftWall || mellowOnRightWall
+            
+            if mellowOnWall && tutorialIndex == 5 && tutorialProgress == 1 {
+                didCompleteCurrentTask()
+                tutorialProgress = 2
+            }
+            
+            mellow.jump()
         }
     }
     
@@ -223,6 +286,57 @@ class TutorialScene: GameScene {
     }
     
     //MARK: Override Game Scene Methods
+    override func mellowDestroyed(_ by: DeathTypes) {
+        //Remove the mellow's physicsBody so it doesn't slide
+        mellow.physicsBody = nil
+        //Animate through the crushed textures
+        var crushedTextures: [SKTexture] = [SKTexture]()
+        for i in 1...7 {
+            crushedTextures.append(SKTexture(imageNamed: "crushed\(i)"))
+        }
+        let moveAction = SKAction.move(by: CGVector(dx: 0, dy: -10), duration: 0.14)
+        mellow.run(moveAction)
+        let crushedAction = SKAction.animate(with: crushedTextures, timePerFrame: 0.02)
+        
+        if by == .crushed {
+            mellow.run(crushedAction, completion: {
+                //Crushed sound effects
+                
+                self.playSoundEffectNamed("MellowCrushed.wav", waitForCompletion: false)
+                
+                self.createExplosion(atPoint: self.mellow.position)
+                
+                self.mellow.removeFromParent()
+            })
+        } else {
+            self.playSoundEffectNamed("MellowBurned.wav", waitForCompletion: false)
+            mellow.run(crushedAction, completion: {
+                
+                //Add the fire after getting crushed
+                let mellowBurned = SKEmitterNode(fileNamed: "MellowBurned")!
+                mellowBurned.zPosition = 20
+                mellowBurned.position = self.mellow.position
+                mellowBurned.position.y -= self.mellow.physicsSize.height * 0.3
+                self.addChild(mellowBurned)
+                
+                self.mellow.removeFromParent()
+            })
+        }
+        
+        tutorialProgress = 5
+        resetLabel(withText: "Didn't I just say\nnot to get crushed?")
+    }
+    
+    override func turnToBackground(_ block: RoundedBlockNode) {
+        block.becomeBackground()
+        if tutorialIndex == 4 {
+            tutorialProgress += 1
+            if tutorialProgress == 4 {
+                didCompleteCurrentTask()
+            }
+        }
+    }
+    
     override func mellowAccel() {
         if let data = self.motionManager.accelerometerData {
             mellow.setdx(withAcceleration: data.acceleration.x)
@@ -256,7 +370,6 @@ class TutorialScene: GameScene {
                 }
             }
         }
-        
         
         if mellow.bottomSideInContact == 0 {
             //Add the wall-cling animations if the mellow is touching a wall and is off the ground
@@ -306,6 +419,16 @@ class TutorialScene: GameScene {
         }
     }
     
+    //MARK: Convenience Methods
+    func runBlink(onNode node: SKNode) {
+        let fadeOut: SKAction = SKAction.fadeAlpha(to: 0.5, duration: 0.5)
+        let fadeIn: SKAction = SKAction.fadeAlpha(to: 1.0, duration: 0.5)
+        let waitAction: SKAction = SKAction.wait(forDuration: 0.4)
+        let sequence: SKAction = SKAction.sequence([fadeOut, fadeIn, waitAction])
+        let blinkForever: SKAction = SKAction.repeatForever(sequence)
+        
+        node.run(blinkForever, withKey: "Blink")
+    }
     
     //MARK: Transition Methods
     func transitionToMenu() {
