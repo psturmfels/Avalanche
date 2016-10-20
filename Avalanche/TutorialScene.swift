@@ -22,7 +22,7 @@ class TutorialScene: GameScene {
         "Don't get crushed\nby the falling blocks",
         "You can wall-jump\nTry jumping off\nthe side of the block",
         "Don't touch\nthe rising lava",
-        ""
+        "Don't stop climbing!\nGood luck!"
     ]
     var tutorialIndex: Int = 0
     var tutorialProgress: Int = 1
@@ -164,6 +164,15 @@ class TutorialScene: GameScene {
             }
         case 5:
             createExplosion(atPoint: self.mellow.position)
+        case 6:
+            if tutorialProgress < -1 {
+                mellow = MellowNode(imageNamed: "standing")
+                let mellowPos: CGPoint = CGPoint(x: self.frame.midX, y: self.size.height * 0.7)
+                //Most of the initialization of the mellow is done in setup()
+                mellow.setup(mellowPos)
+                self.addChild(mellow)
+                createExplosion(atPoint: self.mellow.position)
+            }
         default:
             break
         }
@@ -172,7 +181,7 @@ class TutorialScene: GameScene {
     }
     
     func newTaskBegan() {
-        if tutorialIndex == 4 && tutorialProgress > 4 {
+        if (tutorialIndex == 4 || tutorialIndex == 6) && tutorialProgress > 4 {
             createTapToContinue()
             tutorialProgress = -10
             return
@@ -204,7 +213,31 @@ class TutorialScene: GameScene {
             
             let sequence: SKAction = SKAction.sequence([blockAction, waitAction, blockAction, waitAction, blockAction])
             self.run(sequence)
+        case 6:
+            createLava()
+            risingLava.position.y = -risingLava.frame.height * 0.5
+            risingLava.physicsBody?.velocity.dy = 45.0
             
+            let slowDown: SKAction = SKAction.run {
+                if self.risingLava.physicsBody!.velocity.dy > 0.0 {
+                    self.risingLava.physicsBody?.velocity.dy -= 1.0
+                }
+            }
+            let waitAction: SKAction = SKAction.wait(forDuration: 0.15)
+            var actions: [SKAction] = []
+            for _ in 0..<45 {
+                actions.append(slowDown)
+                actions.append(waitAction)
+            }
+            
+            let sequence: SKAction = SKAction.sequence(actions)
+            risingLava.run(sequence) {
+                if self.tutorialProgress == 1 {
+                    self.didCompleteCurrentTask()
+                }
+            }
+        case 7:
+            createTapToContinue()
         default:
             break
         }
@@ -226,6 +259,11 @@ class TutorialScene: GameScene {
             }
         }
         
+        if tutorialIndex == 7 {
+            transitionToGameScene()
+            return
+        }
+        
         if tutorialIndex == 0 && tutorialProgress == 1 {
             tutorialProgress = 2
             didCompleteCurrentTask()
@@ -236,19 +274,28 @@ class TutorialScene: GameScene {
             tutorialProgress = 1
         }
         
+        if tutorialIndex == 6 && tutorialProgress < -1 {
+            didCompleteCurrentTask()
+            tutorialProgress = 1
+        }
+        
         if noButtonsTapped && tutorialIndex >= 3 {
             if tutorialIndex == 3 && tutorialProgress == 1 {
                 didCompleteCurrentTask()
                 tutorialProgress = 2
             }
             
-            let mellowOnLeftWall: Bool = mellow.leftSideInContact > 0 && abs(mellow.physicsBody!.velocity.dx) < 10
-            let mellowOnRightWall: Bool = mellow.rightSideInContact > 0 && abs(mellow.physicsBody!.velocity.dx) < 10
-            let mellowOnWall: Bool = mellowOnLeftWall || mellowOnRightWall
             
-            if mellowOnWall && tutorialIndex == 5 && tutorialProgress == 1 {
-                didCompleteCurrentTask()
-                tutorialProgress = 2
+            if tutorialIndex == 5 && tutorialProgress == 1 {
+                let mellowOnLeftWall: Bool = mellow.leftSideInContact > 0 && abs(mellow.physicsBody!.velocity.dx) < 10
+                let mellowOnRightWall: Bool = mellow.rightSideInContact > 0 && abs(mellow.physicsBody!.velocity.dx) < 10
+                let mellowOnWall: Bool = mellowOnLeftWall || mellowOnRightWall
+                let mellowOnGround: Bool = mellow.bottomSideInContact > 0 && mellow.physicsBody!.velocity.dy < 10
+                
+                if !mellowOnGround && mellowOnWall {
+                    didCompleteCurrentTask()
+                    tutorialProgress = 2
+                }
             }
             
             mellow.jump()
@@ -324,7 +371,9 @@ class TutorialScene: GameScene {
         }
         
         tutorialProgress = 5
-        resetLabel(withText: "Didn't I just say\nnot to get crushed?")
+        if tutorialIndex < 7 {
+            resetLabel(withText: "Didn't I just say\nnot to do that?")
+        }
     }
     
     override func turnToBackground(_ block: RoundedBlockNode) {
@@ -431,6 +480,14 @@ class TutorialScene: GameScene {
     }
     
     //MARK: Transition Methods
+    func transitionToGameScene() {
+        let gameScene: ClassicModeScene = ClassicModeScene(fileNamed: "GameScene")!
+        gameScene.size = self.size
+        let transition = SKTransition.crossFade(withDuration: 0.5)
+        gameScene.scaleMode = .resizeFill
+        self.scene!.view!.presentScene(gameScene, transition: transition)
+    }
+    
     func transitionToMenu() {
         let menuScene: MenuScene = MenuScene(size: self.size)
         menuScene.scaleMode = .resizeFill
