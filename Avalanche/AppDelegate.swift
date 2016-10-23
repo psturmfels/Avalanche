@@ -15,13 +15,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     var gameViewController: GameViewController!
+    var gameKitController: GameKitController!
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
+        gameKitController = GameKitController()
+        
         //Initialize the GameCenter Player
         DispatchQueue.main.async {
-            self.authenticateLocalPlayer()
+            self.gameKitController.authenticateLocalPlayer()
         }
         
         //Allow outside music
@@ -64,22 +67,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-    
-    func authenticateLocalPlayer() {
-        let localPlayer = GKLocalPlayer.localPlayer()
-        localPlayer.authenticateHandler = { (viewController: UIViewController?, error: Error?) -> Void in
-            if viewController != nil {
-                if let rootViewController = self.window?.rootViewController {
-                    rootViewController.present(viewController!, animated: true, completion: nil)
-                }
-            }
-            else if localPlayer.isAuthenticated {
-                self.gameViewController.gameCenterIsAuthenticated = true
-            }
-            else {
-                NSLog("Game Center is unavailable; error: \(error)")
-            }
-        }
-    }
+
 }
 

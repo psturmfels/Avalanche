@@ -38,3 +38,11 @@ func RunAfterDelay(_ delay: TimeInterval, block: @escaping ()->()) {
 	let time = DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
 	DispatchQueue.main.asyncAfter(deadline: time, execute: block)
 }
+
+func postNotification(withName name: String) {
+    NotificationCenter.default.post(name: NSNotification.Name(rawValue: name), object: nil, userInfo: nil)
+}
+
+func postNotification(withName name: String, andUserInfo info: [AnyHashable: Any]? ) {
+    NotificationCenter.default.post(name: NSNotification.Name(rawValue: name), object: nil, userInfo: info)
+}

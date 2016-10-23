@@ -14,10 +14,9 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate {
     var gameCenterVC: GKGameCenterViewController!
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
-            if gameCenterIsAuthenticated {
+            if !oldValue && gameCenterIsAuthenticated {
                 localPlayer = GKLocalPlayer.localPlayer()
                 loadGameCenterViewController()
-                menuScene.gameCenterIsAuthenticated = true
             }
         }
     }
@@ -27,6 +26,9 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate {
     
     //MARK: View Methods
     override func viewDidLoad() {
+        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.presentGameCenterViewController), name: NSNotification.Name(rawValue: "presentScores"), object: nil)
+        
         self.view = SKView(frame: UIScreen.main.bounds)
         
         //Load the menu scene on startup
@@ -68,30 +70,43 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate {
         return true
     }
     
+    //MARK: GameKit Methods
+    func authenticationStatusDidChange(notification: Notification) {
+        if let dictionary = notification.userInfo as? [String: Bool] {
+            if let newAuthenticationStatus = dictionary["isAuthenticated"] {
+                gameCenterIsAuthenticated = newAuthenticationStatus
+            }
+        }
+    }
+    
     //MARK: GKGameCenterControllerDelegate
     func loadGameCenterViewController() {
-        if gameCenterIsAuthenticated && localPlayer.isAuthenticated {
-            localPlayer.loadDefaultLeaderboardIdentifier { (string, error) in
-                if error != nil {
-                    NSLog("Could not load leaderboard: \(error!)")
-                }
-                else if let identifier = string {
-                    //Load the gameCenterViewController
-                    self.gameCenterVC.leaderboardIdentifier = identifier
-                }
+        guard localPlayer.isAuthenticated else {
+            return
+        }
+        
+        localPlayer.loadDefaultLeaderboardIdentifier { (string, error) in
+            if error != nil {
+                NSLog("Could not load leaderboard: \(error!)")
+            }
+            else if let identifier = string {
+                //Load the gameCenterViewController
+                self.gameCenterVC.leaderboardIdentifier = identifier
             }
         }
     }
     
     func presentGameCenterViewController() {
-        if gameCenterIsAuthenticated && localPlayer.isAuthenticated {
-            self.present(gameCenterVC, animated: true, completion: nil)
+        guard localPlayer.isAuthenticated else {
+            return
         }
+        
+        self.gameCenterVC.viewState = self.currentGameCenterViewControllerState
+        self.present(gameCenterVC, animated: true, completion: nil)
     }
-
+    
     func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
         currentGameCenterViewControllerState = gameCenterViewController.viewState
-        
         gameCenterViewController.dismiss(animated: true, completion: nil)
     }
     

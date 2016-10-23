@@ -7,7 +7,6 @@
 //
 
 import SpriteKit
-import GameKit
 
 class GameOverScene: SKScene {
     var replayButton: ButtonLabelNode!
@@ -47,24 +46,8 @@ class GameOverScene: SKScene {
         self.addChild(menuButton)
         self.addChild(highScoreLabel)
         self.addChild(scoreLabel)
-        
-        let localPlayer = GKLocalPlayer.localPlayer()
-        if localPlayer.isAuthenticated {
-            localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (identifier, error) in
-                if error != nil {
-                    NSLog("Could not load leaderboard: \(error!)")
-                } else if let leaderboardIdentifier = identifier {
-                    let scoreObject: GKScore = GKScore(leaderboardIdentifier: leaderboardIdentifier, player: localPlayer)
-                    scoreObject.value = Int64(self.highScore)
-                    
-                    GKScore.report([scoreObject], withCompletionHandler: { (error) in
-                        if error != nil {
-                            NSLog("Could not report score \(scoreObject) to leaderboard \(leaderboardIdentifier)")
-                        }
-                    })
-                }
-            })
-        }
+
+        postNotification(withName: "reportScore", andUserInfo: ["highScore": highScore, "leaderboard": 1])
     }
     
     //MARK: Touch Methods

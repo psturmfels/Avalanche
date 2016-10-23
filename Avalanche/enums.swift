@@ -8,6 +8,10 @@
 
 import SpriteKit
 
+enum LeaderBoardTypes: Int {
+    case classic = 1
+}
+
 enum GameStates: Int {
     case gameInProgress = 1
     case gameOver = 2

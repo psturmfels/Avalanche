@@ -7,7 +7,6 @@
 //
 
 import SpriteKit
-import GameKit
 
 class MenuScene: SKScene {
     var playButton: ButtonLabelNode!
@@ -54,15 +53,18 @@ class MenuScene: SKScene {
     
     //MARK: View Methods
     override func didMove(to view: SKView) {
+        NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
+        
         createMenuButtons()
         
-        let localPlayer = GKLocalPlayer.localPlayer()
-        gameCenterIsAuthenticated = localPlayer.isAuthenticated
-        
-        if !gameCenterIsAuthenticated {
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            DispatchQueue.main.async {
-                appDelegate.authenticateLocalPlayer()
+        postNotification(withName: "attemptToAuthenticate")
+    }
+    
+    //MARK: GameKit Methods
+    func authenticationStatusDidChange(notification: Notification) {
+        if let dictionary = notification.userInfo as? [String: Bool] {
+            if let newAuthenticationStatus = dictionary["isAuthenticated"] {
+                gameCenterIsAuthenticated = newAuthenticationStatus
             }
         }
     }
@@ -74,7 +76,7 @@ class MenuScene: SKScene {
         playButton = ButtonLabelNode()
         playButton.setup(withText: "Classic: ", withFontSize: 48.0, withButtonName: "Play", normalTextureName: "playMenuNormal", highlightedTextureName: "playMenuHighlighted", atPosition: center)
         playButton.position.y += playButton.height * 0.5 + 10
- 
+        
         scoresButton = ButtonLabelNode()
         scoresButton.setup(withText: "Scores: ", withFontSize: 48.0, withButtonName: "Scores", normalTextureName: "scoresNormal", highlightedTextureName: "scoresHighlighted", atPosition: center)
         scoresButton.position.y -= scoresButton.height * 0.5 + 10
@@ -139,8 +141,7 @@ class MenuScene: SKScene {
         } else if scoresButton.isPressed {
             scoresButton.didRelease()
             if gameCenterIsAuthenticated {
-                let parentViewController = self.view!.window!.rootViewController as! GameViewController
-                parentViewController.presentGameCenterViewController()
+                postNotification(withName: "presentScores")
             }
         } else if tutorialButton.isPressed {
             tutorialButton.didRelease()
