@@ -8,7 +8,11 @@
 
 import SpriteKit
 
-enum LeaderBoardTypes: Int {
+enum Achievement: String {
+    case whatDoesThisDo = "whatDoesThisDo"
+}
+
+enum LeaderboardTypes: Int {
     case classic = 1
 }
 
@@ -29,6 +33,7 @@ enum ButtonStates {
 enum DeathTypes {
     case lava
     case crushed
+    case selfDestruct
 }
 
 enum CollisionTypes: UInt32 {

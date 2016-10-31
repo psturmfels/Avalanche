@@ -47,7 +47,7 @@ class GameOverScene: SKScene {
         self.addChild(highScoreLabel)
         self.addChild(scoreLabel)
 
-        postNotification(withName: "reportScore", andUserInfo: ["highScore": highScore, "leaderboard": 1])
+        GameKitController.report(highScore, toLeaderboard: .classic)
     }
     
     //MARK: Touch Methods

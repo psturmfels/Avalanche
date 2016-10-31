@@ -23,9 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         gameKitController = GameKitController()
         
         //Initialize the GameCenter Player
-        DispatchQueue.main.async {
-            self.gameKitController.authenticateLocalPlayer()
-        }
+        GameKitController.authenticateLocalPlayer()
         
         //Allow outside music
         do {
@@ -67,6 +65,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
+    
 }
 

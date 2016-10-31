@@ -20,7 +20,7 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate {
             }
         }
     }
-    var currentGameCenterViewControllerState: GKGameCenterViewControllerState = GKGameCenterViewControllerState.leaderboards
+    var currentGameCenterViewControllerState: GKGameCenterViewControllerState = GKGameCenterViewControllerState.default
     var localPlayer: GKLocalPlayer!
     var menuScene: MenuScene!
     
@@ -101,7 +101,6 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate {
             return
         }
         
-        self.gameCenterVC.viewState = self.currentGameCenterViewControllerState
         self.present(gameCenterVC, animated: true, completion: nil)
     }
     

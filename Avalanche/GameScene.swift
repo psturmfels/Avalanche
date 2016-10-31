@@ -614,7 +614,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let crushedAction = SKAction.animate(with: crushedTextures, timePerFrame: 0.02)
         self.risingLava.physicsBody!.velocity.dy = 0
         
-        if by == .crushed {
+        switch by {
+        case .crushed:
             mellow.run(crushedAction, completion: {
                 //Crushed sound effects
                 
@@ -622,7 +623,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     self.backgroundMusic.run(SKAction.stop())
                     self.backgroundMusic.removeFromParent()
                 }
-                
                 self.playSoundEffectNamed("MellowCrushed.wav", waitForCompletion: false)
                 
                 //Add the explosion after the crush
@@ -632,7 +632,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.addChild(mellowCrushedExplosion)
                 self.mellow.removeFromParent()
             })
-        } else {
+        case .lava:
             self.playSoundEffectNamed("MellowBurned.wav", waitForCompletion: false)
             mellow.run(crushedAction, completion: {
                 //Burned Sound Effects
@@ -649,8 +649,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.addChild(mellowBurned)
                 self.mellow.removeFromParent()
             })
+        case .selfDestruct:
+                GameKitController.report(Achievement.whatDoesThisDo, withPercentComplete: 100.0)
+                mellow.run(crushedAction, completion: {
+                //Crushed sound effects
+                
+                if self.backgroundMusic != nil {
+                    self.backgroundMusic.run(SKAction.stop())
+                    self.backgroundMusic.removeFromParent()
+                }
+                self.playSoundEffectNamed("MellowCrushed.wav", waitForCompletion: false)
+                
+                //Add the explosion after the crush
+                let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
+                mellowCrushedExplosion.position = self.mellow.position
+                mellowCrushedExplosion.zPosition = 20
+                self.addChild(mellowCrushedExplosion)
+                self.mellow.removeFromParent()
+            })
         }
-        
         self.currentGameState = .gameOver
     }
     
@@ -809,7 +826,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         } else if pauseScreen.selfDestructButtonLabel.isPressed {
             pauseScreen.selfDestructButtonLabel.didRelease()
             self.currentGameState = .gameInProgress
-            mellowDestroyed(.crushed)
+            mellowDestroyed(.selfDestruct)
         }
     }
     

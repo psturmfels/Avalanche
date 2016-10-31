@@ -17,11 +17,34 @@ class GameKitController: NSObject {
         }
     }
     
+    lazy var achievements: [GKAchievement] = {
+        var achievementArray: [GKAchievement] = []
+        GKAchievement.loadAchievements(completionHandler: { (fetchedAchievements, error) in
+            if error != nil {
+                NSLog("There was an error while fetching completed achievements: \(error!)")
+            }
+            if let unwrappedAchievements = fetchedAchievements {
+                achievementArray = unwrappedAchievements
+            }
+        })
+        return achievementArray
+    }()
+    
+    class func report(_ score: Int, toLeaderboard leaderboard: LeaderboardTypes) {
+        postNotification(withName: "reportScore", andUserInfo: ["highScore": score, "leaderboard": leaderboard.rawValue])
+    }
+    
+    class func report(_ achievement: Achievement, withPercentComplete percentComplete: Double) {
+        postNotification(withName: "reportAchievement", andUserInfo: ["achievementName": achievement.rawValue, "percentComplete": percentComplete])
+    }
+    
     override init() {
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(GameKitController.authenticateLocalPlayer), name: NSNotification.Name(rawValue: "attemptToAuthenticate"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameKitController.reportScore), name: NSNotification.Name("reportScore"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GameKitController.reportAchievement), name: NSNotification.Name("reportAchievement"), object: nil)
     }
+    
+    //MARK: Achievements
     
     func reportAchievement(notification: Notification) {
         guard let dictionary = notification.userInfo as? [String: Any] else {
@@ -37,9 +60,17 @@ class GameKitController: NSObject {
         }
         
         let localPlayer = GKLocalPlayer.localPlayer()
-        
         guard localPlayer.isAuthenticated else {
             return
+        }
+        
+        let achievementIndex: Int? = achievements.index { (achievement) -> Bool in
+            return achievement.identifier == achievementName
+        }
+        if let i = achievementIndex {
+            if achievements[i].percentComplete >= percentComplete {
+                return
+            }
         }
         
         let achievement: GKAchievement = GKAchievement(identifier: achievementName, player: localPlayer)
@@ -52,6 +83,7 @@ class GameKitController: NSObject {
         }
     }
     
+    //MARK: Scores
     func reportScore(notification: Notification) {
         guard let dictionary = notification.userInfo as? [String: Int] else {
             return
@@ -87,26 +119,29 @@ class GameKitController: NSObject {
         
     }
     
-    func authenticateLocalPlayer() {
-        let localPlayer = GKLocalPlayer.localPlayer()
-        if localPlayer.isAuthenticated {
-            postNotification(withName: "authenticationStatusChanged", andUserInfo: ["isAuthenticated":true])
-            return
-        }
-        
-        localPlayer.authenticateHandler = { (viewController: UIViewController?, error: Error?) -> Void in
-            unowned let appDelegate: AppDelegate = UIApplication.shared.delegate as! AppDelegate
-            if viewController != nil {
-                
-                if let rootViewController = appDelegate.window?.rootViewController {
-                    rootViewController.present(viewController!, animated: true, completion: nil)
-                }
-            }
-            else if localPlayer.isAuthenticated {
+    //MARK: Authentication
+    class func authenticateLocalPlayer() {
+        DispatchQueue.main.async {
+            let localPlayer = GKLocalPlayer.localPlayer()
+            if localPlayer.isAuthenticated {
                 postNotification(withName: "authenticationStatusChanged", andUserInfo: ["isAuthenticated":true])
+                return
             }
-            else {
-                postNotification(withName: "authenticationStatusChanged", andUserInfo: ["isAuthenticated":false])
+            
+            localPlayer.authenticateHandler = { (viewController: UIViewController?, error: Error?) -> Void in
+                unowned let appDelegate: AppDelegate = UIApplication.shared.delegate as! AppDelegate
+                if viewController != nil {
+                    
+                    if let rootViewController = appDelegate.window?.rootViewController {
+                        rootViewController.present(viewController!, animated: true, completion: nil)
+                    }
+                }
+                else if localPlayer.isAuthenticated {
+                    postNotification(withName: "authenticationStatusChanged", andUserInfo: ["isAuthenticated":true])
+                }
+                else {
+                    postNotification(withName: "authenticationStatusChanged", andUserInfo: ["isAuthenticated":false])
+                }
             }
         }
     }

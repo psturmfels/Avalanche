@@ -57,7 +57,7 @@ class MenuScene: SKScene {
         
         createMenuButtons()
         
-        postNotification(withName: "attemptToAuthenticate")
+        GameKitController.authenticateLocalPlayer()
     }
     
     //MARK: GameKit Methods
