@@ -280,8 +280,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //Make the mellow "wrap-around" the screen
         //if it goes off the horizontal edges
         let mellowTwoThirds: CGFloat = (2.0 / 3.0) * mellow.frame.width
-        let mellowTwiceHeight: CGFloat = 2 * mellow.frame.height
-        let mellowThriceHeight: CGFloat = 3 * mellow.frame.height
+        let botPoint: CGFloat = self.size.height * 0.2
+        let topPoint: CGFloat = self.size.height * 0.65
         
         if mellow.position.x < -mellow.frame.width / 3 {
             mellow.position.x += self.size.width + mellowTwoThirds
@@ -293,14 +293,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //If the mellow gets too close to the top or bottom of the screen,
         //move the world as opposed to the mellow, ensuring that
         //the mellow always stays on the screen.
-        if mellow.position.y > self.size.height - mellowThriceHeight {
-            let difference: CGFloat = mellow.position.y - (self.size.height - mellowThriceHeight)
-            mellow.position.y = self.size.height - mellowThriceHeight
+        if mellow.position.y > topPoint {
+            let difference: CGFloat = mellow.position.y - (topPoint)
+            mellow.position.y = topPoint
             self.worldNode.position.y -= difference
         }
-        else if mellow.position.y < mellowTwiceHeight {
-            let difference: CGFloat = mellowTwiceHeight - mellow.position.y
-            mellow.position.y = mellowTwiceHeight
+        else if mellow.position.y < botPoint {
+            let difference: CGFloat = botPoint - mellow.position.y
+            mellow.position.y = botPoint
             self.worldNode.position.y += difference
         }
     }
