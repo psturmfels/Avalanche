@@ -105,22 +105,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             switch currentDifficulty {
             case 0:
                 self.initBlocks(0.8, withRange: 0.4, minFallSpeed: -250, maxFallSpeed: -170)
-                lavaMaxSpeed = 43.0
+                lavaMaxSpeed = 47.0
             case 1:
                 self.initBlocks(0.7, withRange: 0.4, minFallSpeed: -260, maxFallSpeed: -180)
-                lavaMaxSpeed = 47.0
+                lavaMaxSpeed = 50.0
             case 2:
                 self.initBlocks(0.6, withRange: 0.4, minFallSpeed: -270, maxFallSpeed: -190)
-                lavaMaxSpeed = 50.0
+                lavaMaxSpeed = 53.0
             case 3:
                 self.initBlocks(0.5, withRange: 0.4, minFallSpeed: -280, maxFallSpeed: -210)
-                lavaMaxSpeed = 53.0
+                lavaMaxSpeed = 56.0
             case 4:
                 self.initBlocks(0.5, withRange: 0.4, minFallSpeed: -290, maxFallSpeed: -220)
-                lavaMaxSpeed = 56.0
+                lavaMaxSpeed = 59.0
             case 5:
                 self.initBlocks(0.4, withRange: 0.3, minFallSpeed: -310, maxFallSpeed: -240)
-                lavaMaxSpeed = 59.0
+                lavaMaxSpeed = 63.0
             default:
                 break;
             }
