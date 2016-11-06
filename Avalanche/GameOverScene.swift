@@ -49,19 +49,19 @@ class GameOverScene: SKScene {
 
         GameKitController.report(highScore, toLeaderboard: .classic)
         if highScore >= 200 {
-            GameKitController.report(Achievement.Beginner, withPercentComplete: 1.0)
+            GameKitController.report(Achievement.Beginner, withPercentComplete: 100.0)
         }
         if highScore >= 400 {
-            GameKitController.report(Achievement.Moderate, withPercentComplete: 1.0)
+            GameKitController.report(Achievement.Moderate, withPercentComplete: 100.0)
         }
         if highScore >= 600 {
-            GameKitController.report(Achievement.Advanced, withPercentComplete: 1.0)
+            GameKitController.report(Achievement.Advanced, withPercentComplete: 100.0)
         }
         if highScore >= 800 {
-            GameKitController.report(Achievement.Pro, withPercentComplete: 1.0)
+            GameKitController.report(Achievement.Pro, withPercentComplete: 100.0)
         }
         if highScore >= 1000 {
-            GameKitController.report(Achievement.Legendary, withPercentComplete: 1.0)
+            GameKitController.report(Achievement.Legendary, withPercentComplete: 100.0)
         }
     }
     
