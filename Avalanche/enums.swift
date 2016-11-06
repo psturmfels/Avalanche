@@ -10,6 +10,11 @@ import SpriteKit
 
 enum Achievement: String {
     case whatDoesThisDo = "whatDoesThisDo"
+    case Beginner = "Beginner"
+    case Moderate = "Moderate"
+    case Advanced = "Advanced"
+    case Pro = "Pro"
+    case Legendary = "Legendary"
 }
 
 enum LeaderboardTypes: Int {
