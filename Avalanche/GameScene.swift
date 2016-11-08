@@ -45,6 +45,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             case .gameInProgress:
                 self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
                 
+                UserDefaults.standard.set(audioIsOn, forKey: "Audio")
+                UserDefaults.standard.set(soundEffectsAreOn, forKey: "Audio")
                 if audioIsOn {
                     if let musicStart = self.action(forKey: "musicStart") {
                         musicStart.speed = 1.0
@@ -129,8 +131,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var lavaMaxSpeed: CGFloat = 40.0
     
-    var soundEffectsAreOn: Bool = !AVAudioSession.sharedInstance().isOtherAudioPlaying
-    var audioIsOn: Bool = !AVAudioSession.sharedInstance().isOtherAudioPlaying
+    var soundEffectsAreOn: Bool = UserDefaults.standard.bool(forKey: "SoundEffects")
+    var audioIsOn: Bool = UserDefaults.standard.bool(forKey: "Audio")
     var backgroundMusic: SKAudioNode!
     var backgroundGradient: SKSpriteNode!
     

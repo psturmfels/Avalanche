@@ -31,10 +31,10 @@ class MenuScene: SKScene {
     
     //MARK: Button Methods
     func displaySettings() {
-        let downShudder1: SKAction = SKAction.moveBy(x: 0.0, y: -20.0, duration: 0.1)
-        let downShudder2: SKAction = SKAction.moveBy(x: 0.0, y: -10.0, duration: 0.1)
-        let downShudder3: SKAction = SKAction.moveBy(x: 0.0, y: -5.0, duration: 0.1)
-        let upSweep: SKAction = SKAction.moveBy(x: 0.0, y: self.frame.height, duration: 0.5)
+        let downShudder1: SKAction = SKAction.moveBy(x: 0.0, y: -20.0, duration: 0.08)
+        let downShudder2: SKAction = SKAction.moveBy(x: 0.0, y: -10.0, duration: 0.08)
+        let downShudder3: SKAction = SKAction.moveBy(x: 0.0, y: -5.0, duration: 0.08)
+        let upSweep: SKAction = SKAction.moveBy(x: 0.0, y: self.frame.height, duration: 0.2)
         
         let moveUpSequence: SKAction = SKAction.sequence([downShudder1, downShudder2, downShudder3, upSweep])
         
@@ -44,10 +44,10 @@ class MenuScene: SKScene {
         playButton.run(moveUpSequence)
         scoresButton.run(moveUpSequence)
         
-        let leftShudder1: SKAction = SKAction.moveBy(x: -20.0, y: 0.0, duration: 0.1)
-        let leftShudder2: SKAction = SKAction.moveBy(x: -10.0, y: 0.0, duration: 0.1)
-        let leftShudder3: SKAction = SKAction.moveBy(x: -5.0, y: 0.0, duration: 0.1)
-        let rightSweep: SKAction = SKAction.moveBy(x: self.frame.width, y: 0.0, duration: 0.5)
+        let leftShudder1: SKAction = SKAction.moveBy(x: -20.0, y: 0.0, duration: 0.07)
+        let leftShudder2: SKAction = SKAction.moveBy(x: -10.0, y: 0.0, duration: 0.07)
+        let leftShudder3: SKAction = SKAction.moveBy(x: -5.0, y: 0.0, duration: 0.07)
+        let rightSweep: SKAction = SKAction.moveBy(x: self.frame.width, y: 0.0, duration: 0.2)
         let moveRightSequence: SKAction = SKAction.sequence([leftShudder1, leftShudder2, leftShudder3, rightSweep])
         
         tutorialButton.name = ""
@@ -56,17 +56,17 @@ class MenuScene: SKScene {
         tutorialButton.run(moveRightSequence)
         settingsButton.run(moveRightSequence)
         
-        let waitAction: SKAction = SKAction.wait(forDuration: 0.5)
-        let extraRightSweep: SKAction = SKAction.moveBy(x: self.frame.width + 35, y: 0.0, duration: 0.5)
+        let waitAction: SKAction = SKAction.wait(forDuration: 0.4)
+        let extraRightSweep: SKAction = SKAction.moveBy(x: self.frame.width + 35, y: 0.0, duration: 0.2)
         let reverseRightSequence: SKAction = SKAction.sequence([waitAction, extraRightSweep, leftShudder1, leftShudder2, leftShudder3])
         menuButton.run(reverseRightSequence) { [unowned self] in
             self.menuButton.name = "Menu"
         }
         
-        let rightShudder1: SKAction = SKAction.moveBy(x: 20.0, y: 0.0, duration: 0.1)
-        let rightShudder2: SKAction = SKAction.moveBy(x: 10.0, y: 0.0, duration: 0.1)
-        let rightShudder3: SKAction = SKAction.moveBy(x: 5.0, y: 0.0, duration: 0.1)
-        let leftSweep: SKAction = SKAction.moveBy(x: -self.frame.width - 35.0, y: 0.0, duration: 0.5)
+        let rightShudder1: SKAction = SKAction.moveBy(x: 20.0, y: 0.0, duration: 0.07)
+        let rightShudder2: SKAction = SKAction.moveBy(x: 10.0, y: 0.0, duration: 0.07)
+        let rightShudder3: SKAction = SKAction.moveBy(x: 5.0, y: 0.0, duration: 0.07)
+        let leftSweep: SKAction = SKAction.moveBy(x: -self.frame.width - 35.0, y: 0.0, duration: 0.2)
         let moveLeftSequence: SKAction = SKAction.sequence([waitAction, leftSweep, rightShudder1, rightShudder2, rightShudder3])
         
         audioButtonLabel.run(moveLeftSequence) { [unowned self] in
@@ -78,21 +78,21 @@ class MenuScene: SKScene {
     }
     
     func returnFromSettings() {
-        let leftShudder1: SKAction = SKAction.moveBy(x: -20.0, y: 0.0, duration: 0.1)
-        let leftShudder2: SKAction = SKAction.moveBy(x: -10.0, y: 0.0, duration: 0.1)
-        let leftShudder3: SKAction = SKAction.moveBy(x: -5.0, y: 0.0, duration: 0.1)
-        let rightSweep: SKAction = SKAction.moveBy(x: self.frame.width + 35.0, y: 0.0, duration: 0.5)
+        let leftShudder1: SKAction = SKAction.moveBy(x: -20.0, y: 0.0, duration: 0.07)
+        let leftShudder2: SKAction = SKAction.moveBy(x: -10.0, y: 0.0, duration: 0.07)
+        let leftShudder3: SKAction = SKAction.moveBy(x: -5.0, y: 0.0, duration: 0.07)
+        let rightSweep: SKAction = SKAction.moveBy(x: self.frame.width + 35.0, y: 0.0, duration: 0.2)
         let moveRightSequence: SKAction = SKAction.sequence([leftShudder1, leftShudder2, leftShudder3, rightSweep])
         audioButtonLabel.buttonNode.name = ""
         soundEffectsButtonLabel.buttonNode.name = ""
         audioButtonLabel.run(moveRightSequence)
         soundEffectsButtonLabel.run(moveRightSequence)
         
-        let waitAction: SKAction = SKAction.wait(forDuration: 0.5)
-        let upShudder1: SKAction = SKAction.moveBy(x: 0.0, y: 20.0, duration: 0.1)
-        let upShudder2: SKAction = SKAction.moveBy(x: 0.0, y: 10.0, duration: 0.1)
-        let upShudder3: SKAction = SKAction.moveBy(x: 0.0, y: 5.0, duration: 0.1)
-        let downSweep: SKAction = SKAction.moveBy(x: 0.0, y: -self.frame.height, duration: 0.5)
+        let waitAction: SKAction = SKAction.wait(forDuration: 0.4)
+        let upShudder1: SKAction = SKAction.moveBy(x: 0.0, y: 20.0, duration: 0.07)
+        let upShudder2: SKAction = SKAction.moveBy(x: 0.0, y: 10.0, duration: 0.07)
+        let upShudder3: SKAction = SKAction.moveBy(x: 0.0, y: 5.0, duration: 0.07)
+        let downSweep: SKAction = SKAction.moveBy(x: 0.0, y: -self.frame.height, duration: 0.2)
         
         let moveDownSequence: SKAction = SKAction.sequence([waitAction, downSweep, upShudder1, upShudder2, upShudder3])
         playButton.run(moveDownSequence) { [unowned self] in
@@ -102,10 +102,10 @@ class MenuScene: SKScene {
             self.scoresButton.buttonNode.name = "Scores"
         }
         
-        let rightShudder1: SKAction = SKAction.moveBy(x: 20.0, y: 0.0, duration: 0.1)
-        let rightShudder2: SKAction = SKAction.moveBy(x: 10.0, y: 0.0, duration: 0.1)
-        let rightShudder3: SKAction = SKAction.moveBy(x: 5.0, y: 0.0, duration: 0.1)
-        let leftSweep: SKAction = SKAction.moveBy(x: -self.frame.width, y: 0.0, duration: 0.5)
+        let rightShudder1: SKAction = SKAction.moveBy(x: 20.0, y: 0.0, duration: 0.07)
+        let rightShudder2: SKAction = SKAction.moveBy(x: 10.0, y: 0.0, duration: 0.07)
+        let rightShudder3: SKAction = SKAction.moveBy(x: 5.0, y: 0.0, duration: 0.07)
+        let leftSweep: SKAction = SKAction.moveBy(x: -self.frame.width, y: 0.0, duration: 0.2)
         let moveLeftSequence: SKAction = SKAction.sequence([waitAction, leftSweep, rightShudder1, rightShudder2, rightShudder3])
         
         tutorialButton.run(moveLeftSequence) { [unowned self] in
@@ -116,7 +116,7 @@ class MenuScene: SKScene {
         }
         
         menuButton.name = ""
-        let extraLeftSweep: SKAction = SKAction.moveBy(x: -self.frame.width - 35.0, y: 0.0, duration: 0.5)
+        let extraLeftSweep: SKAction = SKAction.moveBy(x: -self.frame.width - 35.0, y: 0.0, duration: 0.2)
         let reverseLeftSequence: SKAction = SKAction.sequence([rightShudder1, rightShudder2, rightShudder3, extraLeftSweep])
         menuButton.run(reverseLeftSequence)
     }
@@ -172,15 +172,26 @@ class MenuScene: SKScene {
     //MARK: Creation Methods
     func createSettingsButtons() {
         let center: CGPoint = CGPoint(x: 3 * self.frame.midX, y: self.frame.midY)
-        soundEffectsButtonLabel = ButtonLabelNode()
-        soundEffectsButtonLabel.setup(withText: "Sound: ", withFontSize: 48.0, withButtonName: "", normalTextureName: "audioNormal", highlightedTextureName: "audioOff", atPosition: center)
-        soundEffectsButtonLabel.position.y += soundEffectsButtonLabel.height * 0.5 + 10
-        self.addChild(soundEffectsButtonLabel)
-        
         audioButtonLabel = ButtonLabelNode()
         audioButtonLabel.setup(withText: "Music: ", withFontSize: 48.0, withButtonName: "", normalTextureName: "audioNormal", highlightedTextureName: "audioOff", atPosition: center)
-        audioButtonLabel.position.y -= audioButtonLabel.height * 0.5 + 10
+        audioButtonLabel.position.y += audioButtonLabel.height * 0.5 + 10
         self.addChild(audioButtonLabel)
+        
+        soundEffectsButtonLabel = ButtonLabelNode()
+        soundEffectsButtonLabel.setup(withText: "Sound: ", withFontSize: 48.0, withButtonName: "", normalTextureName: "audioNormal", highlightedTextureName: "audioOff", atPosition: center)
+        soundEffectsButtonLabel.position.y -= soundEffectsButtonLabel.height * 0.5 + 10
+        self.addChild(soundEffectsButtonLabel)
+        
+        let audioIsOn: Bool = UserDefaults.standard.bool(forKey: "Audio")
+        let soundEffectsAreOn: Bool = UserDefaults.standard.bool(forKey: "SoundEffects")
+        if !audioIsOn {
+            audioButtonLabel.didPress()
+            audioButtonLabel.buttonNode.alpha = 0.5
+        }
+        if !soundEffectsAreOn {
+            soundEffectsButtonLabel.didPress()
+            soundEffectsButtonLabel.buttonNode.alpha = 0.5
+        }
         
         menuButton = ButtonNode(imageNamed: "menuNormal")
         let leftX: CGFloat = 20.0 + menuButton.frame.width * 0.5 - self.frame.width
@@ -307,6 +318,7 @@ class MenuScene: SKScene {
                         audioButtonLabel.buttonNode.alpha = 0.5
                         audioButtonLabel.didPress()
                     }
+                    UserDefaults.standard.set(!audioButtonLabel.isPressed, forKey: "Audio")
                 } else if object.name == "SoundEffects" {
                     if soundEffectsButtonLabel.isPressed {
                         soundEffectsButtonLabel.buttonNode.alpha = 1.0
@@ -315,6 +327,7 @@ class MenuScene: SKScene {
                         soundEffectsButtonLabel.buttonNode.alpha = 0.5
                         soundEffectsButtonLabel.didPress()
                     }
+                    UserDefaults.standard.set(!soundEffectsButtonLabel.isPressed, forKey: "SoundEffects")
                 }
             }
         }

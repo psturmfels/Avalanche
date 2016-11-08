@@ -34,6 +34,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print(error)
         }
         
+        let userPreferences: UserDefaults = UserDefaults.standard
+        let defaultPreferencesFile: URL = Bundle.main.url(forResource: "DefaultPreferences", withExtension: "plist")!
+        let defaultPreferencesDictionary: NSDictionary = NSDictionary(contentsOf: defaultPreferencesFile)!
+        userPreferences.register(defaults: defaultPreferencesDictionary as! [String : Any])
+        
+        userPreferences.set(!AVAudioSession.sharedInstance().isOtherAudioPlaying, forKey: "SoundEffects")
+        userPreferences.set(!AVAudioSession.sharedInstance().isOtherAudioPlaying, forKey: "Audio")
+        
         //Bring up the gameViewController
         gameViewController = GameViewController()
         self.window = UIWindow(frame: UIScreen.main.bounds)
