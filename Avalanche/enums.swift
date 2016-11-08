@@ -15,6 +15,7 @@ enum Achievement: String {
     case Advanced = "Advanced"
     case Pro = "Pro"
     case Legendary = "Legendary"
+    case Clueless = "Clueless"
 }
 
 enum LeaderboardTypes: Int {

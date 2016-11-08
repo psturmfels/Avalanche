@@ -46,8 +46,16 @@ class GameOverScene: SKScene {
         self.addChild(menuButton)
         self.addChild(highScoreLabel)
         self.addChild(scoreLabel)
-
+        
         GameKitController.report(highScore, toLeaderboard: .classic)
+        reportScoreAchievements()
+    }
+    
+    //MARK: Achievements
+    func reportScoreAchievements() {
+        if highScore <= 14 {
+            GameKitController.report(Achievement.Clueless, withPercentComplete: 100.0)
+        }
         if highScore >= 200 {
             GameKitController.report(Achievement.Beginner, withPercentComplete: 100.0)
         }
