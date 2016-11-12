@@ -20,6 +20,7 @@ class MenuScene: SKScene {
     var menuButton: ButtonNode!
     
     var titleLabel: LabelNode!
+    var settingsLabel: LabelNode!
     
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
@@ -45,6 +46,7 @@ class MenuScene: SKScene {
         
         playButton.run(moveUpSequence)
         scoresButton.run(moveUpSequence)
+        titleLabel.run(moveUpSequence)
         
         let leftShudder1: SKAction = SKAction.moveBy(x: -20.0, y: 0.0, duration: 0.07)
         let leftShudder2: SKAction = SKAction.moveBy(x: -10.0, y: 0.0, duration: 0.07)
@@ -77,6 +79,7 @@ class MenuScene: SKScene {
         soundEffectsButtonLabel.run(moveLeftSequence) { [unowned self] in
             self.soundEffectsButtonLabel.buttonNode.name = "SoundEffects"
         }
+        settingsLabel.run(moveLeftSequence)
     }
     
     func returnFromSettings() {
@@ -89,6 +92,7 @@ class MenuScene: SKScene {
         soundEffectsButtonLabel.buttonNode.name = ""
         audioButtonLabel.run(moveRightSequence)
         soundEffectsButtonLabel.run(moveRightSequence)
+        settingsLabel.run(moveRightSequence)
         
         let waitAction: SKAction = SKAction.wait(forDuration: 0.4)
         let upShudder1: SKAction = SKAction.moveBy(x: 0.0, y: 20.0, duration: 0.07)
@@ -103,6 +107,7 @@ class MenuScene: SKScene {
         scoresButton.run(moveDownSequence) { [unowned self] in
             self.scoresButton.buttonNode.name = "Scores"
         }
+        titleLabel.run(moveDownSequence)
         
         let rightShudder1: SKAction = SKAction.moveBy(x: 20.0, y: 0.0, duration: 0.07)
         let rightShudder2: SKAction = SKAction.moveBy(x: 10.0, y: 0.0, duration: 0.07)
@@ -160,6 +165,7 @@ class MenuScene: SKScene {
         createMenuButtons()
         createBackground()
         createTitleLabel()
+        createSettingsLabel()
         initBlocks()
     }
     
@@ -173,8 +179,15 @@ class MenuScene: SKScene {
     }
     
     //MARK: Creation Methods
+    func createSettingsLabel() {
+        let settingsPoint: CGPoint = CGPoint(x: 3 * self.frame.midX, y: self.frame.height * 0.7)
+        settingsLabel = LabelNode()
+        settingsLabel.setup(withText: "Settings", withFontSize: 48.0, atPosition: settingsPoint)
+        self.addChild(settingsLabel)
+    }
+    
     func createTitleLabel() {
-        let titlePoint: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.height * 0.8)
+        let titlePoint: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.height * 0.7)
         titleLabel = LabelNode()
         titleLabel.setup(withText: "Avalanche", withFontSize: 48.0, atPosition: titlePoint)
         self.addChild(titleLabel)
