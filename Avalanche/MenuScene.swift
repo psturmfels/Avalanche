@@ -19,6 +19,8 @@ class MenuScene: SKScene {
     var soundEffectsButtonLabel: ButtonLabelNode!
     var menuButton: ButtonNode!
     
+    var titleLabel: LabelNode!
+    
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
             if gameCenterIsAuthenticated {
@@ -157,6 +159,7 @@ class MenuScene: SKScene {
         createSettingsButtons()
         createMenuButtons()
         createBackground()
+        createTitleLabel()
         initBlocks()
     }
     
@@ -170,6 +173,13 @@ class MenuScene: SKScene {
     }
     
     //MARK: Creation Methods
+    func createTitleLabel() {
+        let titlePoint: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.height * 0.8)
+        titleLabel = LabelNode()
+        titleLabel.setup(withText: "Avalanche", withFontSize: 48.0, atPosition: titlePoint)
+        self.addChild(titleLabel)
+    }
+    
     func createSettingsButtons() {
         let center: CGPoint = CGPoint(x: 3 * self.frame.midX, y: self.frame.midY)
         audioButtonLabel = ButtonLabelNode()
