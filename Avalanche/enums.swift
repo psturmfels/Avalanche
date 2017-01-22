@@ -22,6 +22,12 @@ enum LeaderboardTypes: Int {
     case classic = 1
 }
 
+enum MenuStates: Int {
+    case menu = 1
+    case settings = 2
+    case scores = 3
+}
+
 enum GameStates: Int {
     case gameInProgress = 1
     case gameOver = 2
