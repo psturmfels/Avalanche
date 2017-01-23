@@ -146,6 +146,45 @@ class MenuScene: SKScene {
         leaderboardButton.run(reverseRightSequence) { 
             self.leaderboardButton.name = "Leaderboard"
         }
+    
+        animateRight(table: leaderboardTable)
+        animateRight(table: achievementTable)
+    }
+    
+    func animateRight(table tableView: UITableView) {
+        UITableView.animate(withDuration: 0.2, delay: 0.4, options: [], animations: {
+            tableView.frame.origin.x += self.frame.width + 35
+        }) { (_) in
+            UITableView.animate(withDuration: 0.07, animations: {
+                tableView.frame.origin.x -= 20
+            }, completion: { (_) in
+                UITableView.animate(withDuration: 0.07, animations: {
+                    tableView.frame.origin.x -= 10
+                }, completion: { (_) in
+                    UITableView.animate(withDuration: 0.07, animations: {
+                        tableView.frame.origin.x -= 5
+                    })
+                })
+            })
+        }
+    }
+    
+    func animateLeft(table tableView: UITableView) {
+        UITableView.animate(withDuration: 0.07, animations: {
+            tableView.frame.origin.x += 20
+        }) { (_) in
+            UITableView.animate(withDuration: 0.07, animations: {
+                tableView.frame.origin.x += 10
+            }, completion: { (_) in
+                UITableView.animate(withDuration: 0.07, animations: {
+                    tableView.frame.origin.x += 5
+                }, completion: { (_) in
+                    UITableView.animate(withDuration: 0.2, animations: {
+                        tableView.frame.origin.x -= self.frame.width + 35
+                    })
+                })
+            })
+        }
     }
     
     func returnFromScore() {
@@ -155,6 +194,9 @@ class MenuScene: SKScene {
         let reverseLeftSequence: SKAction = SKAction.sequence([MenuScene.rightShudder1, MenuScene.rightShudder2, MenuScene.rightShudder3, extraLeftSweep])
         achievementButton.run(reverseLeftSequence)
         leaderboardButton.run(reverseLeftSequence)
+        
+        animateLeft(table: leaderboardTable)
+        animateLeft(table: achievementTable)
         
         dismissBackToMenu()
         returnMenu()
@@ -224,6 +266,7 @@ class MenuScene: SKScene {
         GameKitController.authenticateLocalPlayer()
         
         createScoreButtons()
+        createScoreTables()
         createSettingsButtons()
         createMenuButtons()
         createBackground()
@@ -254,6 +297,26 @@ class MenuScene: SKScene {
         titleLabel = LabelNode()
         titleLabel.setup(withText: "Avalanche", withFontSize: 48.0, atPosition: titlePoint)
         self.addChild(titleLabel)
+    }
+    
+    func createScoreTables() {
+        let leaderboardHeight: CGFloat = self.frame.height - leaderboardButton.frame.height - 60
+        let rightPoint: CGFloat = 20.0 - self.frame.width
+        
+        leaderboardTable = UITableView(frame: self.frame, style: UITableViewStyle.plain)
+        leaderboardTable.frame.size.width = self.frame.width - 40
+        leaderboardTable.frame.size.height = leaderboardHeight
+        leaderboardTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + 40)
+        leaderboardTable.isHidden = true
+        
+        achievementTable = UITableView(frame: self.frame, style: UITableViewStyle.plain)
+        achievementTable.frame.size.width = self.frame.width - 40
+        achievementTable.frame.size.height = leaderboardHeight
+        achievementTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + 40)
+        achievementTable.backgroundColor = UIColor.red
+        
+        self.view!.addSubview(leaderboardTable)
+        self.view!.addSubview(achievementTable)
     }
     
     func createScoreButtons() {
@@ -434,13 +497,19 @@ class MenuScene: SKScene {
                 } else if object.name == "Achievement" {
                     achievementButton.didPress()
                     achievementButton.alpha = 1.0
+                    achievementTable.isHidden = false
+                    
                     leaderboardButton.didRelease()
                     leaderboardButton.alpha = 0.5
+                    leaderboardTable.isHidden = true
                 } else if object.name == "Leaderboard" {
                     achievementButton.didRelease()
                     achievementButton.alpha = 0.5
+                    achievementTable.isHidden = true
+                    
                     leaderboardButton.didPress()
                     leaderboardButton.alpha = 1.0
+                    leaderboardTable.isHidden = false
                 }
             }
         }
