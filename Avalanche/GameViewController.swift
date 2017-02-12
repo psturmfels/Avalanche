@@ -10,13 +10,14 @@ import UIKit
 import SpriteKit
 import GameKit
 
-class GameViewController: UIViewController, GKGameCenterControllerDelegate {
-    var gameCenterVC: GKGameCenterViewController!
+class GameViewController: UIViewController {
+//    var gameCenterVC: GKGameCenterViewController!
+    
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
             if !oldValue && gameCenterIsAuthenticated {
                 localPlayer = GKLocalPlayer.localPlayer()
-                loadGameCenterViewController()
+                loadGameCenterData()
             }
         }
     }
@@ -27,7 +28,7 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate {
     //MARK: View Methods
     override func viewDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.presentGameCenterViewController), name: NSNotification.Name(rawValue: "presentScores"), object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.presentGameCenterViewController), name: NSNotification.Name(rawValue: "presentScores"), object: nil)
         
         self.view = SKView(frame: UIScreen.main.bounds)
         
@@ -36,10 +37,10 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate {
         menuScene.scaleMode = .resizeFill
         
         //Load the leaderboard
-        self.gameCenterVC = GKGameCenterViewController()
-        self.gameCenterVC.gameCenterDelegate = self
-        self.gameCenterVC.viewState = self.currentGameCenterViewControllerState
-        self.gameCenterVC.leaderboardTimeScope = GKLeaderboardTimeScope.week
+//        self.gameCenterVC = GKGameCenterViewController()
+//        self.gameCenterVC.gameCenterDelegate = self
+//        self.gameCenterVC.viewState = self.currentGameCenterViewControllerState
+//        self.gameCenterVC.leaderboardTimeScope = GKLeaderboardTimeScope.week
         
         let skView = self.view as! SKView
         skView.showsPhysics = false
@@ -80,33 +81,34 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     //MARK: GKGameCenterControllerDelegate
-    func loadGameCenterViewController() {
+    func loadGameCenterData() {
         guard localPlayer.isAuthenticated else {
             return
         }
         
-        localPlayer.loadDefaultLeaderboardIdentifier { (string, error) in
-            if error != nil {
-                NSLog("Could not load leaderboard: \(error!)")
-            }
-            else if let identifier = string {
-                //Load the gameCenterViewController
-                self.gameCenterVC.leaderboardIdentifier = identifier
-            }
-        }
-    }
-    
-    func presentGameCenterViewController() {
-        guard localPlayer.isAuthenticated else {
-            return
-        }
+//        localPlayer.loadDefaultLeaderboardIdentifier { (string, error) in
+//            if error != nil {
+//                NSLog("Could not load leaderboard: \(error!)")
+//            }
+//            else if let identifier = string {
+//                //Load the gameCenterViewController
+//                self.gameCenterVC.leaderboardIdentifier = identifier
+//            }
+//        }
         
-        self.present(gameCenterVC, animated: true, completion: nil)
     }
     
-    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
-        currentGameCenterViewControllerState = gameCenterViewController.viewState
-        gameCenterViewController.dismiss(animated: true, completion: nil)
-    }
+//    func presentGameCenterViewController() {
+//        guard localPlayer.isAuthenticated else {
+//            return
+//        }
+//        
+//        self.present(gameCenterVC, animated: true, completion: nil)
+//    }
+//    
+//    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+//        currentGameCenterViewControllerState = gameCenterViewController.viewState
+//        gameCenterViewController.dismiss(animated: true, completion: nil)
+//    }
     
 }

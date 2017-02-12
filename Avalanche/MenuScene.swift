@@ -43,6 +43,7 @@ class MenuScene: SKScene {
     var achievementButton: ButtonNode!
     var leaderboardTable: UITableView!
     var achievementTable: UITableView!
+    var achievementTableHandler: AchievementTableViewHandler!
     
     var titleLabel: LabelNode!
     var settingsLabel: LabelNode!
@@ -140,15 +141,17 @@ class MenuScene: SKScene {
         
         let extraRightSweep: SKAction = SKAction.moveBy(x: self.frame.width + 35, y: 0.0, duration: 0.2)
         let reverseRightSequence: SKAction = SKAction.sequence([MenuScene.waitPointFour, extraRightSweep, MenuScene.leftShudder1, MenuScene.leftShudder2, MenuScene.leftShudder3])
-        achievementButton.run(reverseRightSequence) { 
+        achievementButton.run(reverseRightSequence) {
             self.achievementButton.name = "Achievement"
         }
-        leaderboardButton.run(reverseRightSequence) { 
+        leaderboardButton.run(reverseRightSequence) {
             self.leaderboardButton.name = "Leaderboard"
         }
-    
+        
         animateRight(table: leaderboardTable)
         animateRight(table: achievementTable)
+        leaderboardTable.reloadData()
+        achievementTable.reloadData()
     }
     
     func animateRight(table tableView: UITableView) {
@@ -308,15 +311,25 @@ class MenuScene: SKScene {
         leaderboardTable.frame.size.height = leaderboardHeight
         leaderboardTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + 40)
         leaderboardTable.isHidden = true
+        leaderboardTable.tableFooterView = UIView()
         
         achievementTable = UITableView(frame: self.frame, style: UITableViewStyle.plain)
         achievementTable.frame.size.width = self.frame.width - 40
         achievementTable.frame.size.height = leaderboardHeight
         achievementTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + 40)
         achievementTable.backgroundColor = UIColor.red
+        achievementTable.tableFooterView = UIView()
         
         self.view!.addSubview(leaderboardTable)
         self.view!.addSubview(achievementTable)
+        
+        achievementTableHandler = AchievementTableViewHandler()
+        
+//        leaderboardTable.dataSource = tableHandler
+//        leaderboardTable.delegate = tableHandler
+        achievementTable.dataSource = achievementTableHandler
+        achievementTable.delegate = achievementTableHandler
+        achievementTable.register(AchievementTableViewCell.self, forCellReuseIdentifier: "AchievementTableViewCell")
     }
     
     func createScoreButtons() {
