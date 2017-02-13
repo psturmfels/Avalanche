@@ -10,11 +10,10 @@ import UIKit
 import GameKit
 
 class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSource {
-    var expandedRow: IndexPath!
-    var normalHeight: CGFloat = 50.0
-    var expandedHeight: CGFloat = 200.0
+    var expandedPath: IndexPath?
     var achievementDescriptions: [GKAchievementDescription]!
-    var achievementProgress: [GKAchievement]!
+    var achievementProgress: [String:Double] = [String:Double]()
+    var achievementImages: [String:UIImage] = [String:UIImage]()
     
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
@@ -23,6 +22,7 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             }
         }
     }
+    var achievementsAreLoaded: Bool = false
     
     override init() {
         super.init()
@@ -50,7 +50,11 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                 return
             }
             
-            self.achievementProgress = achievements
+            for achievementProgressObject in achievements {
+                if let identifier = achievementProgressObject.identifier {
+                    self.achievementProgress[identifier] = achievementProgressObject.percentComplete
+                }
+            }
         }
         
         GKAchievementDescription.loadAchievementDescriptions { (descriptions, error) in
@@ -65,18 +69,28 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             
             self.achievementDescriptions = descriptions
             for achievement in self.achievementDescriptions {
-                achievement.loadImage(completionHandler: { (image, error) in
-                    if error != nil {
-                        NSLog("Failed to load image for achievement '\(achievement.title)'")
-                    }
-                })
+                if let identifier = achievement.identifier {
+                    achievement.loadImage(completionHandler: { (image, error) in
+                        if error != nil {
+                            NSLog("Failed to load image for achievement '\(achievement.title)'")
+                            self.achievementImages[identifier] = GKAchievementDescription.placeholderCompletedAchievementImage()
+                        } else if let image = image {
+                            self.achievementImages[identifier] = image
+                            
+                        } else {
+                            self.achievementImages[identifier] = GKAchievementDescription.placeholderCompletedAchievementImage()
+                        }
+                    })
+                    
+                }
             }
+            self.achievementsAreLoaded = true
         }
     }
     
     //MARK: UITableViewDataSource Methods
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if gameCenterIsAuthenticated {
+        if achievementsAreLoaded {
             return achievementDescriptions.count
         }
         else {
@@ -87,6 +101,16 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: AchievementTableViewCell = tableView.dequeueReusableCell(withIdentifier: "AchievementTableViewCell", for: indexPath) as! AchievementTableViewCell
         let row: Int = indexPath.row
+        
+        let achievementIdentifier: String = achievementDescriptions[row].identifier!
+        
+        if let achievementProgress = self.achievementProgress[achievementIdentifier] {
+            cell.achievementProgress = achievementProgress
+        }
+        
+        if let achievementImage = self.achievementImages[achievementIdentifier] {
+            cell.achievementImage = achievementImage
+        }
         
         cell.achievement = achievementDescriptions[row]
         
@@ -99,20 +123,67 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     
     //MARK: UITableViewDelegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.expandedRow = indexPath
-        tableView.beginUpdates()
-        tableView.endUpdates()
-        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+        if indexPath == self.expandedPath {
+            tableView.deselectRow(at: indexPath, animated: true)
+            let cell: AchievementTableViewCell = tableView.cellForRow(at: indexPath) as! AchievementTableViewCell
+            cell.wasDeselected()
+            
+            self.expandedPath = nil
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        } else {
+            if let expandedPath = self.expandedPath {
+                AchievementTableViewHandler.deselectRowIn(tableView, atIndex: expandedPath, true)
+            }
+                
+            self.expandedPath = indexPath
+            tableView.beginUpdates()
+            tableView.endUpdates()
+            tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+            
+            let cell: AchievementTableViewCell = tableView.cellForRow(at: indexPath) as! AchievementTableViewCell
+            cell.wasSelected()
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let expandedRow = self.expandedRow else {
-            return normalHeight
+        guard let expandedPath = self.expandedPath else {
+            return AchievementTableViewCell.defaultHeight
         }
-        if indexPath == expandedRow {
-            return expandedHeight
+        
+        if indexPath == expandedPath {
+            let achievementIdentifier: String = achievementDescriptions[indexPath.row].identifier!
+            let achievedDescription: String = achievementDescriptions[indexPath.row].achievedDescription!
+            let unachievedDescription: String = achievementDescriptions[indexPath.row].unachievedDescription!
+            
+            if let achievementProgress = self.achievementProgress[achievementIdentifier] {
+                if achievementProgress == 100.0 {
+                    return AchievementTableViewCell.expandedHeightNecessary(forDescription: achievedDescription)
+                } else {
+                    return AchievementTableViewCell.expandedHeightNecessary(forDescription: unachievedDescription)
+                }
+            }
+            
+            return AchievementTableViewCell.expandedHeightNecessary(forDescription: unachievedDescription)
         } else {
-            return normalHeight
+            return AchievementTableViewCell.defaultHeight
         }
+    }
+    
+    //MARK: Helper functions
+    class func deselectAllAchievements(_ tableView: UITableView, _ animated: Bool) {
+        if let selectedIndices: [IndexPath] = tableView.indexPathsForSelectedRows {
+            for selectedIndex in selectedIndices {
+                let cell: AchievementTableViewCell = tableView.cellForRow(at: selectedIndex) as! AchievementTableViewCell
+                cell.wasDeselected()
+                
+                tableView.deselectRow(at: selectedIndex, animated: animated)
+            }
+        }
+    }
+    
+    class func deselectRowIn(_ tableView: UITableView, atIndex index: IndexPath, _ animated: Bool) {
+        let cell: AchievementTableViewCell = tableView.cellForRow(at: index) as! AchievementTableViewCell
+        cell.wasDeselected()
     }
 }

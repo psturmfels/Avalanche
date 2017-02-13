@@ -43,7 +43,7 @@ class MenuScene: SKScene {
     var achievementButton: ButtonNode!
     var leaderboardTable: UITableView!
     var achievementTable: UITableView!
-    var achievementTableHandler: AchievementTableViewHandler!
+    weak var achievementTableHandler: AchievementTableViewHandler!
     
     var titleLabel: LabelNode!
     var settingsLabel: LabelNode!
@@ -311,19 +311,20 @@ class MenuScene: SKScene {
         leaderboardTable.frame.size.height = leaderboardHeight
         leaderboardTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + 40)
         leaderboardTable.isHidden = true
-        leaderboardTable.tableFooterView = UIView()
+        leaderboardTable.separatorStyle = UITableViewCellSeparatorStyle.none
+        leaderboardTable.backgroundColor = UIColor.clear
         
         achievementTable = UITableView(frame: self.frame, style: UITableViewStyle.plain)
         achievementTable.frame.size.width = self.frame.width - 40
         achievementTable.frame.size.height = leaderboardHeight
         achievementTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + 40)
-        achievementTable.backgroundColor = UIColor.red
-        achievementTable.tableFooterView = UIView()
+        achievementTable.separatorStyle = UITableViewCellSeparatorStyle.none
+        achievementTable.backgroundColor = UIColor.clear
         
         self.view!.addSubview(leaderboardTable)
         self.view!.addSubview(achievementTable)
         
-        achievementTableHandler = AchievementTableViewHandler()
+        achievementTableHandler = GameKitController.achievementTableHandler
         
 //        leaderboardTable.dataSource = tableHandler
 //        leaderboardTable.delegate = tableHandler

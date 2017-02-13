@@ -27,6 +27,7 @@ class GameViewController: UIViewController {
     
     //MARK: View Methods
     override func viewDidLoad() {
+        
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.presentGameCenterViewController), name: NSNotification.Name(rawValue: "presentScores"), object: nil)
         

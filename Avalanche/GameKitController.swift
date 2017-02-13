@@ -30,6 +30,8 @@ class GameKitController: NSObject {
         return achievementArray
     }()
     
+    static let achievementTableHandler: AchievementTableViewHandler = AchievementTableViewHandler()
+    
     class func report(_ score: Int, toLeaderboard leaderboard: LeaderboardTypes) {
         postNotification(withName: "reportScore", andUserInfo: ["highScore": score, "leaderboard": leaderboard.rawValue])
     }
