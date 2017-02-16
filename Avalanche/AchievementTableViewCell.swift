@@ -128,7 +128,7 @@ class AchievementTableViewCell: UITableViewCell {
         achievementTitleLabel.frame.origin.y = achievementImageView.frame.origin.y + achievementImageView.frame.height * 0.5 - achievementTitleLabel.frame.height * 0.5
         
         achievementDescriptionLabel.sizeToFit()
-        achievementDescriptionLabel.frame.origin.y = achievementImageView.frame.height + 45.0
+        achievementDescriptionLabel.frame.origin.y = AchievementTableViewCell.defaultImageSize.height + 45.0
         achievementDescriptionLabel.frame.origin.x = 20.0
     }
     

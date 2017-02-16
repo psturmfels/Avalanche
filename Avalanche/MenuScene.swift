@@ -203,6 +203,9 @@ class MenuScene: SKScene {
         
         dismissBackToMenu()
         returnMenu()
+        
+        GameKitController.achievementTableHandler.expandedPath = nil
+        AchievementTableViewHandler.deselectAllAchievements(achievementTable, false)
     }
     
     func displaySettings() {

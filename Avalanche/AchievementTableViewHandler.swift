@@ -180,6 +180,8 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                 tableView.deselectRow(at: selectedIndex, animated: animated)
             }
         }
+        let zeroIndex: IndexPath = IndexPath(row: 0, section: 0)
+        tableView.scrollToRow(at: zeroIndex, at: UITableViewScrollPosition.top, animated: animated)
     }
     
     class func deselectRowIn(_ tableView: UITableView, atIndex index: IndexPath, _ animated: Bool) {
