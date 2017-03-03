@@ -25,7 +25,7 @@ class AchievementTableViewCell: UITableViewCell {
         descriptionLabel.font = AchievementTableViewCell.descriptionFont
         descriptionLabel.text = description
         descriptionLabel.sizeToFit()
-
+        
         return AchievementTableViewCell.expandedImageSize.height + descriptionLabel.frame.height + AchievementTableViewCell.excessHeight
     }
     
@@ -35,6 +35,7 @@ class AchievementTableViewCell: UITableViewCell {
     
     var achievementTitleLabel: UILabel!
     var achievementDescriptionLabel: UILabel!
+    var isExpanded: Bool = false
     
     var achievementProgress: Double = 0.0
     
@@ -96,6 +97,8 @@ class AchievementTableViewCell: UITableViewCell {
     }
     
     func updateCellUI() {
+        self.frame.size.height = LeaderboardTableViewCell.defaultHeight
+        
         guard let achievement = self.achievement else {
             return
         }
@@ -110,17 +113,29 @@ class AchievementTableViewCell: UITableViewCell {
             AchievementTableViewCell.defaultWidth = whiteBackdrop.frame.width - 40.0
         }
         
-        achievementTitleLabel.text = achievement.title!
+        if let title = achievement.title {
+            achievementTitleLabel.text = title
+        } else {
+            achievementTitleLabel.text = "Achievement"
+        }
         achievementTitleLabel.sizeToFit()
         
         achievementDescriptionLabel.frame.size.width = whiteBackdrop.frame.width - 40.0
         achievementDescriptionLabel.frame.size.height = CGFloat.greatestFiniteMagnitude
         
         if achievementProgress == 100.0 {
-            achievementDescriptionLabel.text = achievement.achievedDescription!
+            if let achievedDescription = achievement.achievedDescription {
+                achievementDescriptionLabel.text = achievedDescription
+            } else {
+                achievementDescriptionLabel.text = "This is a description for an achievement that has already been achieved by the local player."
+            }
             achievementImageView.image = achievementImage
         } else {
-            achievementDescriptionLabel.text = achievement.unachievedDescription!
+            if let unachievedDescription = achievement.unachievedDescription {
+                achievementDescriptionLabel.text = unachievedDescription
+            } else {
+                achievementDescriptionLabel.text = "This is a description for an achievement that has not yet been achieved by the local player."
+            }
             achievementImageView.image = GKAchievementDescription.incompleteAchievementImage()
         }
         
@@ -130,12 +145,18 @@ class AchievementTableViewCell: UITableViewCell {
         achievementDescriptionLabel.sizeToFit()
         achievementDescriptionLabel.frame.origin.y = AchievementTableViewCell.defaultImageSize.height + 45.0
         achievementDescriptionLabel.frame.origin.x = 20.0
+        
+        if isExpanded {
+            self.wasSelected(animateWithDuration: 0.0)
+        } else {
+            self.wasDeselected(animateWithDuration: 0.0)
+        }
     }
     
-    func wasSelected() {
-        UIView.animate(withDuration: 0.2) {
+    func wasSelected(animateWithDuration duration: Float = 0.2) {
+        UIView.animate(withDuration: TimeInterval(duration)) {
             self.achievementImageView.frame.size = AchievementTableViewCell.expandedImageSize
-            self.whiteBackdrop.frame.size.height += AchievementTableViewCell.expandedImageSize.height + self.achievementDescriptionLabel.frame.height + AchievementTableViewCell.excessHeight - AchievementTableViewCell.defaultHeight
+            self.whiteBackdrop.frame.size.height = AchievementTableViewCell.expandedImageSize.height + self.achievementDescriptionLabel.frame.height + AchievementTableViewCell.excessHeight - 20
             self.achievementDescriptionLabel.alpha = 1.0
             
             self.achievementTitleLabel.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
@@ -144,10 +165,10 @@ class AchievementTableViewCell: UITableViewCell {
         }
     }
     
-    func wasDeselected() {
-        UIView.animate(withDuration: 0.2) {
+    func wasDeselected(animateWithDuration duration: Float = 0.2) {
+        UIView.animate(withDuration: TimeInterval(duration)) {
             self.achievementImageView.frame.size = AchievementTableViewCell.defaultImageSize
-            self.whiteBackdrop.frame.size.height -= AchievementTableViewCell.expandedImageSize.height + self.achievementDescriptionLabel.frame.height + AchievementTableViewCell.excessHeight - AchievementTableViewCell.defaultHeight
+            self.whiteBackdrop.frame.size.height = AchievementTableViewCell.defaultHeight - 20
             self.achievementDescriptionLabel.alpha = 0.0
             
             self.achievementTitleLabel.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)

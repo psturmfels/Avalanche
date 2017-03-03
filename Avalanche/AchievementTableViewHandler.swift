@@ -24,9 +24,16 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     var achievementsAreLoaded: Bool = false
     
+    var staticAchievements: [GKAchievementDescription] = [GKAchievementDescription]() //TODO: DELETE ME
+    
     override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(AchievementTableViewHandler.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
+        
+        for _ in 0...50 {
+            let achievement: GKAchievementDescription = GKAchievementDescription()
+            staticAchievements.append(achievement)
+        } //TODO: DELETE ME 
     }
     
     
@@ -84,7 +91,8 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                     
                 }
             }
-            self.achievementsAreLoaded = true
+//            self.achievementsAreLoaded = true
+//            TODO: UNCOMMENT ME
         }
     }
     
@@ -94,11 +102,31 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             return achievementDescriptions.count
         }
         else {
-            return 0
+            return staticAchievements.count
+//            TODO: FIX ME
+//            return 0
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard achievementsAreLoaded else {
+            let cell: AchievementTableViewCell = tableView.dequeueReusableCell(withIdentifier: "AchievementTableViewCell", for: indexPath) as! AchievementTableViewCell
+            let row: Int = indexPath.row
+            
+            if let expandedPath = self.expandedPath, expandedPath == indexPath {
+                cell.isExpanded = true
+            } else {
+                cell.isExpanded = false
+            }
+            
+            cell.achievement = staticAchievements[row]
+            
+            return cell
+            
+//            TODO: DELETE ME
+//            return AchievementTableViewCell()
+        }
+        
         let cell: AchievementTableViewCell = tableView.dequeueReusableCell(withIdentifier: "AchievementTableViewCell", for: indexPath) as! AchievementTableViewCell
         let row: Int = indexPath.row
         
@@ -110,6 +138,12 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         
         if let achievementImage = self.achievementImages[achievementIdentifier] {
             cell.achievementImage = achievementImage
+        }
+        
+        if let expandedPath = self.expandedPath, expandedPath == indexPath {
+            cell.isExpanded = true
+        } else {
+            cell.isExpanded = false
         }
         
         cell.achievement = achievementDescriptions[row]
@@ -152,6 +186,12 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         }
         
         if indexPath == expandedPath {
+            guard achievementsAreLoaded else {
+                return AchievementTableViewCell.expandedHeightNecessary(forDescription: "This is a description for an achievement that has not yet been achieved by the local player.")
+//                TODO: FIX ME
+//                return AchievementTableViewCell.defaultHeight
+            }
+            
             let achievementIdentifier: String = achievementDescriptions[indexPath.row].identifier!
             let achievedDescription: String = achievementDescriptions[indexPath.row].achievedDescription!
             let unachievedDescription: String = achievementDescriptions[indexPath.row].unachievedDescription!

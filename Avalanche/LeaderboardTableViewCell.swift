@@ -109,13 +109,6 @@ class LeaderboardTableViewCell: UITableViewCell {
             userLabel.text = "Anonymous"
         }
         
-        if isExpanded {
-            self.userLabel.numberOfLines = 0
-            self.userLabel.lineBreakMode = NSLineBreakMode.byCharWrapping
-            self.userLabel.frame.size.width = LeaderboardTableViewCell.defaultWidth
-            self.userLabel.frame.size.height = CGFloat.greatestFiniteMagnitude
-        }
-        
         scoreLabel.sizeToFit()
         userLabel.sizeToFit()
         
@@ -125,32 +118,33 @@ class LeaderboardTableViewCell: UITableViewCell {
         userLabel.frame.origin.y = whiteBackdrop.frame.origin.y + whiteBackdrop.frame.height * 0.5 - userLabel.frame.height * 0.5
         
         if isExpanded {
-            self.whiteBackdrop.frame.size.height = self.userLabel.frame.height + LeaderboardTableViewCell.excessHeight - 20
+            self.wasSelected(animateWithDuration: 0.0)
+        } else {
+            self.wasDeselected(animateWithDuration: 0.0)
         }
     }
     
-    func wasSelected() {
+    func wasSelected(animateWithDuration duration: Float = 0.2) {
         let previousYPoint: CGFloat = self.userLabel.frame.origin.y
-        
         self.userLabel.numberOfLines = 0
         self.userLabel.lineBreakMode = NSLineBreakMode.byCharWrapping
         self.userLabel.frame.size.width = LeaderboardTableViewCell.defaultWidth
         self.userLabel.frame.size.height = CGFloat.greatestFiniteMagnitude
         self.userLabel.sizeToFit()
         self.userLabel.frame.origin.y = previousYPoint
-        UIView.animate(withDuration: 0.2) {
+        UIView.animate(withDuration: TimeInterval(duration)) {
             self.whiteBackdrop.frame.size.height = self.userLabel.frame.height + LeaderboardTableViewCell.excessHeight - 20
         }
     }
     
-    func wasDeselected() {
+    func wasDeselected(animateWithDuration duration: Float = 0.2) {
         let previousYPoint: CGFloat = self.userLabel.frame.origin.y
         self.userLabel.numberOfLines = 1
         self.userLabel.lineBreakMode = NSLineBreakMode.byTruncatingTail
         self.userLabel.sizeToFit()
         self.userLabel.frame.origin.y = previousYPoint
         
-        UIView.animate(withDuration: 0.2) {
+        UIView.animate(withDuration: TimeInterval(duration)) {
             self.whiteBackdrop.frame.size.height = LeaderboardTableViewCell.defaultHeight - 20
         }
     }
