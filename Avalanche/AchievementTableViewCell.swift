@@ -133,7 +133,7 @@ class AchievementTableViewCell: UITableViewCell {
     }
     
     func wasSelected() {
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: 0.2) {
             self.achievementImageView.frame.size = AchievementTableViewCell.expandedImageSize
             self.whiteBackdrop.frame.size.height += AchievementTableViewCell.expandedImageSize.height + self.achievementDescriptionLabel.frame.height + AchievementTableViewCell.excessHeight - AchievementTableViewCell.defaultHeight
             self.achievementDescriptionLabel.alpha = 1.0
@@ -145,7 +145,7 @@ class AchievementTableViewCell: UITableViewCell {
     }
     
     func wasDeselected() {
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: 0.2) {
             self.achievementImageView.frame.size = AchievementTableViewCell.defaultImageSize
             self.whiteBackdrop.frame.size.height -= AchievementTableViewCell.expandedImageSize.height + self.achievementDescriptionLabel.frame.height + AchievementTableViewCell.excessHeight - AchievementTableViewCell.defaultHeight
             self.achievementDescriptionLabel.alpha = 0.0
@@ -155,4 +155,6 @@ class AchievementTableViewCell: UITableViewCell {
             self.achievementTitleLabel.frame.origin.y = self.achievementImageView.frame.origin.y + self.achievementImageView.frame.height * 0.5 - self.achievementTitleLabel.frame.height * 0.5
         }
     }
+    
+    
 }

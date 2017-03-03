@@ -44,6 +44,7 @@ class MenuScene: SKScene {
     var leaderboardTable: UITableView!
     var achievementTable: UITableView!
     weak var achievementTableHandler: AchievementTableViewHandler!
+    weak var leaderboardTableHandler: LeaderboardTableViewHandler!
     
     var titleLabel: LabelNode!
     var settingsLabel: LabelNode!
@@ -184,6 +185,14 @@ class MenuScene: SKScene {
                 }, completion: { (_) in
                     UITableView.animate(withDuration: 0.2, animations: {
                         tableView.frame.origin.x -= self.frame.width + 35
+                    }, completion: { (_) in
+                        if tableView == self.achievementTable {
+                            GameKitController.achievementTableHandler.expandedPath = nil
+                            AchievementTableViewHandler.deselectAllAchievements(self.achievementTable, false)
+                        } else if tableView == self.leaderboardTable {
+                            GameKitController.leaderboardTableHandler.expandedPath = nil
+                            LeaderboardTableViewHandler.deselectAllAScores(self.leaderboardTable, false)
+                        }
                     })
                 })
             })
@@ -198,14 +207,12 @@ class MenuScene: SKScene {
         achievementButton.run(reverseLeftSequence)
         leaderboardButton.run(reverseLeftSequence)
         
+        
         animateLeft(table: leaderboardTable)
         animateLeft(table: achievementTable)
         
         dismissBackToMenu()
         returnMenu()
-        
-        GameKitController.achievementTableHandler.expandedPath = nil
-        AchievementTableViewHandler.deselectAllAchievements(achievementTable, false)
     }
     
     func displaySettings() {
@@ -328,12 +335,14 @@ class MenuScene: SKScene {
         self.view!.addSubview(achievementTable)
         
         achievementTableHandler = GameKitController.achievementTableHandler
-        
-//        leaderboardTable.dataSource = tableHandler
-//        leaderboardTable.delegate = tableHandler
         achievementTable.dataSource = achievementTableHandler
         achievementTable.delegate = achievementTableHandler
         achievementTable.register(AchievementTableViewCell.self, forCellReuseIdentifier: "AchievementTableViewCell")
+        
+        leaderboardTableHandler = GameKitController.leaderboardTableHandler
+        leaderboardTable.dataSource = leaderboardTableHandler
+        leaderboardTable.delegate = leaderboardTableHandler
+        leaderboardTable.register(LeaderboardTableViewCell.self, forCellReuseIdentifier: "LeaderboardTableViewCell")
     }
     
     func createScoreButtons() {

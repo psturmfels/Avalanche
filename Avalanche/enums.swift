@@ -18,8 +18,9 @@ enum Achievement: String {
     case Clueless = "Clueless"
 }
 
-enum LeaderboardTypes: Int {
-    case classic = 1
+enum LeaderboardTypes: String {
+    case classic = "classicModeLeaderboard"
+    case arcade  = "arcadeModeLeaderboard"
 }
 
 enum MenuStates: Int {

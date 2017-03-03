@@ -30,6 +30,7 @@ class GameKitController: NSObject {
         return achievementArray
     }()
     
+    static let leaderboardTableHandler: LeaderboardTableViewHandler = LeaderboardTableViewHandler()
     static let achievementTableHandler: AchievementTableViewHandler = AchievementTableViewHandler()
     
     class func report(_ score: Int, toLeaderboard leaderboard: LeaderboardTypes) {
@@ -87,35 +88,29 @@ class GameKitController: NSObject {
     
     //MARK: Scores
     func reportScore(notification: Notification) {
-        guard let dictionary = notification.userInfo as? [String: Int] else {
+        guard let dictionary = notification.userInfo as? [String: Any] else {
             return
         }
         
-        guard let highScore = dictionary["highScore"] else {
+        guard let highScore: Int = dictionary["highScore"] as? Int else {
             return
         }
         
-        //        guard let leaderBoard: Int = dictionary["leaderboard"] else {
-        //            return
-        //        }
+        guard let leaderboardIdentifier: String = dictionary["leaderboard"] as? String else {
+            return
+        }
         
         let localPlayer = GKLocalPlayer.localPlayer()
         guard localPlayer.isAuthenticated else {
             return
         }
         
-        localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (identifier, error) in
+        let scoreObject: GKScore = GKScore(leaderboardIdentifier: leaderboardIdentifier, player: localPlayer)
+        scoreObject.value = Int64(highScore)
+        
+        GKScore.report([scoreObject], withCompletionHandler: { (error) in
             if error != nil {
-                NSLog("Could not load leaderboard: \(error!)")
-            } else if let leaderboardIdentifier = identifier {
-                let scoreObject: GKScore = GKScore(leaderboardIdentifier: leaderboardIdentifier, player: localPlayer)
-                scoreObject.value = Int64(highScore)
-                
-                GKScore.report([scoreObject], withCompletionHandler: { (error) in
-                    if error != nil {
-                        NSLog("Could not report score \(scoreObject) to leaderboard \(leaderboardIdentifier)")
-                    }
-                })
+                NSLog("Could not report score \(scoreObject) to leaderboard \(leaderboardIdentifier)")
             }
         })
         

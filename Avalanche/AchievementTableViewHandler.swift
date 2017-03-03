@@ -121,7 +121,7 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         return 1
     }
     
-    //MARK: UITableViewDelegate
+    //MARK: UITableViewDelegate Methods
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath == self.expandedPath {
             tableView.deselectRow(at: indexPath, animated: true)
@@ -174,8 +174,9 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     class func deselectAllAchievements(_ tableView: UITableView, _ animated: Bool) {
         if let selectedIndices: [IndexPath] = tableView.indexPathsForSelectedRows {
             for selectedIndex in selectedIndices {
-                let cell: AchievementTableViewCell = tableView.cellForRow(at: selectedIndex) as! AchievementTableViewCell
-                cell.wasDeselected()
+                if let cell: AchievementTableViewCell = tableView.cellForRow(at: selectedIndex) as? AchievementTableViewCell {
+                    cell.wasDeselected()
+                }
                 
                 tableView.deselectRow(at: selectedIndex, animated: animated)
             }
@@ -185,7 +186,8 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     
     class func deselectRowIn(_ tableView: UITableView, atIndex index: IndexPath, _ animated: Bool) {
-        let cell: AchievementTableViewCell = tableView.cellForRow(at: index) as! AchievementTableViewCell
-        cell.wasDeselected()
+        if let cell: AchievementTableViewCell = tableView.cellForRow(at: index) as? AchievementTableViewCell {
+            cell.wasDeselected()
+        }
     }
 }
