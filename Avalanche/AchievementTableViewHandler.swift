@@ -80,12 +80,8 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                     achievement.loadImage(completionHandler: { (image, error) in
                         if error != nil {
                             NSLog("Failed to load image for achievement '\(achievement.title)'")
-                            self.achievementImages[identifier] = GKAchievementDescription.placeholderCompletedAchievementImage()
                         } else if let image = image {
                             self.achievementImages[identifier] = image
-                            
-                        } else {
-                            self.achievementImages[identifier] = GKAchievementDescription.placeholderCompletedAchievementImage()
                         }
                     })
                     
@@ -134,10 +130,14 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         
         if let achievementProgress = self.achievementProgress[achievementIdentifier] {
             cell.achievementProgress = achievementProgress
+        } else {
+            cell.achievementProgress = 0.0
         }
         
         if let achievementImage = self.achievementImages[achievementIdentifier] {
             cell.achievementImage = achievementImage
+        } else {
+            cell.achievementImage = AchievementTableViewCell.defaultAchievementImage
         }
         
         if let expandedPath = self.expandedPath, expandedPath == indexPath {

@@ -155,7 +155,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         
         if indexPath == expandedPath {
             guard scoresAreLoaded else {
-                return LeaderboardTableViewCell.expandedHeightNecessary(forUser: "Anonymous")
+                return LeaderboardTableViewCell.expandedHeightNecessary(forUser: "ThisIsAUserWithAnObnoxiouslyLongName", andRank: 100)
                 //TODO: FIX ME
 //                return LeaderboardTableViewCell.defaultHeight
             }
@@ -167,7 +167,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                 return LeaderboardTableViewCell.defaultHeight
             }
             
-            return LeaderboardTableViewCell.expandedHeightNecessary(forUser: userName)
+            return LeaderboardTableViewCell.expandedHeightNecessary(forUser: userName, andRank: scoreArray[indexPath.row].value)
             
         } else {
             return LeaderboardTableViewCell.defaultHeight

@@ -17,6 +17,7 @@ class AchievementTableViewCell: UITableViewCell {
     static let defaultHeight: CGFloat = 80.0
     static var defaultWidth: CGFloat = 240.0
     static let excessHeight: CGFloat = 40.0
+    static let defaultAchievementImage: UIImage = UIImage(named: "placeholderAchievementImage")!
     
     class func expandedHeightNecessary(forDescription description: String) -> CGFloat {
         let descriptionLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: AchievementTableViewCell.defaultWidth, height: CGFloat.greatestFiniteMagnitude))
@@ -31,7 +32,7 @@ class AchievementTableViewCell: UITableViewCell {
     
     var whiteBackdrop: UIView!
     var achievementImageView: UIImageView!
-    var achievementImage: UIImage = GKAchievementDescription.placeholderCompletedAchievementImage()
+    var achievementImage: UIImage = AchievementTableViewCell.defaultAchievementImage
     
     var achievementTitleLabel: UILabel!
     var achievementDescriptionLabel: UILabel!
@@ -75,6 +76,8 @@ class AchievementTableViewCell: UITableViewCell {
         achievementTitleLabel.font = AchievementTableViewCell.titleFont
         achievementTitleLabel.textColor = UIColor.black
         achievementTitleLabel.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        achievementTitleLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+        achievementTitleLabel.numberOfLines = 1
         
         achievementDescriptionLabel = UILabel()
         achievementDescriptionLabel.font = AchievementTableViewCell.descriptionFont
@@ -118,6 +121,7 @@ class AchievementTableViewCell: UITableViewCell {
         } else {
             achievementTitleLabel.text = "Achievement"
         }
+        
         achievementTitleLabel.sizeToFit()
         
         achievementDescriptionLabel.frame.size.width = whiteBackdrop.frame.width - 40.0
@@ -136,7 +140,7 @@ class AchievementTableViewCell: UITableViewCell {
             } else {
                 achievementDescriptionLabel.text = "This is a description for an achievement that has not yet been achieved by the local player."
             }
-            achievementImageView.image = GKAchievementDescription.incompleteAchievementImage()
+            achievementImageView.image = AchievementTableViewCell.defaultAchievementImage
         }
         
         achievementTitleLabel.frame.origin.x = achievementImageView.frame.origin.x + achievementImageView.frame.width + 20.0
@@ -155,6 +159,14 @@ class AchievementTableViewCell: UITableViewCell {
     
     func wasSelected(animateWithDuration duration: Float = 0.2) {
         UIView.animate(withDuration: TimeInterval(duration)) {
+            if let text = self.achievementTitleLabel.text, text.characters.count > 10 {
+                self.achievementTitleLabel.numberOfLines = 2
+            } else {
+                self.achievementTitleLabel.numberOfLines = 1
+            }
+            self.achievementTitleLabel.frame.size.width = self.whiteBackdrop.frame.width - AchievementTableViewCell.defaultImageSize.width - 120.0
+            self.achievementTitleLabel.sizeToFit()
+            
             self.achievementImageView.frame.size = AchievementTableViewCell.expandedImageSize
             self.whiteBackdrop.frame.size.height = AchievementTableViewCell.expandedImageSize.height + self.achievementDescriptionLabel.frame.height + AchievementTableViewCell.excessHeight - 20
             self.achievementDescriptionLabel.alpha = 1.0
@@ -167,6 +179,10 @@ class AchievementTableViewCell: UITableViewCell {
     
     func wasDeselected(animateWithDuration duration: Float = 0.2) {
         UIView.animate(withDuration: TimeInterval(duration)) {
+            self.achievementTitleLabel.numberOfLines = 1
+            self.achievementTitleLabel.frame.size.width = self.whiteBackdrop.frame.width - AchievementTableViewCell.defaultImageSize.width
+            self.achievementTitleLabel.sizeToFit()
+            
             self.achievementImageView.frame.size = AchievementTableViewCell.defaultImageSize
             self.whiteBackdrop.frame.size.height = AchievementTableViewCell.defaultHeight - 20
             self.achievementDescriptionLabel.alpha = 0.0
