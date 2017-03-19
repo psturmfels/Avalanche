@@ -41,7 +41,10 @@ class GameKitController: NSObject {
         postNotification(withName: "reportAchievement", andUserInfo: ["achievementName": achievement.rawValue, "percentComplete": percentComplete])
     }
     
-    override init() {
+    var mutableAchievementsDictionary: NSMutableDictionary!
+    var achievementDictionaryURL: URL!
+    
+    override init() {        
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(GameKitController.reportScore), name: NSNotification.Name("reportScore"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameKitController.reportAchievement), name: NSNotification.Name("reportAchievement"), object: nil)
@@ -61,6 +64,9 @@ class GameKitController: NSObject {
         guard let percentComplete = dictionary["percentComplete"] as? Double else {
             return
         }
+        
+        self.mutableAchievementsDictionary.setValue(percentComplete, forKey: achievementName)
+        self.mutableAchievementsDictionary.write(to: self.achievementDictionaryURL, atomically: true)
         
         let localPlayer = GKLocalPlayer.localPlayer()
         guard localPlayer.isAuthenticated else {

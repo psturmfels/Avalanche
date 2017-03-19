@@ -19,8 +19,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        let achievementsDefaultsFile: URL = Bundle.main.url(forResource: "Achievements", withExtension: "plist")!
+        let achievementsDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: achievementsDefaultsFile)!
         
         gameKitController = GameKitController()
+        let userDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        if let achievementsDirectory = NSURL(fileURLWithPath: userDirectory).appendingPathComponent("Achievements.plist") {
+            gameKitController.achievementDictionaryURL = achievementsDirectory
+            
+            if let achievementsDictionary = NSDictionary(contentsOf: achievementsDirectory) {
+                gameKitController.mutableAchievementsDictionary = achievementsDictionary.mutableCopy() as! NSMutableDictionary
+                print(achievementsDictionary)
+            } else {
+                achievementsDefaultsDictionary.write(to: achievementsDirectory, atomically: true)
+            }
+        }
         
         //Initialize the GameCenter Player
         GameKitController.authenticateLocalPlayer()
