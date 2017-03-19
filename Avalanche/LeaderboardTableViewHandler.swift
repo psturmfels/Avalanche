@@ -23,17 +23,10 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     var leaderboards: [GKLeaderboard]!
     var scores: [String: [GKScore]] = [String: [GKScore]]()
     var currentLeaderboard: String!
-    var staticScores: [GKScore] = [GKScore]() //TODO: DELETE ME
     
     override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(LeaderboardTableViewHandler.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
-        
-        for i in 0...50 {
-            let score: GKScore = GKScore(leaderboardIdentifier: "classicMode")
-            score.value = Int64(100 + i * 10)
-            staticScores.append(score)
-        }//TODO: DELETE ME
     }
     
     //MARK: GameCenter Methods
@@ -93,8 +86,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                     
                 })
             }
-            self.scoresAreLoaded = true 
-            //TODO: UNCOMMENT ME
+            self.scoresAreLoaded = true
         }
     }
     
@@ -105,7 +97,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard scoresAreLoaded else {
-            return staticScores.count //TODO: FIX ME
+            return 0
         }
         guard let scoreArray = self.scores[self.currentLeaderboard] else {
             return 0
@@ -116,18 +108,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard scoresAreLoaded else {
-            let cell: LeaderboardTableViewCell = tableView.dequeueReusableCell(withIdentifier: "LeaderboardTableViewCell") as! LeaderboardTableViewCell
-            
-            let row: Int = indexPath.row
-            cell.isExpanded = false
-            if let expandedPath = self.expandedPath, expandedPath == indexPath {
-                cell.isExpanded = true
-            }
-            cell.score = staticScores[row]
-            
-            return cell
-            //TODO: DELETE ME
-//            return LeaderboardTableViewCell()
+            return LeaderboardTableViewCell()
         }
         guard let scoreArray = self.scores[self.currentLeaderboard] else {
             return LeaderboardTableViewCell()
@@ -155,9 +136,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         
         if indexPath == expandedPath {
             guard scoresAreLoaded else {
-                return LeaderboardTableViewCell.expandedHeightNecessary(forUser: "ThisIsAUserWithAnObnoxiouslyLongName", andScore: "\(staticScores[0].value)")
-                //TODO: FIX ME
-//                return LeaderboardTableViewCell.defaultHeight
+                return LeaderboardTableViewCell.defaultHeight
             }
             guard let scoreArray = self.scores[self.currentLeaderboard] else {
                 return LeaderboardTableViewCell.defaultHeight

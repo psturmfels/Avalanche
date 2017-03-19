@@ -32,6 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 print(achievementsDictionary)
             } else {
                 achievementsDefaultsDictionary.write(to: achievementsDirectory, atomically: true)
+                gameKitController.mutableAchievementsDictionary = achievementsDefaultsDictionary.mutableCopy() as! NSMutableDictionary
             }
         }
         

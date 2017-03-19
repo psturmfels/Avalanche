@@ -71,7 +71,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.motionManager.stopAccelerometerUpdates()
                 
                 //Run the game over functions after a specified duration
-                let gameOverAction = SKAction.wait(forDuration: 4.0)
+                let gameOverAction = SKAction.wait(forDuration: 2.0)
                 self.run(gameOverAction, completion: {
                     self.transitionToGameOverScene()
                 })
