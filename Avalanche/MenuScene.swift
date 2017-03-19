@@ -32,6 +32,7 @@ class MenuScene: SKScene {
     //MARK: Buttons and Labels
     var playButton: ButtonLabelNode!
     var scoresButton: ButtonLabelNode!
+    var arcadeButton: ButtonLabelNode!
     var tutorialButton: ButtonNode!
     var settingsButton: ButtonNode!
     
@@ -81,9 +82,11 @@ class MenuScene: SKScene {
         let moveUpSequence: SKAction = SKAction.sequence([MenuScene.downShudder1, MenuScene.downShudder2, MenuScene.downShudder3, upSweep])
         
         playButton.buttonNode.name = ""
+        arcadeButton.buttonNode.name = ""
         scoresButton.buttonNode.name = ""
         
         playButton.run(moveUpSequence)
+        arcadeButton.run(moveUpSequence)
         scoresButton.run(moveUpSequence)
         titleLabel.run(moveUpSequence)
         
@@ -103,6 +106,9 @@ class MenuScene: SKScene {
         let moveDownSequence: SKAction = SKAction.sequence([MenuScene.waitPointFour, downSweep, MenuScene.upShudder1, MenuScene.upShudder2, MenuScene.upShudder3])
         playButton.run(moveDownSequence) { [unowned self] in
             self.playButton.buttonNode.name = "Play"
+        }
+        arcadeButton.run(moveDownSequence) { [unowned self] in
+            self.arcadeButton.buttonNode.name = "Arcade"
         }
         scoresButton.run(moveDownSequence) { [unowned self] in
             self.scoresButton.buttonNode.name = "Scores"
@@ -259,6 +265,10 @@ class MenuScene: SKScene {
         self.scene!.view!.presentScene(gameScene, transition: transition)
     }
     
+    func transitionToArcade() {
+        print("Transition to ARcade mode")
+    }
+    
     func transitionToTutorial() {
         guard self.scene != nil && self.scene?.view != nil else {
             abort();
@@ -403,9 +413,13 @@ class MenuScene: SKScene {
         playButton.setup(withText: "Classic: ", withFontSize: 48.0, withButtonName: "Play", normalTextureName: "playMenuNormal", highlightedTextureName: "playMenuHighlighted", atPosition: center)
         playButton.position.y += playButton.height * 0.5 + 10
         
+        arcadeButton = ButtonLabelNode()
+        arcadeButton.setup(withText: "Arcade: ", withFontSize: 48.0, withButtonName: "Arcade", normalTextureName: "playMenuNormal", highlightedTextureName: "playMenuHighlighted", atPosition: center)
+        arcadeButton.position.y -= arcadeButton.height * 0.5 + 10
+        
         scoresButton = ButtonLabelNode()
         scoresButton.setup(withText: "Scores: ", withFontSize: 48.0, withButtonName: "Scores", normalTextureName: "scoresNormal", highlightedTextureName: "scoresHighlighted", atPosition: center)
-        scoresButton.position.y -= scoresButton.height * 0.5 + 10
+        scoresButton.position.y -= 3.0 * (scoresButton.height * 0.5 + 10)
         scoresButton.alpha = 0.5
         
         tutorialButton = ButtonNode(imageNamed: "tutorialNormal")
@@ -418,6 +432,7 @@ class MenuScene: SKScene {
         settingsButton.position.x -= settingsButton.frame.width + 20
         
         self.addChild(playButton)
+        self.addChild(arcadeButton)
         self.addChild(scoresButton)
         self.addChild(tutorialButton)
         self.addChild(settingsButton)
@@ -493,6 +508,8 @@ class MenuScene: SKScene {
                 if object.name == "Play" {
                     playButton.didPress()
                     break
+                } else if object.name == "Arcade" {
+                    arcadeButton.didPress()
                 } else if object.name == "Tutorial" {
                     tutorialButton.didPress()
                 } else if object.name == "Settings" {
@@ -548,7 +565,7 @@ class MenuScene: SKScene {
             let location = touch.location(in: self)
             let objects = nodes(at: location) as [SKNode]
             for object in objects {
-                if object.name == "Play" || object.name == "Scores" || object.name == "Tutorial" || object.name == "Settings" || object.name == "Menu" {
+                if object.name == "Play" || object.name == "Arcade" || object.name == "Scores" || object.name == "Tutorial" || object.name == "Settings" || object.name == "Menu" {
                     movedOverButton = true
                     break
                 }
@@ -557,6 +574,7 @@ class MenuScene: SKScene {
         
         if !movedOverButton {
             playButton.didRelease()
+            arcadeButton.didRelease()
             scoresButton.didRelease()
             tutorialButton.didRelease()
             settingsButton.didRelease()
@@ -568,6 +586,9 @@ class MenuScene: SKScene {
         if playButton.isPressed {
             playButton.didRelease()
             transitionToGame()
+        } else if arcadeButton.isPressed {
+            arcadeButton.didRelease()
+            transitionToArcade()
         } else if scoresButton.isPressed {
             scoresButton.didRelease()
             if gameCenterIsAuthenticated {
@@ -588,6 +609,7 @@ class MenuScene: SKScene {
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         playButton.didRelease()
+        arcadeButton.didRelease()
         scoresButton.didRelease()
         tutorialButton.didRelease()
         settingsButton.didRelease()

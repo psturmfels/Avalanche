@@ -93,7 +93,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                     
                 })
             }
-//            self.scoresAreLoaded = true 
+            self.scoresAreLoaded = true 
             //TODO: UNCOMMENT ME
         }
     }
@@ -155,7 +155,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         
         if indexPath == expandedPath {
             guard scoresAreLoaded else {
-                return LeaderboardTableViewCell.expandedHeightNecessary(forUser: "ThisIsAUserWithAnObnoxiouslyLongName", andRank: 100)
+                return LeaderboardTableViewCell.expandedHeightNecessary(forUser: "ThisIsAUserWithAnObnoxiouslyLongName", andScore: 100)
                 //TODO: FIX ME
 //                return LeaderboardTableViewCell.defaultHeight
             }
@@ -167,7 +167,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                 return LeaderboardTableViewCell.defaultHeight
             }
             
-            return LeaderboardTableViewCell.expandedHeightNecessary(forUser: userName, andRank: scoreArray[indexPath.row].value)
+            return LeaderboardTableViewCell.expandedHeightNecessary(forUser: userName, andScore: scoreArray[indexPath.row].value)
             
         } else {
             return LeaderboardTableViewCell.defaultHeight

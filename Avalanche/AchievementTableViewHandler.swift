@@ -87,7 +87,7 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                     
                 }
             }
-//            self.achievementsAreLoaded = true
+            self.achievementsAreLoaded = true
 //            TODO: UNCOMMENT ME
         }
     }
