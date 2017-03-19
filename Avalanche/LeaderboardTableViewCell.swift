@@ -16,26 +16,28 @@ class LeaderboardTableViewCell: UITableViewCell {
     static let defaultHeight: CGFloat = 80.0
     static var defaultWidth: CGFloat = 240.0
     static let excessHeight: CGFloat = 70.0
-    static let scoreUserPadding: CGFloat = 15.0
+    static let scoreUserPadding: CGFloat = 10.0
     static let leftScoreMargin: CGFloat = 10.0
-    static let rightUserPadding: CGFloat = 15.0
+    static let rightUserPadding: CGFloat = 30.0
+    static let scoreLabelWidth: CGFloat = 80.0
     
-    class func expandedHeightNecessary(forUser user: String, andScore score: Int64) -> CGFloat {
-        let dummyScoreLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: LeaderboardTableViewCell.defaultWidth, height: CGFloat.greatestFiniteMagnitude))
+    class func expandedHeightNecessary(forUser user: String, andScore scoreString: String) -> CGFloat {
+        let dummyScoreLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: LeaderboardTableViewCell.scoreLabelWidth, height: CGFloat.greatestFiniteMagnitude))
         dummyScoreLabel.numberOfLines = 0
+        dummyScoreLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         dummyScoreLabel.font = LeaderboardTableViewCell.scoreFont
-        dummyScoreLabel.text = "\(score)"
+        dummyScoreLabel.text = scoreString
         dummyScoreLabel.sizeToFit()
         
         let userLabelWidth: CGFloat = LeaderboardTableViewCell.defaultWidth - LeaderboardTableViewCell.leftScoreMargin - LeaderboardTableViewCell.scoreUserPadding - dummyScoreLabel.frame.width - LeaderboardTableViewCell.rightUserPadding
         let dummyUserLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: userLabelWidth , height: CGFloat.greatestFiniteMagnitude))
         dummyUserLabel.numberOfLines = 0
-        dummyUserLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+        dummyUserLabel.lineBreakMode = NSLineBreakMode.byCharWrapping
         dummyUserLabel.font = LeaderboardTableViewCell.userFont
         dummyUserLabel.text = user
         dummyUserLabel.sizeToFit()
         
-        return dummyUserLabel.frame.height + LeaderboardTableViewCell.excessHeight
+        return max(dummyScoreLabel.frame.height + 40.0, dummyUserLabel.frame.height + LeaderboardTableViewCell.excessHeight)
     }
     
     var whiteBackdrop: UIView!
@@ -134,7 +136,7 @@ class LeaderboardTableViewCell: UITableViewCell {
         
         scoreLabel.frame.origin.x = whiteBackdrop.frame.origin.x + LeaderboardTableViewCell.leftScoreMargin
         scoreLabel.frame.origin.y = whiteBackdrop.frame.origin.y + whiteBackdrop.frame.height * 0.5 - scoreLabel.frame.height * 0.5
-        userLabel.frame.origin.x = scoreLabel.frame.origin.x + scoreLabel.frame.width + LeaderboardTableViewCell.scoreUserPadding
+        userLabel.frame.origin.x = scoreLabel.frame.origin.x + LeaderboardTableViewCell.scoreLabelWidth + LeaderboardTableViewCell.scoreUserPadding
         userLabel.frame.origin.y = whiteBackdrop.frame.origin.y + whiteBackdrop.frame.height * 0.5 - userLabel.frame.height * 0.5
         dateLabel.frame.origin.x = userLabel.frame.origin.x
         dateLabel.frame.origin.y = userLabel.frame.origin.y + userLabel.frame.height + 10.0
@@ -147,21 +149,35 @@ class LeaderboardTableViewCell: UITableViewCell {
     }
     
     func wasSelected(animateWithDuration duration: Float = 0.2) {
-        let prevY: CGFloat = self.whiteBackdrop.frame.origin.y + self.whiteBackdrop.frame.height * 0.5 - self.userLabel.frame.height * 0.5
+        let prevScoreY: CGFloat = self.whiteBackdrop.frame.origin.y + self.whiteBackdrop.frame.height * 0.5 - self.scoreLabel.frame.height * 0.5
+        self.scoreLabel.numberOfLines = 0
+        self.scoreLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+        self.scoreLabel.frame.size.height = CGFloat.greatestFiniteMagnitude
+        self.scoreLabel.frame.size.width = LeaderboardTableViewCell.scoreLabelWidth
+        self.scoreLabel.sizeToFit()
+        self.scoreLabel.frame.origin.y = prevScoreY
+        
+        let prevUserY: CGFloat = self.whiteBackdrop.frame.origin.y + self.whiteBackdrop.frame.height * 0.5 - self.userLabel.frame.height * 0.5
         self.userLabel.numberOfLines = 0
         self.userLabel.lineBreakMode = NSLineBreakMode.byCharWrapping
         self.userLabel.frame.size.height = CGFloat.greatestFiniteMagnitude
         let userLabelWidth: CGFloat = LeaderboardTableViewCell.defaultWidth - LeaderboardTableViewCell.leftScoreMargin - LeaderboardTableViewCell.scoreUserPadding - scoreLabel.frame.width - LeaderboardTableViewCell.rightUserPadding
         self.userLabel.frame.size.width = userLabelWidth
         self.userLabel.sizeToFit()
-        self.userLabel.frame.origin.y = prevY
+        self.userLabel.frame.origin.y = prevUserY
         
         guard let score = self.score else {
             return
         }
+        
+        var scoreString: String = "\(score.value)"
+        if let unwrappedScoreFormatted = score.formattedValue {
+            scoreString = unwrappedScoreFormatted
+        }
+        
         guard let alias = score.player?.alias else {
             UIView.animate(withDuration: TimeInterval(duration)) {
-                self.whiteBackdrop.frame.size.height = LeaderboardTableViewCell.expandedHeightNecessary(forUser: "ThisIsAUserWithAnObnoxiouslyLongName", andScore: 100) - 20
+                self.whiteBackdrop.frame.size.height = LeaderboardTableViewCell.expandedHeightNecessary(forUser: "ThisIsAUserWithAnObnoxiouslyLongName", andScore: scoreString) - 20
                 self.dateLabel.frame.origin.y = self.userLabel.frame.origin.y + self.userLabel.frame.height + 10.0
                 self.dateLabel.alpha = 1.0
             }
@@ -169,13 +185,18 @@ class LeaderboardTableViewCell: UITableViewCell {
         }
         
         UIView.animate(withDuration: TimeInterval(duration)) {
-            self.whiteBackdrop.frame.size.height = LeaderboardTableViewCell.expandedHeightNecessary(forUser: alias, andScore: score.value) - 20
+            self.whiteBackdrop.frame.size.height = LeaderboardTableViewCell.expandedHeightNecessary(forUser: alias, andScore: scoreString) - 20
             self.dateLabel.frame.origin.y = self.userLabel.frame.origin.y + self.userLabel.frame.height + 10.0
             self.dateLabel.alpha = 1.0
         }
     }
     
     func wasDeselected(animateWithDuration duration: Float = 0.2) {
+        self.scoreLabel.numberOfLines = 1
+        self.scoreLabel.sizeToFit()
+        self.scoreLabel.lineBreakMode = NSLineBreakMode.byTruncatingTail
+        self.scoreLabel.frame.size.width = LeaderboardTableViewCell.scoreLabelWidth
+        
         self.userLabel.numberOfLines = 1
         self.userLabel.sizeToFit()
         self.userLabel.lineBreakMode = NSLineBreakMode.byTruncatingTail

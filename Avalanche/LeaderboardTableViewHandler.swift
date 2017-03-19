@@ -155,7 +155,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         
         if indexPath == expandedPath {
             guard scoresAreLoaded else {
-                return LeaderboardTableViewCell.expandedHeightNecessary(forUser: "ThisIsAUserWithAnObnoxiouslyLongName", andScore: 100)
+                return LeaderboardTableViewCell.expandedHeightNecessary(forUser: "ThisIsAUserWithAnObnoxiouslyLongName", andScore: "\(staticScores[0].value)")
                 //TODO: FIX ME
 //                return LeaderboardTableViewCell.defaultHeight
             }
@@ -166,8 +166,12 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             guard let userName = scoreArray[indexPath.row].player?.alias else {
                 return LeaderboardTableViewCell.defaultHeight
             }
+            var scoreString: String = "\(scoreArray[indexPath.row].value)"
+            if let unwrappedScoreFormatted = scoreArray[indexPath.row].formattedValue {
+                scoreString = unwrappedScoreFormatted
+            }
             
-            return LeaderboardTableViewCell.expandedHeightNecessary(forUser: userName, andScore: scoreArray[indexPath.row].value)
+            return LeaderboardTableViewCell.expandedHeightNecessary(forUser: userName, andScore: scoreString)
             
         } else {
             return LeaderboardTableViewCell.defaultHeight
