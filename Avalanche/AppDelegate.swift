@@ -29,7 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             if let achievementsDictionary = NSDictionary(contentsOf: achievementsDirectory) {
                 gameKitController.mutableAchievementsDictionary = achievementsDictionary.mutableCopy() as! NSMutableDictionary
-                print(achievementsDictionary)
             } else {
                 achievementsDefaultsDictionary.write(to: achievementsDirectory, atomically: true)
                 gameKitController.mutableAchievementsDictionary = achievementsDefaultsDictionary.mutableCopy() as! NSMutableDictionary

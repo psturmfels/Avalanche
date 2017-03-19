@@ -266,7 +266,17 @@ class MenuScene: SKScene {
     }
     
     func transitionToArcade() {
-        print("Transition to ARcade mode")
+        guard self.scene != nil && self.scene?.view != nil else {
+            abort();
+        }
+        
+        //Load the Game Scene
+        let gameScene: ArcadeModeScene = ArcadeModeScene(fileNamed: "GameScene")!
+        gameScene.size = self.size
+        gameScene.scaleMode = .resizeFill
+        
+        let transition = SKTransition.crossFade(withDuration: 0.5)
+        self.scene!.view!.presentScene(gameScene, transition: transition)
     }
     
     func transitionToTutorial() {

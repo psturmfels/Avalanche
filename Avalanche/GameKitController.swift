@@ -25,6 +25,9 @@ class GameKitController: NSObject {
             }
             if let unwrappedAchievements = fetchedAchievements {
                 achievementArray = unwrappedAchievements
+                for achievement in achievementArray {
+                    print(achievement)
+                }
             }
         })
         return achievementArray
@@ -72,16 +75,7 @@ class GameKitController: NSObject {
         guard localPlayer.isAuthenticated else {
             return
         }
-        
-        let achievementIndex: Int? = achievements.index { (achievement) -> Bool in
-            return achievement.identifier == achievementName
-        }
-        if let i = achievementIndex {
-            if achievements[i].percentComplete >= percentComplete {
-                return
-            }
-        }
-        
+
         let achievement: GKAchievement = GKAchievement(identifier: achievementName, player: localPlayer)
         achievement.percentComplete = percentComplete
         achievement.showsCompletionBanner = true

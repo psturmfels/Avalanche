@@ -1,16 +1,16 @@
 //
-//  ClassicModeScene.swift
+//  ArcadeModeScene.swift
 //  Avalanche
 //
-//  Created by Pascal Sturmfels on 10/18/16.
-//  Copyright (c) 2016 LooseFuzz. All rights reserved.
+//  Created by Pascal Sturmfels on 3/19/17.
+//  Copyright © 2017 LooseFuzz. All rights reserved.
 //
 
 import SpriteKit
 import CoreMotion
 import AVFoundation
 
-class ClassicModeScene: GameScene {
+class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
     
     override func didMove(to view: SKView) {
@@ -26,4 +26,6 @@ class ClassicModeScene: GameScene {
         createBackgroundNotifications()
         startMusic()
     }
+    
+    
 }
