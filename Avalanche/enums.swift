@@ -23,6 +23,11 @@ enum LeaderboardTypes: String {
     case arcade  = "arcadeModeLeaderboard"
 }
 
+enum GameType {
+    case Classic
+    case Arcade
+}
+
 enum MenuStates: Int {
     case menu = 1
     case settings = 2
@@ -43,6 +48,16 @@ enum ButtonStates {
     case controlTapped
 }
 
+enum PowerUpTypes: String {
+    case timeSlow = "timeSlow"
+    
+    static var allTypes = [PowerUpTypes.timeSlow]
+    static func returnRandomType() -> PowerUpTypes {
+        let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.allTypes.count - 1)
+        return PowerUpTypes.allTypes[randomIndex]
+    }
+}
+
 enum DeathTypes {
     case lava
     case crushed
@@ -54,6 +69,7 @@ enum CollisionTypes: UInt32 {
     case background = 2
     case fallingBlock = 4
     case lava = 8
+    case powerUp = 16
 }
 
 enum Orientation {

@@ -14,6 +14,7 @@ class GameOverScene: SKScene {
     var highScore: Int!
     var highScoreLabel: SKLabelNode!
     var scoreLabel: SKLabelNode!
+    var gameType: GameType = GameType.Classic
     
     //MARK: Initializing Methods
     override func didMove(to view: SKView) {
@@ -136,11 +137,20 @@ class GameOverScene: SKScene {
     }
     
     func transitionToReplay() {
-        let gameScene: ClassicModeScene = ClassicModeScene(fileNamed: "GameScene")!
-        gameScene.size = self.size
-        let transition = SKTransition.crossFade(withDuration: 0.5)
-        gameScene.scaleMode = .resizeFill
-        self.scene!.view!.presentScene(gameScene, transition: transition)
+        switch gameType {
+        case .Classic:
+            let gameScene: ClassicModeScene = ClassicModeScene(fileNamed: "GameScene")!
+            gameScene.size = self.size
+            let transition = SKTransition.crossFade(withDuration: 0.5)
+            gameScene.scaleMode = .resizeFill
+            self.scene!.view!.presentScene(gameScene, transition: transition)
+        case .Arcade:
+            let gameScene: ArcadeModeScene = ArcadeModeScene(fileNamed: "GameScene")!
+            gameScene.size = self.size
+            let transition = SKTransition.crossFade(withDuration: 0.5)
+            gameScene.scaleMode = .resizeFill
+            self.scene!.view!.presentScene(gameScene, transition: transition)
+        }
     }
 }
 

@@ -15,6 +15,7 @@ class RoundedBlockNode: SKSpriteNode {
             self.physicsBody!.velocity.dy = fallSpeed
         }
     }
+    var originalFallSpeed: CGFloat = -150.0
     
     //MARK: Creation Method
     func setup(_ minFallSpeed: Float, maxFallSpeed: Float) {
@@ -39,16 +40,17 @@ class RoundedBlockNode: SKSpriteNode {
         self.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.mellow.rawValue | CollisionTypes.fallingBlock.rawValue
         self.name = "fallingBlock"
         
-        fallSpeed = RandomCGFloat(min: minFallSpeed, max: maxFallSpeed)
+        self.fallSpeed = RandomCGFloat(min: minFallSpeed, max: maxFallSpeed)
+        self.originalFallSpeed = fallSpeed
     }
     
     //MARK: Game Methods
     func becomeBackground() {
+        self.name = "backgroundBlock"
         self.physicsBody!.isDynamic = false
         self.run(SKAction.move(by: CGVector(dx: 0, dy: -2.0), duration: 0.0))
         self.physicsBody!.categoryBitMask = CollisionTypes.background.rawValue
         let fadeAction = SKAction.colorize(with: UIColor.black, colorBlendFactor: 1.0, duration: 0.5)
         self.run(fadeAction)
     }
-    
 }

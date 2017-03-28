@@ -42,7 +42,7 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     func loadGameCenterAchievements() {
         GKAchievement.loadAchievements { (achievements, error) in
             if error != nil {
-                NSLog("Failed to load achievement progress with error \(error)")
+                NSLog("Failed to load achievement progress with error \(error!)")
             }
             
             guard let achievements = achievements else {
@@ -58,7 +58,7 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         }
         
         GKAchievementDescription.loadAchievementDescriptions { (descriptions, error) in
-            if error != nil {
+            if let error = error {
                 NSLog("Failed to load achievement descriptions with error \(error).")
             }
             
@@ -71,8 +71,8 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             for achievement in self.achievementDescriptions {
                 if let identifier = achievement.identifier {
                     achievement.loadImage(completionHandler: { (image, error) in
-                        if error != nil {
-                            NSLog("Failed to load image for achievement '\(achievement.title)'")
+                        if let _ = error  {
+                            NSLog("Failed to load image for achievement '\(achievement.title!)'")
                         } else if let image = image {
                             self.achievementImages[identifier] = image
                         }

@@ -45,7 +45,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         }
         
         localPlayer.loadDefaultLeaderboardIdentifier { (defaultIdentifier, error) in
-            if error != nil {
+            if let error = error {
                 NSLog("Error loading default leaderboard identifier: \(error)")
             }
             
@@ -58,7 +58,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         }
         
         GKLeaderboard.loadLeaderboards { (leaderboards, error) in
-            if error != nil {
+            if let error = error {
                 NSLog("Failed to load leaderboards with error \(error)")
             }
             
@@ -73,7 +73,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                 leaderboard.playerScope = GKLeaderboardPlayerScope.global
                 leaderboard.range = NSRange(location: 1, length: 25)
                 leaderboard.loadScores(completionHandler: { (scores, error) in
-                    if error != nil {
+                    if let error = error {
                         NSLog("Failed to load scores for \(leaderboard.identifier!) with error \(error)")
                     }
                     

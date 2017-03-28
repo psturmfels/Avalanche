@@ -1,4 +1,5 @@
 import Foundation
+import GameplayKit
 import UIKit
 
 func RandomInt(min: Int, max: Int) -> Int {
@@ -7,7 +8,7 @@ func RandomInt(min: Int, max: Int) -> Int {
 }
 
 func deg2rad(_ degrees: Int) -> Double {
-    return Double(degrees) * M_PI / 180.0
+    return Double(degrees) * Double.pi / 180.0
 }
 
 func RandomFloat() -> Float {

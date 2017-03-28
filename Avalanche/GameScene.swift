@@ -7,10 +7,14 @@
 //
 
 import SpriteKit
+import GameplayKit
 import CoreMotion
 import AVFoundation
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    //MARK: Random Generator
+    let blockPositionGenerator: GKShuffledDistribution = GKShuffledDistribution(lowestValue: 1, highestValue: 1000)
+    
     
     //MARK: Game Nodes
     var worldNode: SKNode!
@@ -38,62 +42,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    var minFallSpeed: Float = -250.0
+    var maxFallSpeed: Float = -170.0
+    
+    
     var shouldContinueSpawning: Bool = true
     var currentGameState: GameStates = GameStates.gameInProgress {
         didSet {
             switch currentGameState {
             case .gameInProgress:
-                self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
-                
-                UserDefaults.standard.set(audioIsOn, forKey: "Audio")
-                UserDefaults.standard.set(soundEffectsAreOn, forKey: "Audio")
-                if audioIsOn {
-                    if let musicStart = self.action(forKey: "musicStart") {
-                        musicStart.speed = 1.0
-                    } else {
-                        self.backgroundMusic.run(SKAction.play())
-                    }
-                }
-                
-                self.physicsWorld.speed = 1.0
-                if let action = self.action(forKey: "genBlocks") {
-                    action.speed = 1.0
-                }
-                self.removePauseNode()
-                
-                self.motionManager.startAccelerometerUpdates()
+                switchedToInProgress()
                 
             case .gameOver:
-                self.controlButton.didRelease()
-                
-                //Stop generating blocks
-                self.removeAction(forKey: "genBlocks")
-                self.motionManager.stopAccelerometerUpdates()
-                
-                //Run the game over functions after a specified duration
-                let gameOverAction = SKAction.wait(forDuration: 2.0)
-                self.run(gameOverAction, completion: {
-                    self.transitionToGameOverScene()
-                })
-                
+                switchedToOver()
                 
             case .gamePaused:
-                if let musicStart = self.action(forKey: "musicStart") {
-                    musicStart.speed = 0.0
-                } else {
-                    self.backgroundMusic.run(SKAction.pause())
-                }
-                
-                self.controlButton.updateTextureSet(withNormalTextureName: "playNormal", highlightedTextureName: "playHighlighted")
-                
-                self.motionManager.stopAccelerometerUpdates()
-                
-                self.physicsWorld.speed = 0.0
-                if let action = self.action(forKey: "genBlocks") {
-                    action.speed = 0.0
-                }
-                
-                self.displayPauseNode()
+                switchedToPause()
                 
             case .tutorial:
                 break
@@ -101,32 +65,76 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    var currentDifficulty: Int = -1 {
-        didSet {
-            self.removeAction(forKey: "genBlocks")
-            switch currentDifficulty {
-            case 0:
-                self.initBlocks(0.8, withRange: 0.4, minFallSpeed: -250, maxFallSpeed: -170)
-                lavaMaxSpeed = 47.0
-            case 1:
-                self.initBlocks(0.7, withRange: 0.4, minFallSpeed: -260, maxFallSpeed: -180)
-                lavaMaxSpeed = 50.0
-            case 2:
-                self.initBlocks(0.6, withRange: 0.4, minFallSpeed: -270, maxFallSpeed: -190)
-                lavaMaxSpeed = 53.0
-            case 3:
-                self.initBlocks(0.5, withRange: 0.4, minFallSpeed: -280, maxFallSpeed: -210)
-                lavaMaxSpeed = 56.0
-            case 4:
-                self.initBlocks(0.5, withRange: 0.4, minFallSpeed: -290, maxFallSpeed: -220)
-                lavaMaxSpeed = 59.0
-            case 5:
-                self.initBlocks(0.4, withRange: 0.3, minFallSpeed: -310, maxFallSpeed: -240)
-                lavaMaxSpeed = 63.0
-            default:
-                break;
+    func switchedToInProgress() {
+        self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
+        
+        UserDefaults.standard.set(audioIsOn, forKey: "Audio")
+        UserDefaults.standard.set(soundEffectsAreOn, forKey: "Audio")
+        if audioIsOn {
+            if let musicStart = self.action(forKey: "musicStart") {
+                musicStart.speed = 1.0
+            } else {
+                self.backgroundMusic.run(SKAction.play())
             }
         }
+        
+        self.physicsWorld.speed = 1.0
+        if let action = self.action(forKey: "genBlocks") {
+            action.speed = 1.0
+        }
+        self.removePauseNode()
+        
+        self.motionManager.startAccelerometerUpdates()
+    }
+    
+    func switchedToOver() {
+        self.controlButton.didRelease()
+        
+        //Stop generating blocks
+        self.removeAction(forKey: "genBlocks")
+        self.motionManager.stopAccelerometerUpdates()
+        
+        //Run the game over functions after a specified duration
+        let gameOverAction = SKAction.wait(forDuration: 2.0)
+        self.run(gameOverAction, completion: {
+            self.transitionToGameOverScene()
+        })
+    }
+    
+    func switchedToPause() {
+        if let musicStart = self.action(forKey: "musicStart") {
+            musicStart.speed = 0.0
+        } else {
+            self.backgroundMusic.run(SKAction.pause())
+        }
+        
+        self.controlButton.updateTextureSet(withNormalTextureName: "playNormal", highlightedTextureName: "playHighlighted")
+        
+        self.motionManager.stopAccelerometerUpdates()
+        
+        self.physicsWorld.speed = 0.0
+        
+        if let action = self.action(forKey: "genBlocks") {
+            action.speed = 0.0
+        }
+        
+        self.displayPauseNode()
+    }
+    
+    var currentDifficulty: Int = -1 {
+        didSet {
+            self.updateCurrentDifficulty()
+        }
+    }
+    
+    func updateCurrentDifficulty() {
+        self.removeAction(forKey: "genBlocks")
+        self.minFallSpeed = -200.0  - 15.0 * Float(self.currentDifficulty)
+        self.maxFallSpeed = self.minFallSpeed + 60.0
+        let timeDuration: TimeInterval = 0.9 - 0.05 * Double(self.currentDifficulty)
+        let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
+        self.initBlocks(timeDuration, withRange: timeRange)
+        self.lavaMaxSpeed = 40.0 + 3.0 * CGFloat(self.currentDifficulty)
     }
     
     var lavaMaxSpeed: CGFloat = 40.0
@@ -167,7 +175,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func generateRandomBlock(_ minFallSpeed: Float, maxFallSpeed: Float) {
         //Choose random paramters for the block
-        let randomXVal: CGFloat = CGFloat(RandomDouble(min: 0.0, max: Double(self.size.width)))
+        let XMultiplier: CGFloat = CGFloat(self.blockPositionGenerator.nextUniform())
+        let randomXVal: CGFloat = self.size.width * XMultiplier
         let randomColor: Int = RandomInt(min: 1, max: 8)
         let roundedBlock: RoundedBlockNode = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
         
@@ -181,9 +190,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         worldNode.addChild(roundedBlock)
     }
     
-    func initBlocks(_ sec: TimeInterval, withRange durationRange: TimeInterval, minFallSpeed: Float, maxFallSpeed: Float) {
+    func initBlocks(_ sec: TimeInterval, withRange durationRange: TimeInterval) {
         let createBlock: SKAction = SKAction.run { [unowned self] in
-            self.generateRandomBlock(minFallSpeed, maxFallSpeed: maxFallSpeed)
+            self.generateRandomBlock(self.minFallSpeed, maxFallSpeed: self.maxFallSpeed)
         }
         
         let wait: SKAction = SKAction.wait(forDuration: sec, withRange: durationRange)
@@ -260,7 +269,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             backgroundGradient.colorBlendFactor = newBlendFactor
             
-            let nextDifficulty = min(bestSoFar / 200, 5)
+            let nextDifficulty = min(bestSoFar / 100, 10)
             if nextDifficulty > currentDifficulty {
                 currentDifficulty = nextDifficulty
             }
@@ -600,7 +609,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     }
                 }
             }
+        } else {
+            didBeginRemainingContact(withBody: firstBody, andBody: secondBody, atPoint: contactPoint)
         }
+    }
+    
+    func didBeginRemainingContact(withBody firstBody: SKPhysicsBody, andBody secondbody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
     }
     
     func mellowDestroyed(_ by: DeathTypes) {
