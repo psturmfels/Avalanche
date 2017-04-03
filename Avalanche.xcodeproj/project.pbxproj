@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0208198D1E6A5BC70089C151 /* AchievementImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0208198C1E6A5BC70089C151 /* AchievementImages.xcassets */; };
+		020A37231E91E5C200CBB595 /* PowerUpEmitter.sks in Resources */ = {isa = PBXBuildFile; fileRef = 020A37211E91E5C200CBB595 /* PowerUpEmitter.sks */; };
 		020C08471E7F5E4800561BA6 /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020C08461E7F5E4800561BA6 /* PowerUp.swift */; };
 		020C08491E7F75AB00561BA6 /* PowerUpImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */; };
 		027546501E7F13A100159F8F /* Achievements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0275464F1E7F13A100159F8F /* Achievements.plist */; };
@@ -53,6 +54,7 @@
 
 /* Begin PBXFileReference section */
 		0208198C1E6A5BC70089C151 /* AchievementImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = AchievementImages.xcassets; path = ../AchievementImages.xcassets; sourceTree = "<group>"; };
+		020A37211E91E5C200CBB595 /* PowerUpEmitter.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = PowerUpEmitter.sks; sourceTree = "<group>"; };
 		020C08461E7F5E4800561BA6 /* PowerUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerUp.swift; sourceTree = "<group>"; };
 		020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = PowerUpImages.xcassets; sourceTree = "<group>"; };
 		0275464F1E7F13A100159F8F /* Achievements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Achievements.plist; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 			isa = PBXGroup;
 			children = (
 				1AAB5D431CE0D6EF00F820F0 /* MellowCrushed.sks */,
+				020A37211E91E5C200CBB595 /* PowerUpEmitter.sks */,
 				1A0E90C71CE8E3BC00ED018E /* MellowBurned.sks */,
 				1A51C6B51D722D8F005F6D1A /* spark.png */,
 			);
@@ -325,6 +328,7 @@
 				027546501E7F13A100159F8F /* Achievements.plist in Resources */,
 				1AFD03831D636CA700A54640 /* MellowBurned.wav in Resources */,
 				1AAFB4CC1CA07D6100E7472B /* ButtonImages.xcassets in Resources */,
+				020A37231E91E5C200CBB595 /* PowerUpEmitter.sks in Resources */,
 				1A84D9681DD2577A00E9273C /* DefaultPreferences.plist in Resources */,
 				027546521E7F13BD00159F8F /* LocalScores.plist in Resources */,
 				1A0584E31CDD27C300B3DF8B /* RoundedBlock.atlas in Resources */,

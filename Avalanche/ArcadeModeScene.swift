@@ -154,6 +154,10 @@ class ArcadeModeScene: GameScene {
     override func didBeginRemainingContact(withBody firstBody: SKPhysicsBody, andBody secondbody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
         if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondbody.categoryBitMask == CollisionTypes.powerUp.rawValue {
             if let powerUpNode = secondbody.node as? PowerUp {
+                let powerUpExplosion = SKEmitterNode(fileNamed: "PowerUp")!
+                powerUpExplosion.position = powerUpNode.position
+                powerUpExplosion.zPosition = 20
+                self.addChild(powerUpExplosion)
                 runPowerUp(type: powerUpNode.type!)
                 powerUpNode.removeFromParent()
             }
@@ -224,6 +228,7 @@ class ArcadeModeScene: GameScene {
         if self.action(forKey: "timeSlow") != nil {
             self.removeAction(forKey: "timeSlow")
         } else {
+            self.backgroundMusic.run(SKAction.changePlaybackRate(to: 0.5, duration: 0.0))
             self.mellow.speed = 0.5
             self.removeAction(forKey: "genBlocks")
             self.lavaMaxSpeed = self.lavaMaxSpeed * 0.5
@@ -249,6 +254,7 @@ class ArcadeModeScene: GameScene {
     
     func removeTimeSlow() {
         self.mellow.speed = 1.0
+        self.backgroundMusic.run(SKAction.changePlaybackRate(to: 1.0, duration: 0.0))
         for node in self.worldNode.children {
             if node.name == "fallingBlock" {
                 if let fallingBlock = node as? RoundedBlockNode {
