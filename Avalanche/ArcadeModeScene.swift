@@ -12,6 +12,8 @@ import AVFoundation
 
 class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
+    var nextPowerUp: Int = 50
+    var currentPowerUps: [PowerUp] = []
     
     override func switchedToInProgress() {
         self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
@@ -30,11 +32,14 @@ class ArcadeModeScene: GameScene {
         if let action = self.action(forKey: "genBlocks") {
             action.speed = 1.0
         }
-        if let action = self.action(forKey: "genPowerUps") {
+        if let action = self.action(forKey: "timeSlow") {
             action.speed = 1.0
         }
-        if let action = self.action(forKey: "powerUpTimeSlow") {
-            action.speed = 1.0
+        
+        for activePowerUp in self.currentPowerUps {
+            if let circleAction = activePowerUp.action(forKey: "PowerUpCountdown") {
+                circleAction.speed = 1.0
+            }
         }
         
         self.removePauseNode()
@@ -71,13 +76,15 @@ class ArcadeModeScene: GameScene {
         if let action = self.action(forKey: "genBlocks") {
             action.speed = 0.0
         }
-        if let action = self.action(forKey: "genPowerUps") {
-            action.speed = 0.0
-        }
-        if let action = self.action(forKey: "powerUpTimeSlow") {
+        if let action = self.action(forKey: "timeSlow") {
             action.speed = 0.0
         }
         
+        for activePowerUp in self.currentPowerUps {
+            if let circleAction = activePowerUp.action(forKey: "PowerUpCountdown") {
+                circleAction.speed = 0.0
+            }
+        }
         self.displayPauseNode()
     }
     
@@ -93,12 +100,11 @@ class ArcadeModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
-        initPowerUps(6, withRange: 3)
     }
     
     //MARK: Overriden Update Methods
     override func updateCurrentDifficulty() {
-        guard self.action(forKey: "powerUpTimeSlow") == nil else {
+        guard self.action(forKey: "timeSlow") == nil else {
             return
         }
         
@@ -109,6 +115,15 @@ class ArcadeModeScene: GameScene {
         let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
         self.initBlocks(timeDuration, withRange: timeRange)
         self.lavaMaxSpeed = 40.0 + 3.0 * CGFloat(self.currentDifficulty)
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        super.update(currentTime)
+        
+        if current > nextPowerUp {
+            self.generateRandomPowerUp()
+            nextPowerUp = current + RandomInt(min: 10, max: 20)
+        }
     }
     
     //MARK: Overriden Return Methods
@@ -136,18 +151,6 @@ class ArcadeModeScene: GameScene {
         worldNode.addChild(powerUp)
     }
     
-    func initPowerUps(_ durationBetween: TimeInterval, withRange durationRange: TimeInterval) {
-        let createPowerUp: SKAction = SKAction.run { [unowned self] in
-            self.generateRandomPowerUp()
-        }
-        
-        let wait: SKAction = SKAction.wait(forDuration: durationBetween, withRange: durationRange)
-        let sequence: SKAction = SKAction.sequence([createPowerUp, wait])
-        let repeatForever: SKAction = SKAction.repeatForever(sequence)
-        
-        self.run(repeatForever, withKey: "genPowerUps")
-    }
-    
     override func didBeginRemainingContact(withBody firstBody: SKPhysicsBody, andBody secondbody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
         if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondbody.categoryBitMask == CollisionTypes.powerUp.rawValue {
             if let powerUpNode = secondbody.node as? PowerUp {
@@ -157,16 +160,69 @@ class ArcadeModeScene: GameScene {
         }
     }
     
+    func addPowerUpIcon(type: PowerUpTypes) {
+        let searchIndex: Int? = currentPowerUps.index { (powerUp) -> Bool in
+            return powerUp.type == type
+        }
+        
+        if let indexOfType = searchIndex {
+            currentPowerUps[indexOfType].updateCountDown()
+            if indexOfType != currentPowerUps.count - 1 {
+                swap(&currentPowerUps[indexOfType], &currentPowerUps[currentPowerUps.count - 1])
+                swap(&currentPowerUps[indexOfType].position, &currentPowerUps[currentPowerUps.count - 1].position)
+            }
+        } else {
+            let defaultPosition: CGPoint = CGPoint(x: -20.0, y: 40.0)
+            
+            let newIndicator: PowerUp = PowerUp()
+            
+            newIndicator.indicatorSetup(atPoint: defaultPosition, withType: type, asIndicator: true)
+            newIndicator.beginCountdown()
+            currentPowerUps.append(newIndicator)
+            self.addChild(newIndicator)
+            
+            for indicator in currentPowerUps {
+                indicator.position.x += 60.0
+            }
+        }
+    }
+    
+    func removePowerUpIcon(type: PowerUpTypes) {
+        let searchIndex: Int? = currentPowerUps.index { (powerUp) -> Bool in
+            return powerUp.type == type
+        }
+        guard let indexOfType = searchIndex else {
+            return
+        }
+        
+        for i in 0..<indexOfType {
+            currentPowerUps[i].position.x -= 60.0
+        }
+        
+        currentPowerUps[indexOfType].removeFromParent()
+        currentPowerUps.remove(at: indexOfType)
+    }
+    
     func runPowerUp(type: PowerUpTypes) {
+        addPowerUpIcon(type: type)
         switch type {
         case .timeSlow:
             powerUpTimeSlow()
         }
     }
     
+    func endPowerUp(type: PowerUpTypes) {
+        removePowerUpIcon(type: type)
+        switch type {
+        case .timeSlow:
+            removeTimeSlow()
+        }
+        
+    }
+    
     func powerUpTimeSlow() {
-        if self.action(forKey: "powerUpTimeSlow") != nil {
-            self.removeAction(forKey: "powerUpTimeSlow")
+        if self.action(forKey: "timeSlow") != nil {
+            self.removeAction(forKey: "timeSlow")
         } else {
             self.mellow.speed = 0.5
             self.removeAction(forKey: "genBlocks")
@@ -183,12 +239,12 @@ class ArcadeModeScene: GameScene {
                 }
             }
         }
-        let wait: SKAction = SKAction.wait(forDuration: 6.0)
+        let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .timeSlow))
         let removeSlow = SKAction.run { [unowned self] in
-            self.removeTimeSlow()
+            self.endPowerUp(type: .timeSlow)
         }
         let sequence: SKAction = SKAction.sequence([wait, removeSlow])
-        self.run(sequence, withKey: "powerUpTimeSlow")
+        self.run(sequence, withKey: "timeSlow")
     }
     
     func removeTimeSlow() {

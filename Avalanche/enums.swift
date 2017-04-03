@@ -56,6 +56,13 @@ enum PowerUpTypes: String {
         let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.allTypes.count - 1)
         return PowerUpTypes.allTypes[randomIndex]
     }
+    
+    static func duration(ofType type: PowerUpTypes) -> TimeInterval {
+        switch type {
+        case .timeSlow:
+            return 7.0
+        }
+    }
 }
 
 enum DeathTypes {

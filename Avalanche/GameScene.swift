@@ -494,7 +494,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         risingLava.physicsBody!.collisionBitMask = 0x00000000
         
         //But I should be notified if the lava touhes stuff
-        risingLava.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue
+        risingLava.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.powerUp.rawValue
         risingLava.name = "lava"
         worldNode.addChild(risingLava)
     }
@@ -553,6 +553,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     first.fallSpeed = second.fallSpeed
                 } else {
                     second.fallSpeed = first.fallSpeed
+                }
+                if first.position.y > second.position.y {
+                    first.position.y = second.position.y + second.frame.height * 0.5 + first.frame.height * 0.5
+                } else {
+                    second.position.y = first.position.y + first.frame.height * 0.5 + second.frame.height * 0.5
                 }
             }
         }
@@ -649,13 +654,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.mellow.removeFromParent()
             })
         case .lava:
-            self.playSoundEffectNamed("MellowBurned.wav", waitForCompletion: false)
             mellow.run(crushedAction, completion: {
                 //Burned Sound Effects
                 if self.backgroundMusic != nil {
                     self.backgroundMusic.run(SKAction.stop())
                     self.backgroundMusic.removeFromParent()
                 }
+                self.playSoundEffectNamed("MellowBurned.wav", waitForCompletion: false)
                 
                 //Add the fire after getting crushed
                 let mellowBurned = SKEmitterNode(fileNamed: "MellowBurned")!
@@ -743,6 +748,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if firstBody.categoryBitMask != CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.lava.rawValue {
             if let removeBlock = firstBody.node as? RoundedBlockNode , removeBlock.parent != nil {
                 removeBlock.removeFromParent()
+            }
+            else if let removePowerUp = firstBody.node as? PowerUp, removePowerUp.parent != nil {
+                removePowerUp.removeFromParent()
             }
         }
     }
