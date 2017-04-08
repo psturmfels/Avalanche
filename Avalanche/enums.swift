@@ -50,6 +50,7 @@ enum ButtonStates {
 
 enum PowerUpTypes: String {
     case timeSlow = "timeSlow"
+    case jetPack = "jetPack"
     
     static var allTypes = [PowerUpTypes.timeSlow]
     static func returnRandomType() -> PowerUpTypes {
@@ -60,6 +61,8 @@ enum PowerUpTypes: String {
     static func duration(ofType type: PowerUpTypes) -> TimeInterval {
         switch type {
         case .timeSlow:
+            return 7.0
+        case .jetPack:
             return 7.0
         }
     }

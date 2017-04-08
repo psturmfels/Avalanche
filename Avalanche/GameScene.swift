@@ -757,6 +757,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     //MARK: Touch Methods
+    func noButtonsTapped() {
+        mellow.jump()
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         /* Called when a touch begins */
         
@@ -776,7 +780,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             //Jump if no buttons were tapped
             if noButtonsTapped {
-                mellow.jump()
+                self.noButtonsTapped()
             }
         }
         else if currentGameState == .gamePaused {

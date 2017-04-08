@@ -9,23 +9,23 @@
 import UIKit
 import SpriteKit
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l < r
+    case (nil, _?):
+        return true
+    default:
+        return false
+    }
 }
 
 fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l > r
+    default:
+        return rhs < lhs
+    }
 }
 
 
@@ -80,7 +80,7 @@ class MellowNode: SKSpriteNode {
         self.run(SKAction.rotate(toAngle: 0.0, duration: 0.01), completion: {
             self.physicsBody!.angularVelocity = 0
             self.physicsBody!.allowsRotation = false
-        }) 
+        })
         /*I can't figure out why the above line is necessary,
          but for some reason, when I put the mellow code in
          a separate class, it ended up being horizontal!
@@ -90,43 +90,45 @@ class MellowNode: SKSpriteNode {
     
     //MARK: Motion Methods
     func jump() {
-        if self.physicsBody != nil {
-            if bottomSideInContact > 0 && self.physicsBody!.velocity.dy < 10 {
-                //Jump upwards, using the correct animations depending on
-                //which direction the mellow is facing
-                bottomSideInContact = 0
-                let forceAction = SKAction.applyForce(CGVector(dx: 0, dy: 70000), duration: 0.01)
-                var jumpAction: SKAction
-                if direction == .right {
-                    jumpAction = SKAction.animate(with: rightJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
-                }
-                else {
-                    jumpAction = SKAction.animate(with: leftJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
-                }
-                
-                let actionSequence = SKAction.sequence([jumpAction, forceAction])
-                self.run(actionSequence)
+        guard self.physicsBody != nil else {
+            return
+        }
+        
+        if bottomSideInContact > 0 && self.physicsBody!.velocity.dy < 10 {
+            //Jump upwards, using the correct animations depending on
+            //which direction the mellow is facing
+            bottomSideInContact = 0
+            let forceAction: SKAction = SKAction.applyForce(CGVector(dx: 0, dy: 70000), duration: 0.01)
+            var jumpAction: SKAction
+            if direction == .right {
+                jumpAction = SKAction.animate(with: rightJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
             }
-            else if leftSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
-                //Wall jump right if the mellow is clinging on to a wall the left side
-                leftSideInContact = 0
-                bottomSideInContact = 0
-                self.physicsBody!.velocity.dy = 0
-                let jumpAction = SKAction.animate(with: leftWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
-                let forceAction = SKAction.applyForce(CGVector(dx: 60000, dy: 70000), duration: 0.01)
-                let actionSequence = SKAction.sequence([jumpAction, forceAction])
-                self.run(actionSequence)
+            else {
+                jumpAction = SKAction.animate(with: leftJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
             }
-            else if rightSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
-                //Wall jump left if the mellow is clining to a wall on the right side
-                rightSideInContact = 0
-                bottomSideInContact = 0
-                self.physicsBody!.velocity.dy = 0
-                let jumpAction = SKAction.animate(with: rightWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
-                let forceAction = SKAction.applyForce(CGVector(dx: -60000, dy: 70000), duration: 0.01)
-                let actionSequence = SKAction.sequence([jumpAction, forceAction])
-                self.run(actionSequence)
-            }
+            
+            let actionSequence = SKAction.sequence([jumpAction, forceAction])
+            self.run(actionSequence)
+        }
+        else if leftSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
+            //Wall jump right if the mellow is clinging on to a wall the left side
+            leftSideInContact = 0
+            bottomSideInContact = 0
+            self.physicsBody!.velocity.dy = 0
+            let jumpAction = SKAction.animate(with: leftWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
+            let forceAction = SKAction.applyForce(CGVector(dx: 60000, dy: 70000), duration: 0.01)
+            let actionSequence = SKAction.sequence([jumpAction, forceAction])
+            self.run(actionSequence)
+        }
+        else if rightSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
+            //Wall jump left if the mellow is clining to a wall on the right side
+            rightSideInContact = 0
+            bottomSideInContact = 0
+            self.physicsBody!.velocity.dy = 0
+            let jumpAction = SKAction.animate(with: rightWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
+            let forceAction = SKAction.applyForce(CGVector(dx: -60000, dy: 70000), duration: 0.01)
+            let actionSequence = SKAction.sequence([jumpAction, forceAction])
+            self.run(actionSequence)
         }
     }
     
@@ -153,7 +155,7 @@ class MellowNode: SKSpriteNode {
                 direction = .right
             }
             
-            //Set proper horizontal velocity depending on how tilted the screen is 
+            //Set proper horizontal velocity depending on how tilted the screen is
             //by linear growth per frame tilted up to a cutoff
             if self.physicsBody?.velocity.dx < CGFloat(accel) * 1000.0 {
                 self.physicsBody!.velocity.dx += 80
@@ -174,7 +176,7 @@ class MellowNode: SKSpriteNode {
             self.physicsBody?.velocity.dx = 0
             if (!self.hasActions())
             {
-                    self.texture = SKTexture(imageNamed: "standing")
+                self.texture = SKTexture(imageNamed: "standing")
             }
         }
     }

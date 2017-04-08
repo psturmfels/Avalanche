@@ -14,6 +14,7 @@ class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
     var nextPowerUp: Int = 50
     var currentPowerUps: [PowerUp] = []
+    var isJetPacking: Bool = false
     
     override func switchedToInProgress() {
         self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
@@ -53,6 +54,7 @@ class ArcadeModeScene: GameScene {
         //Stop generating blocks/powerups
         self.removeAllActions()
         self.motionManager.stopAccelerometerUpdates()
+        self.isJetPacking = false
         
         //Run the game over functions after a specified duration
         let gameOverAction = SKAction.wait(forDuration: 2.0)
@@ -71,6 +73,7 @@ class ArcadeModeScene: GameScene {
         self.controlButton.updateTextureSet(withNormalTextureName: "playNormal", highlightedTextureName: "playHighlighted")
         
         self.motionManager.stopAccelerometerUpdates()
+        self.isJetPacking = false
         
         self.physicsWorld.speed = 0.0
         if let action = self.action(forKey: "genBlocks") {
@@ -102,6 +105,30 @@ class ArcadeModeScene: GameScene {
         startMusic()
     }
     
+    //MARK: Overriden Touch Methods
+    override func noButtonsTapped() {
+        let hasJetPack: Int? = currentPowerUps.index(where: { (powerUp) -> Bool in
+            return powerUp.type == .jetPack
+        })
+        if let _ = hasJetPack {
+            self.isJetPacking = true
+        } else {
+            mellow.jump()
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        
+        self.isJetPacking = false
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        
+        self.isJetPacking = false
+    }
+    
     //MARK: Overriden Update Methods
     override func updateCurrentDifficulty() {
         guard self.action(forKey: "timeSlow") == nil else {
@@ -124,6 +151,8 @@ class ArcadeModeScene: GameScene {
             self.generateRandomPowerUp()
             nextPowerUp = current + RandomInt(min: 10, max: 20)
         }
+        
+        print(self.mellow.physicsBody!.velocity.dy)
     }
     
     //MARK: Overriden Return Methods
@@ -208,6 +237,8 @@ class ArcadeModeScene: GameScene {
         switch type {
         case .timeSlow:
             powerUpTimeSlow()
+        case .jetPack:
+            addJetPack()
         }
     }
     
@@ -216,7 +247,17 @@ class ArcadeModeScene: GameScene {
         switch type {
         case .timeSlow:
             removeTimeSlow()
+        case .jetPack:
+            removeJetPack()
         }
+        
+    }
+    
+    func addJetPack() {
+        
+    }
+    
+    func removeJetPack() {
         
     }
     
