@@ -94,11 +94,11 @@ class GameOverScene: SKScene {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if replayButton.isPressed {
-            replayButton.didRelease()
+            replayButton.didRelease(didActivate: true)
             transitionToReplay()
         }
         else if menuButton.isPressed {
-            menuButton.didRelease()
+            menuButton.didRelease(didActivate: true)
             transitionToMenu()
         }
     }

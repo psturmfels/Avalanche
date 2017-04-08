@@ -154,10 +154,6 @@ class ArcadeModeScene: GameScene {
     override func didBeginRemainingContact(withBody firstBody: SKPhysicsBody, andBody secondbody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
         if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondbody.categoryBitMask == CollisionTypes.powerUp.rawValue {
             if let powerUpNode = secondbody.node as? PowerUp {
-                let powerUpExplosion = SKEmitterNode(fileNamed: "PowerUp")!
-                powerUpExplosion.position = powerUpNode.position
-                powerUpExplosion.zPosition = 20
-                self.addChild(powerUpExplosion)
                 runPowerUp(type: powerUpNode.type!)
                 powerUpNode.removeFromParent()
             }

@@ -323,7 +323,7 @@ class TutorialScene: GameScene {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if menuButton.isPressed {
-            menuButton.didRelease()
+            menuButton.didRelease(didActivate: true)
             transitionToMenu()
         }
     }

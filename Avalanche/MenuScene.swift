@@ -594,26 +594,26 @@ class MenuScene: SKScene {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if playButton.isPressed {
-            playButton.didRelease()
+            playButton.didRelease(didActivate: true)
             transitionToGame()
         } else if arcadeButton.isPressed {
-            arcadeButton.didRelease()
+            arcadeButton.didRelease(didActivate: true)
             transitionToArcade()
         } else if scoresButton.isPressed {
-            scoresButton.didRelease()
+            scoresButton.didRelease(didActivate: true)
             if gameCenterIsAuthenticated {
                 //postNotification(withName: "presentScores")
                 displayScores()
             }
         } else if tutorialButton.isPressed {
-            tutorialButton.didRelease()
+            tutorialButton.didRelease(didActivate: true)
             transitionToTutorial()
         } else if settingsButton.isPressed {
-            settingsButton.didRelease()
+            settingsButton.didRelease(didActivate: true)
             displaySettings()
         } else if menuButton.isPressed {
+            menuButton.didRelease(didActivate: true)
             menuButtonPressed()
-            menuButton.didRelease()
         }
     }
     

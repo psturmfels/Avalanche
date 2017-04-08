@@ -72,7 +72,7 @@ class ButtonLabelNode: SKNode {
         self.buttonNode.didPress()
     }
     
-    func didRelease() {
-        self.buttonNode.didRelease()
+    func didRelease(didActivate: Bool = false) {
+        self.buttonNode.didRelease(didActivate: didActivate)
     }
 }

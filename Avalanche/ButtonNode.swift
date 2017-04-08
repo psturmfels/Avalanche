@@ -31,10 +31,14 @@ class ButtonNode: SKSpriteNode {
         }
     }
     
-    func didRelease() {
+    func didRelease(didActivate: Bool = false) {
         if isPressed {
             isPressed = false
             self.texture = relaxedTexture
+        }
+        let soundEffectsAreOn: Bool = UserDefaults.standard.bool(forKey: "SoundEffects")
+        if soundEffectsAreOn && didActivate {
+            self.run(SKAction.playSoundFileNamed("ButtonClick.wav", waitForCompletion: false))
         }
     }
     

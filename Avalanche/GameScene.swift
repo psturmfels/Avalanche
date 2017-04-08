@@ -838,7 +838,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if controlButton.isPressed {
-            controlButton.didRelease()
+            controlButton.didRelease(didActivate: true)
             if currentGameState == .gameInProgress {
                 self.currentGameState = .gamePaused
                 self.controlButton.updateTextureSet(withNormalTextureName: "playNormal", highlightedTextureName: "playHighlighted")
