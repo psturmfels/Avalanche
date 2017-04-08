@@ -14,7 +14,25 @@ class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
     var nextPowerUp: Int = 50
     var currentPowerUps: [PowerUp] = []
-    var isJetPacking: Bool = false
+    var isJetPacking: Bool = false {
+        didSet {
+            if isJetPacking {
+                guard mellow.childNode(withName: "jetpackTrail") == nil else {
+                    return
+                }
+                let jetpackTrail: SKEmitterNode = SKEmitterNode(fileNamed: "JetpackTrail")!
+                jetpackTrail.name = "jetpackTrail"
+                jetpackTrail.position.x = 0.0
+                jetpackTrail.position.y = -mellow.size.height * 0.5
+                jetpackTrail.zPosition = 0
+                self.mellow.addChild(jetpackTrail)
+            } else {
+                if let jetpackTrail = mellow.childNode(withName: "jetpackTrail") {
+                    jetpackTrail.removeFromParent()
+                }
+            }
+        }
+    }
     
     override func switchedToInProgress() {
         self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
