@@ -52,7 +52,7 @@ enum PowerUpTypes: String {
     case timeSlow = "timeSlow"
     case jetPack = "jetPack"
     
-    static var allTypes = [PowerUpTypes.timeSlow]
+    static var allTypes = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack]
     static func returnRandomType() -> PowerUpTypes {
         let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.allTypes.count - 1)
         return PowerUpTypes.allTypes[randomIndex]

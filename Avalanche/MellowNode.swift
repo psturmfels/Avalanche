@@ -108,7 +108,7 @@ class MellowNode: SKSpriteNode {
             }
             
             let actionSequence = SKAction.sequence([jumpAction, forceAction])
-            self.run(actionSequence)
+            self.run(actionSequence, withKey: "isJumping")
         }
         else if leftSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
             //Wall jump right if the mellow is clinging on to a wall the left side
@@ -118,7 +118,7 @@ class MellowNode: SKSpriteNode {
             let jumpAction = SKAction.animate(with: leftWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
             let forceAction = SKAction.applyForce(CGVector(dx: 60000, dy: 70000), duration: 0.01)
             let actionSequence = SKAction.sequence([jumpAction, forceAction])
-            self.run(actionSequence)
+            self.run(actionSequence, withKey: "isJumping")
         }
         else if rightSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
             //Wall jump left if the mellow is clining to a wall on the right side
@@ -128,7 +128,7 @@ class MellowNode: SKSpriteNode {
             let jumpAction = SKAction.animate(with: rightWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
             let forceAction = SKAction.applyForce(CGVector(dx: -60000, dy: 70000), duration: 0.01)
             let actionSequence = SKAction.sequence([jumpAction, forceAction])
-            self.run(actionSequence)
+            self.run(actionSequence, withKey: "isJumping")
         }
     }
     
@@ -138,18 +138,16 @@ class MellowNode: SKSpriteNode {
             if trailingNum > 3 {
                 trailingNum = 3
             }
-            //NOTE: The "!self.hasActions()" is checked for before setting the animation
-            //So that the animation is not reset while the mellow is jumping
-            
+
             //Set proper animations depending on how tilted the screen is
             if accel < 0 {
-                if !self.hasActions() {
+                if self.action(forKey: "isJumping") == nil {
                     self.texture = SKTexture(imageNamed: "leftRun\(trailingNum)")
                 }
                 direction = .left
             }
             else {
-                if !self.hasActions() {
+                if self.action(forKey: "isJumping") == nil {
                     self.texture = SKTexture(imageNamed: "rightrun\(trailingNum)")
                 }
                 direction = .right
@@ -174,7 +172,7 @@ class MellowNode: SKSpriteNode {
         }
         else {
             self.physicsBody?.velocity.dx = 0
-            if (!self.hasActions())
+            if self.action(forKey: "isJumping") == nil
             {
                 self.texture = SKTexture(imageNamed: "standing")
             }

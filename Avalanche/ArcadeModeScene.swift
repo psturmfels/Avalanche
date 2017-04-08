@@ -107,10 +107,7 @@ class ArcadeModeScene: GameScene {
     
     //MARK: Overriden Touch Methods
     override func noButtonsTapped() {
-        let hasJetPack: Int? = currentPowerUps.index(where: { (powerUp) -> Bool in
-            return powerUp.type == .jetPack
-        })
-        if let _ = hasJetPack {
+        if self.action(forKey: "jetPack") != nil {
             self.isJetPacking = true
         } else {
             mellow.jump()
@@ -152,7 +149,20 @@ class ArcadeModeScene: GameScene {
             nextPowerUp = current + RandomInt(min: 10, max: 20)
         }
         
-        print(self.mellow.physicsBody!.velocity.dy)
+        guard mellow != nil else {
+            return
+        }
+        guard mellow.physicsBody != nil else {
+            return
+        }
+        
+        if isJetPacking {
+            let forceAction: SKAction = SKAction.applyForce(CGVector(dx: 0, dy: 5000), duration: 0.01)
+            self.mellow.run(forceAction)
+            if self.mellow.physicsBody!.velocity.dy > 150 {
+                self.mellow.physicsBody!.velocity.dy = 150
+            }
+        }
     }
     
     //MARK: Overriden Return Methods
@@ -254,11 +264,17 @@ class ArcadeModeScene: GameScene {
     }
     
     func addJetPack() {
-        
+        self.removeAction(forKey: "jetPack")
+        let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .jetPack))
+        let removeJetPack: SKAction = SKAction.run { [unowned self] in
+            self.endPowerUp(type: .jetPack)
+        }
+        let sequence: SKAction = SKAction.sequence([wait, removeJetPack])
+        self.run(sequence, withKey: "jetPack")
     }
     
     func removeJetPack() {
-        
+        self.isJetPacking = false
     }
     
     func powerUpTimeSlow() {
