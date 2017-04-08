@@ -19,7 +19,7 @@ class ArcadeModeScene: GameScene {
         self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
         
         UserDefaults.standard.set(audioIsOn, forKey: "Audio")
-        UserDefaults.standard.set(soundEffectsAreOn, forKey: "Audio")
+        UserDefaults.standard.set(soundEffectsAreOn, forKey: "SoundEffects")
         if audioIsOn {
             if let musicStart = self.action(forKey: "musicStart") {
                 musicStart.speed = 1.0
