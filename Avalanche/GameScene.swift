@@ -15,7 +15,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //MARK: Random Generator
     let blockPositionGenerator: GKShuffledDistribution = GKShuffledDistribution(lowestValue: 1, highestValue: 1000)
     
-    
     //MARK: Game Nodes
     var worldNode: SKNode!
     let motionManager: CMMotionManager = CMMotionManager()
@@ -44,6 +43,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var minFallSpeed: Float = -250.0
     var maxFallSpeed: Float = -170.0
+    
+    var currentHighestPoint: CGFloat = 10.0
     
     
     var shouldContinueSpawning: Bool = true
@@ -129,12 +130,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func updateCurrentDifficulty() {
         self.removeAction(forKey: "genBlocks")
-        self.minFallSpeed = -200.0  - 15.0 * Float(self.currentDifficulty)
+        self.minFallSpeed = -180.0  - 15.0 * Float(self.currentDifficulty)
         self.maxFallSpeed = self.minFallSpeed + 60.0
-        let timeDuration: TimeInterval = 0.9 - 0.05 * Double(self.currentDifficulty)
+        let timeDuration: TimeInterval = 0.75 - 0.04 * Double(self.currentDifficulty)
         let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
         self.initBlocks(timeDuration, withRange: timeRange)
-        self.lavaMaxSpeed = 40.0 + 3.0 * CGFloat(self.currentDifficulty)
+        self.lavaMaxSpeed = 50.0 + 3.0 * CGFloat(self.currentDifficulty)
     }
     
     var lavaMaxSpeed: CGFloat = 40.0
@@ -170,6 +171,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Block Methods
     func turnToBackground(_ block: RoundedBlockNode) {
+        self.currentHighestPoint = max(block.position.y + block.frame.height * 0.5, self.currentHighestPoint)
         block.becomeBackground()
     }
     
@@ -279,10 +281,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func setLavaSpeed() {
         //The lava's rising speed is an arbitrary function of its distance to the mellow
         if risingLava.physicsBody != nil {
-            let lavaYPos: CGFloat = worldNode.position.y + risingLava.position.y
+            let lavaYPos: CGFloat = risingLava.position.y
             let lavaYTop: CGFloat = lavaYPos + risingLava.frame.height * 0.5
-            let distanceToLava: CGFloat = mellow.position.y - lavaYTop
-            let newLavaRisingSpeed: CGFloat = lavaMaxSpeed - (lavaMaxSpeed - 5) * pow(3.14159, -0.003 * distanceToLava)
+            let distanceToLava: CGFloat = self.currentHighestPoint - lavaYTop
+            let newLavaRisingSpeed: CGFloat = lavaMaxSpeed - (lavaMaxSpeed) * pow(3.14159, -0.003 * distanceToLava + 0.005)
             risingLava.physicsBody!.velocity.dy = newLavaRisingSpeed
         }
     }
@@ -470,6 +472,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floor.physicsBody!.collisionBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.fallingBlock.rawValue
         floor.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.fallingBlock.rawValue
         floor.name = "floor"
+        self.currentHighestPoint = floor.position.y + floor.frame.height * 0.5
         worldNode.addChild(floor)
     }
     

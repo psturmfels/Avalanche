@@ -12,7 +12,7 @@ import AVFoundation
 
 class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
-    var nextPowerUp: Int = 50
+    var nextPowerUp: Int = 30
     var currentPowerUps: [PowerUp] = []
     var isJetPacking: Bool = false {
         didSet {
@@ -23,7 +23,7 @@ class ArcadeModeScene: GameScene {
                 let jetpackTrail: SKEmitterNode = SKEmitterNode(fileNamed: "JetpackTrail")!
                 jetpackTrail.name = "jetpackTrail"
                 jetpackTrail.position.x = 0.0
-                jetpackTrail.position.y = -mellow.size.height * 0.5
+                jetpackTrail.position.y = -mellow.size.height * 0.52
                 jetpackTrail.zPosition = 0
                 self.mellow.addChild(jetpackTrail)
             } else {
@@ -150,13 +150,7 @@ class ArcadeModeScene: GameScene {
             return
         }
         
-        self.removeAction(forKey: "genBlocks")
-        self.minFallSpeed = -200.0  - 15.0 * Float(self.currentDifficulty)
-        self.maxFallSpeed = self.minFallSpeed + 60.0
-        let timeDuration: TimeInterval = 0.9 - 0.05 * Double(self.currentDifficulty)
-        let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
-        self.initBlocks(timeDuration, withRange: timeRange)
-        self.lavaMaxSpeed = 40.0 + 3.0 * CGFloat(self.currentDifficulty)
+        super.updateCurrentDifficulty()
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -174,11 +168,15 @@ class ArcadeModeScene: GameScene {
             return
         }
         
+        
         if isJetPacking {
-            let forceAction: SKAction = SKAction.applyForce(CGVector(dx: 0, dy: 5000), duration: 0.01)
+            let forceAction: SKAction = SKAction.applyForce(CGVector(dx: 0, dy: 4500), duration: 0.01)
             self.mellow.run(forceAction)
-            if self.mellow.physicsBody!.velocity.dy > 150 {
-                self.mellow.physicsBody!.velocity.dy = 150
+            if self.mellow.physicsBody!.velocity.dy > 120 {
+                self.mellow.physicsBody!.velocity.dy = 120
+            }
+            if let jetpackTrail = self.childNode(withName: "jetpackTrail") {
+                jetpackTrail.zRotation = 50.0 * mellow.physicsBody!.velocity.dx
             }
         }
     }
