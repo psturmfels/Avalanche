@@ -15,6 +15,7 @@ class PauseNode: SKNode {
     var audioButtonLabel: ButtonLabelNode!
     var soundEffectsButtonLabel: ButtonLabelNode!
     var selfDestructButtonLabel: ButtonLabelNode!
+    var menuButton: ButtonNode!
     
     //MARK: Initialization methods
     func setup(withSize size: CGSize, atPosition position: CGPoint) {
@@ -45,6 +46,15 @@ class PauseNode: SKNode {
         selfDestructButtonLabel = ButtonLabelNode()
         selfDestructButtonLabel.setup(withText: "Explode: ", withFontSize: 40.0, withButtonName: "SelfDestruct", normalTextureName: "selfDestructNormal", highlightedTextureName: "selfDestructHighlighted", atPosition: center)
         self.addChild(selfDestructButtonLabel)
+        
+        
+        menuButton = ButtonNode(imageNamed: "menuNormal")
+        let menuX: CGFloat = -size.width * 0.5 + 1.5 * self.menuButton.frame.width + 40
+        let menuY: CGFloat = size.height * 0.5 - self.menuButton.frame.height * 0.5 - 20
+        let menuPos: CGPoint = CGPoint(x: menuX, y: menuY)
+        
+        menuButton.setup(atPosition: menuPos, withName: "Menu", normalTextureName: "menuNormal", highlightedTextureName: "menuHighlighted")
+        self.addChild(menuButton)
     }
     
     func toggleButton(_ button: ButtonNode) {

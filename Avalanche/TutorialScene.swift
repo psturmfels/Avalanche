@@ -488,7 +488,7 @@ class TutorialScene: GameScene {
         self.scene!.view!.presentScene(gameScene, transition: transition)
     }
     
-    func transitionToMenu() {
+    override func transitionToMenu() {
         let menuScene: MenuScene = MenuScene(size: self.size)
         menuScene.scaleMode = .resizeFill
         let transition = SKTransition.crossFade(withDuration: 0.5)

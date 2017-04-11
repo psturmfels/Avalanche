@@ -783,6 +783,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         controlButton.didPress()
                         noButtonsTapped = false
                         break
+                    } else if object.name == "Menu" {
+                        pauseScreen.menuButton.didPress()
+                        noButtonsTapped = false
+                        break
                     }
                 }
             }
@@ -814,6 +818,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         pauseScreen.toggleButton(object as! ButtonNode)
                         soundEffectsAreOn = !soundEffectsAreOn
                         break
+                    } else if object.name == "Menu" {
+                        pauseScreen.menuButton.didPress()
+                        break
                     }
                 }
             }
@@ -832,7 +839,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let location = touch.location(in: self)
             let objects = nodes(at: location) as [SKNode]
             for object in objects {
-                if object.name == "Control" || object.name == "SelfDestruct" {
+                if object.name == "Control" || object.name == "SelfDestruct" || object.name == "Menu" {
                     movedOverButton = true
                     break
                 }
@@ -842,6 +849,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if !movedOverButton {
             pauseScreen.selfDestructButtonLabel.didRelease()
             controlButton.didRelease()
+            pauseScreen.menuButton.didRelease()
         }
     }
     
@@ -864,6 +872,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             pauseScreen.selfDestructButtonLabel.didRelease()
             self.currentGameState = .gameInProgress
             mellowDestroyed(.selfDestruct)
+        } else if pauseScreen.menuButton.isPressed {
+            pauseScreen.menuButton.didRelease(didActivate: true)
+            transitionToMenu()
         }
     }
     
@@ -873,6 +884,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         controlButton.didRelease()
+        pauseScreen.menuButton.didRelease()
         pauseScreen.selfDestructButtonLabel.didRelease()
+    }
+    
+    func transitionToMenu() {
+        if let musicStart = self.action(forKey: "musicStart") {
+            musicStart.speed = 0.0
+        } else {
+            self.backgroundMusic.run(SKAction.pause())
+        }
+        
+        self.motionManager.stopAccelerometerUpdates()
+        
+        self.physicsWorld.speed = 0.0
+        
+        if let action = self.action(forKey: "genBlocks") {
+            action.speed = 0.0
+        }
+        
+        let menuScene: MenuScene = MenuScene(size: self.size)
+        menuScene.scaleMode = .resizeFill
+        let transition = SKTransition.crossFade(withDuration: 0.5)
+        self.scene!.view!.presentScene(menuScene, transition: transition)
     }
 }
