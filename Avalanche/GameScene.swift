@@ -187,7 +187,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //Set the block's position
         roundedBlock.position.x = randomXVal
-        roundedBlock.position.y = 2.0 * self.size.height - worldNode.position.y
+        roundedBlock.position.y = 2.0 * self.size.height + currentHighestPoint
         
         worldNode.addChild(roundedBlock)
     }

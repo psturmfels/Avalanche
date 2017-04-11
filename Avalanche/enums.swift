@@ -63,7 +63,7 @@ enum PowerUpTypes: String {
         case .timeSlow:
             return 7.0
         case .jetPack:
-            return 7.0
+            return 4.0
         }
     }
 }

@@ -181,7 +181,7 @@ class ArcadeModeScene: GameScene {
         
         if current > nextPowerUp {
             self.generateRandomPowerUp()
-            nextPowerUp = current + RandomInt(min: 10, max: 20)
+            nextPowerUp = current + RandomInt(min: 40, max: 80)
         }
         
         guard mellow != nil else {
