@@ -51,8 +51,10 @@ class ArcadeModeScene: GameScene {
         if let action = self.action(forKey: "genBlocks") {
             action.speed = 1.0
         }
-        if let action = self.action(forKey: "timeSlow") {
-            action.speed = 1.0
+        for powerUpType in PowerUpTypes.allTypes {
+            if let action = self.action(forKey: powerUpType.rawValue) {
+                action.speed = 1.0
+            }
         }
         
         for activePowerUp in self.currentPowerUps {
@@ -97,8 +99,11 @@ class ArcadeModeScene: GameScene {
         if let action = self.action(forKey: "genBlocks") {
             action.speed = 0.0
         }
-        if let action = self.action(forKey: "timeSlow") {
-            action.speed = 0.0
+        
+        for powerUpType in PowerUpTypes.allTypes {
+            if let action = self.action(forKey: powerUpType.rawValue) {
+                action.speed = 0.0
+            }
         }
         
         for activePowerUp in self.currentPowerUps {
@@ -125,7 +130,7 @@ class ArcadeModeScene: GameScene {
     
     //MARK: Overriden Touch Methods
     override func noButtonsTapped() {
-        if self.action(forKey: "jetPack") != nil {
+        if self.action(forKey: PowerUpTypes.jetPack.rawValue) != nil {
             self.isJetPacking = true
         } else {
             mellow.jump()
@@ -145,8 +150,26 @@ class ArcadeModeScene: GameScene {
     }
     
     //MARK: Overriden Update Methods
+    override func mellowAccel() {
+        //Make the mellow move to the left or right depending on the tilt of the screen
+        
+        if let data = self.motionManager.accelerometerData {
+            mellow.setdx(withAcceleration: data.acceleration.x)
+        }
+        
+        if mellow.bottomSideInContact == 0 && !self.isJetPacking {
+            //Add the wall-cling animations if the mellow is touching a wall and is off the ground
+            if mellow.leftSideInContact > 0 {
+                mellow.texture = SKTexture(imageNamed: "leftwallcling")
+            }
+            else if mellow.rightSideInContact > 0 {
+                mellow.texture = SKTexture(imageNamed: "rightwallcling")
+            }
+        }
+    }
+    
     override func updateCurrentDifficulty() {
-        guard self.action(forKey: "timeSlow") == nil else {
+        guard self.action(forKey: PowerUpTypes.timeSlow.rawValue) == nil else {
             return
         }
         
@@ -175,8 +198,22 @@ class ArcadeModeScene: GameScene {
             if self.mellow.physicsBody!.velocity.dy > 120 {
                 self.mellow.physicsBody!.velocity.dy = 120
             }
-            if let jetpackTrail = self.childNode(withName: "jetpackTrail") {
-                jetpackTrail.zRotation = 50.0 * mellow.physicsBody!.velocity.dx
+            if let jetpackTrail = self.mellow.childNode(withName: "jetpackTrail") as? SKEmitterNode {
+                let signModifier: CGFloat
+                
+                if mellow.direction == .left {
+                    signModifier = 1.0
+                } else {
+                    signModifier = -1.0
+                }
+                
+                jetpackTrail.emissionAngle = 1.5 * CGFloat.pi + signModifier * CGFloat(self.mellow.trailingNum) * 0.09
+                jetpackTrail.zRotation = signModifier * CGFloat(self.mellow.trailingNum) * 0.09
+                let newXPos: CGFloat = signModifier * CGFloat(self.mellow.trailingNum) * 2.5
+                if abs(jetpackTrail.position.x - newXPos) > 1.0 {
+                    let moveAction: SKAction = SKAction.moveTo(x: newXPos, duration: 0.1)
+                    jetpackTrail.run(moveAction)
+                }
             }
         }
     }
@@ -280,13 +317,13 @@ class ArcadeModeScene: GameScene {
     }
     
     func addJetPack() {
-        self.removeAction(forKey: "jetPack")
+        self.removeAction(forKey: PowerUpTypes.jetPack.rawValue)
         let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .jetPack))
         let removeJetPack: SKAction = SKAction.run { [unowned self] in
             self.endPowerUp(type: .jetPack)
         }
         let sequence: SKAction = SKAction.sequence([wait, removeJetPack])
-        self.run(sequence, withKey: "jetPack")
+        self.run(sequence, withKey: PowerUpTypes.jetPack.rawValue)
     }
     
     func removeJetPack() {
@@ -294,8 +331,8 @@ class ArcadeModeScene: GameScene {
     }
     
     func powerUpTimeSlow() {
-        if self.action(forKey: "timeSlow") != nil {
-            self.removeAction(forKey: "timeSlow")
+        if self.action(forKey: PowerUpTypes.timeSlow.rawValue) != nil {
+            self.removeAction(forKey: PowerUpTypes.timeSlow.rawValue)
         } else {
             self.backgroundMusic.run(SKAction.changePlaybackRate(to: 0.5, duration: 0.0))
             self.mellow.speed = 0.5
@@ -318,7 +355,7 @@ class ArcadeModeScene: GameScene {
             self.endPowerUp(type: .timeSlow)
         }
         let sequence: SKAction = SKAction.sequence([wait, removeSlow])
-        self.run(sequence, withKey: "timeSlow")
+        self.run(sequence, withKey: PowerUpTypes.timeSlow.rawValue)
     }
     
     func removeTimeSlow() {

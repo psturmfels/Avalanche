@@ -41,6 +41,8 @@ class MellowNode: SKSpriteNode {
     var rightSideInContact: Int = 0
     var physicsSize: CGSize!
     
+    var trailingNum: Int = 0
+    
     //Mark: Creation Method
     func setup(_ position: CGPoint) {
         var i = 1
@@ -138,6 +140,7 @@ class MellowNode: SKSpriteNode {
             if trailingNum > 3 {
                 trailingNum = 3
             }
+            self.trailingNum = trailingNum
 
             //Set proper animations depending on how tilted the screen is
             if accel < 0 {
@@ -172,6 +175,7 @@ class MellowNode: SKSpriteNode {
         }
         else {
             self.physicsBody?.velocity.dx = 0
+            self.trailingNum = 0
             if self.action(forKey: "isJumping") == nil
             {
                 self.texture = SKTexture(imageNamed: "standing")
