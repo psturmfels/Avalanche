@@ -46,7 +46,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var currentHighestPoint: CGFloat = 10.0
     
-    
     var shouldContinueSpawning: Bool = true
     var currentGameState: GameStates = GameStates.gameInProgress {
         didSet {
@@ -178,7 +177,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func generateRandomBlock(_ minFallSpeed: Float, maxFallSpeed: Float) {
         //Choose random paramters for the block
         let XMultiplier: CGFloat = CGFloat(self.blockPositionGenerator.nextUniform())
-        let randomXVal: CGFloat = self.size.width * XMultiplier
+        var randomXVal: CGFloat = self.size.width * XMultiplier
+        let yPoint: CGFloat = 2.0 * self.size.height + currentHighestPoint
+        var generationPoint: CGPoint = CGPoint(x: randomXVal, y: yPoint)
+        
+        if self.worldNode.nodes(at: generationPoint).count > 0 {
+            randomXVal = self.size.width * XMultiplier
+            generationPoint = CGPoint(x: randomXVal, y: yPoint)
+        }
+        
         let randomColor: Int = RandomInt(min: 1, max: 8)
         let roundedBlock: RoundedBlockNode = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
         
@@ -186,8 +193,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         roundedBlock.setup(minFallSpeed, maxFallSpeed: maxFallSpeed)
         
         //Set the block's position
-        roundedBlock.position.x = randomXVal
-        roundedBlock.position.y = 2.0 * self.size.height + currentHighestPoint
+        roundedBlock.position = generationPoint
         
         worldNode.addChild(roundedBlock)
     }
