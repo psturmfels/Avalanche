@@ -116,6 +116,7 @@ class ArcadeModeScene: GameScene {
     
     override func didMove(to view: SKView) {
         //Create stuff
+        self.sandBoxMode = true //TODO: get rid of me
         createWorld()
         createMellow()
         createFloor()
@@ -126,6 +127,12 @@ class ArcadeModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
+        
+        let ballAndChain: BallAndChain = BallAndChain()
+        ballAndChain.name = "ballAndChain"
+        let ballPos: CGPoint = CGPoint(x: mellow.position.x + 100.0, y: mellow.position.y)
+        ballAndChain.setup(attachedToNode: mellow, atPoint: ballPos, toParentScene: self)
+        self.addChild(ballAndChain)
     }
     
     //MARK: Overriden Touch Methods

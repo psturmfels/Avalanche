@@ -80,6 +80,7 @@ enum CollisionTypes: UInt32 {
     case fallingBlock = 4
     case lava = 8
     case powerUp = 16
+    case powerUpObject = 32
 }
 
 enum Orientation {

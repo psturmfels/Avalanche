@@ -12,6 +12,8 @@ import CoreMotion
 import AVFoundation
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    var sandBoxMode: Bool = false //TODO: Get rid of me
+    
     //MARK: Random Generator
     let blockPositionGenerator: GKShuffledDistribution = GKShuffledDistribution(lowestValue: 1, highestValue: 1000)
     
@@ -133,8 +135,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.maxFallSpeed = self.minFallSpeed + 60.0
         let timeDuration: TimeInterval = 0.75 - 0.04 * Double(self.currentDifficulty)
         let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
-        self.initBlocks(timeDuration, withRange: timeRange)
-        self.lavaMaxSpeed = 50.0 + 3.0 * CGFloat(self.currentDifficulty)
+        
+        if sandBoxMode { //TODO: Get rid of me
+            self.lavaMaxSpeed = 0
+        } else {
+            self.initBlocks(timeDuration, withRange: timeRange)
+            self.lavaMaxSpeed = 50.0 + 3.0 * CGFloat(self.currentDifficulty)
+        }
     }
     
     var lavaMaxSpeed: CGFloat = 40.0
@@ -680,8 +687,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.mellow.removeFromParent()
             })
         case .selfDestruct:
-                GameKitController.report(Achievement.whatDoesThisDo, withPercentComplete: 100.0)
-                mellow.run(crushedAction, completion: {
+            GameKitController.report(Achievement.whatDoesThisDo, withPercentComplete: 100.0)
+            mellow.run(crushedAction, completion: {
                 //Crushed sound effects
                 
                 if self.backgroundMusic != nil {
