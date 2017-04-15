@@ -116,7 +116,6 @@ class ArcadeModeScene: GameScene {
     
     override func didMove(to view: SKView) {
         //Create stuff
-        self.sandBoxMode = true //TODO: get rid of me
         createWorld()
         createMellow()
         createFloor()
@@ -127,12 +126,6 @@ class ArcadeModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
-        
-        let ballAndChain: BallAndChain = BallAndChain()
-        ballAndChain.name = "ballAndChain"
-        let ballPos: CGPoint = CGPoint(x: mellow.position.x + 100.0, y: mellow.position.y)
-        ballAndChain.setup(attachedToNode: mellow, atPoint: ballPos, toParentScene: self)
-        self.addChild(ballAndChain)
     }
     
     //MARK: Overriden Touch Methods
@@ -309,6 +302,8 @@ class ArcadeModeScene: GameScene {
             powerUpTimeSlow()
         case .jetPack:
             addJetPack()
+        case .ballAndChain:
+            addBallAndChain()
         }
     }
     
@@ -319,8 +314,32 @@ class ArcadeModeScene: GameScene {
             removeTimeSlow()
         case .jetPack:
             removeJetPack()
+        case .ballAndChain:
+            removeBallAndChain()
         }
         
+    }
+    
+    func addBallAndChain() {
+        self.removeAction(forKey: PowerUpTypes.ballAndChain.rawValue)
+        let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .ballAndChain))
+        let removeBallAndChain: SKAction = SKAction.run { [unowned self] in
+            self.endPowerUp(type: .ballAndChain)
+        }
+        let sequence: SKAction = SKAction.sequence([wait, removeBallAndChain])
+        self.run(sequence, withKey: PowerUpTypes.ballAndChain.rawValue)
+        
+        let ballAndChain: BallAndChain = BallAndChain()
+        ballAndChain.name = "ballAndChain"
+        let ballPos: CGPoint = CGPoint(x: mellow.position.x, y: mellow.position.y + 100.0)
+        ballAndChain.setup(attachedToNode: mellow, atPoint: ballPos, toParentScene: self)
+        self.addChild(ballAndChain)
+    }
+    
+    func removeBallAndChain() {
+        if let ballAndChain = self.childNode(withName: "ballAndChain") as? BallAndChain {
+            ballAndChain.removeFrom(parentScene: self)
+        }
     }
     
     func addJetPack() {

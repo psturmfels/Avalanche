@@ -11,10 +11,12 @@ import SpriteKit
 class BallAndChain: SKNode {
     var ball: SKSpriteNode!
     var links: [SKSpriteNode] = []
+    var joints: [SKPhysicsJoint] = []
     
     func setup(attachedToNode node: SKNode, atPoint point: CGPoint, toParentScene parentScene: SKScene) {
         // Calculate distance & angle
         ball = SKSpriteNode(imageNamed: "ball")
+        ball.size = CGSize(width: 32.0, height: 32.0)
         ball.position = point
         ball.size.height = 40.0
         ball.size.width = 40.0
@@ -26,9 +28,10 @@ class BallAndChain: SKNode {
         ball.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue
         ball.physicsBody!.contactTestBitMask = 0
         parentScene.addChild(ball)
+        let ballAnchorPoint: CGPoint = CGPoint(x: self.ball.frame.midX, y: self.ball.frame.maxY)
         
-        let deltaX: CGFloat = node.position.x - point.x
-        let deltaY: CGFloat = node.position.y - point.y - ball.frame.height * 0.5
+        let deltaX: CGFloat = node.position.x - ballAnchorPoint.x
+        let deltaY: CGFloat = node.position.y - ballAnchorPoint.y
         let total: CGFloat = deltaX * deltaX + deltaY * deltaY
         let distance: CGFloat = sqrt(total)
         let height: CGFloat = 8.0
@@ -40,14 +43,15 @@ class BallAndChain: SKNode {
         var previousNode: SKSpriteNode?
         let angle: Float = atan2f(Float(deltaY), Float(deltaX))
         
-        let ballAnchorPoint: CGPoint = CGPoint(x: self.ball.frame.midX, y: self.ball.frame.maxY)
         let ropeJoint: SKPhysicsJointLimit = SKPhysicsJointLimit.joint(withBodyA: node.physicsBody!, bodyB: ball.physicsBody!, anchorA: node.position, anchorB: ballAnchorPoint)
         ropeJoint.maxLength = ropeJoint.maxLength + 2.0 * CGFloat(numLinks)
         parentScene.physicsWorld.add(ropeJoint)
         
+        self.joints.append(ropeJoint)
+        
         for i in 0...numLinks {
-            var x: CGFloat = ball.position.x
-            var y: CGFloat = ball.position.y + ball.frame.height * 0.5
+            var x: CGFloat = ballAnchorPoint.x
+            var y: CGFloat = ballAnchorPoint.y
             
             y += vY * CGFloat(i)
             x += vX * CGFloat(i)
@@ -72,17 +76,13 @@ class BallAndChain: SKNode {
                 let anchorPoint: CGPoint = CGPoint(x: 0.5 * (pNode.position.x + ropeLink.position.x), y: 0.5 * (pNode.position.y + ropeLink.position.y))
 //                let anchorPoint: CGPoint = CGPoint(x: ropeLink.frame.midX, y: ropeLink.frame.midY)
                 let pin = SKPhysicsJointPin.joint(withBodyA: pNode.physicsBody!, bodyB: ropeLink.physicsBody!, anchor: anchorPoint)
-            
+                self.joints.append(pin)
+                
                 parentScene.physicsWorld.add(pin)
-            } else {
-                if i == 0 {
-                    ropeLink.zRotation = 0.0
-                    let pin = SKPhysicsJointPin.joint(withBodyA: self.ball.physicsBody!, bodyB: ropeLink.physicsBody!, anchor: ballAnchorPoint)
-                    pin.lowerAngleLimit = 0.0
-                    pin.upperAngleLimit = 0.0
-                    pin.shouldEnableLimits = true
-                    parentScene.physicsWorld.add(pin)
-                }
+            } else if i == 0 {
+                let pin = SKPhysicsJointPin.joint(withBodyA: self.ball.physicsBody!, bodyB: ropeLink.physicsBody!, anchor: ballAnchorPoint)
+                self.joints.append(pin)
+                parentScene.physicsWorld.add(pin)
             }
             
             previousNode = ropeLink
@@ -90,8 +90,37 @@ class BallAndChain: SKNode {
         if let pNode = previousNode {
             let anchorPoint: CGPoint = CGPoint(x: pNode.frame.midX, y: pNode.frame.midY)
             let pin: SKPhysicsJointPin = SKPhysicsJointPin.joint(withBodyA: node.physicsBody!, bodyB: pNode.physicsBody!, anchor: anchorPoint)
+            self.joints.append(pin)
             parentScene.physicsWorld.add(pin)
         }
     }
     
+    func removeFrom(parentScene scene: SKScene) {
+        guard let lastJoint = self.joints.popLast() else {
+            return
+        }
+        scene.physicsWorld.remove(lastJoint)
+        
+        let waitAction: SKAction = SKAction.wait(forDuration: 1.1)
+        let removeAction: SKAction = SKAction.run { [unowned self, unowned scene] in
+            for joint in self.joints {
+                scene.physicsWorld.remove(joint)
+            }
+            self.ball.removeFromParent()
+            for link in self.links {
+                link.removeFromParent()
+            }
+        }
+        let sequence: SKAction = SKAction.sequence([waitAction, removeAction])
+        
+        
+        let fadeAction: SKAction = SKAction.fadeOut(withDuration: 1.0)
+        for link in links {
+            link.run(fadeAction)
+        }
+        ball.run(fadeAction)
+        scene.run(sequence) { [unowned self] in
+            self.removeFromParent()
+        }
+    }
 }
