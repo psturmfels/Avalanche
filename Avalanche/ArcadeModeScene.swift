@@ -181,7 +181,7 @@ class ArcadeModeScene: GameScene {
         
         if current > nextPowerUp {
             self.generateRandomPowerUp()
-            nextPowerUp = current + RandomInt(min: 40, max: 80)
+            nextPowerUp = current + RandomInt(min: 10, max: 20)
         }
         
         guard mellow != nil else {
@@ -321,19 +321,22 @@ class ArcadeModeScene: GameScene {
     }
     
     func addBallAndChain() {
-        self.removeAction(forKey: PowerUpTypes.ballAndChain.rawValue)
+        if self.action(forKey: PowerUpTypes.ballAndChain.rawValue) != nil  {
+            self.removeAction(forKey: PowerUpTypes.ballAndChain.rawValue)
+        } else {
+            let ballAndChain: BallAndChain = BallAndChain()
+            ballAndChain.name = "ballAndChain"
+            let ballPos: CGPoint = CGPoint(x: mellow.position.x, y: mellow.position.y + 60.0)
+            ballAndChain.setup(attachedToNode: mellow, atPoint: ballPos, toParentScene: self)
+            self.addChild(ballAndChain)
+        }
+        
         let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .ballAndChain))
         let removeBallAndChain: SKAction = SKAction.run { [unowned self] in
             self.endPowerUp(type: .ballAndChain)
         }
         let sequence: SKAction = SKAction.sequence([wait, removeBallAndChain])
         self.run(sequence, withKey: PowerUpTypes.ballAndChain.rawValue)
-        
-        let ballAndChain: BallAndChain = BallAndChain()
-        ballAndChain.name = "ballAndChain"
-        let ballPos: CGPoint = CGPoint(x: mellow.position.x, y: mellow.position.y + 100.0)
-        ballAndChain.setup(attachedToNode: mellow, atPoint: ballPos, toParentScene: self)
-        self.addChild(ballAndChain)
     }
     
     func removeBallAndChain() {

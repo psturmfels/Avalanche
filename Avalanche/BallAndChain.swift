@@ -21,11 +21,12 @@ class BallAndChain: SKNode {
         ball.size.height = 40.0
         ball.size.width = 40.0
         ball.physicsBody = SKPhysicsBody(circleOfRadius: 20.0)
+        ball.zPosition = 20.0
         
-        ball.physicsBody!.mass = 50
+        ball.physicsBody!.mass = 5
         ball.physicsBody!.restitution = 0
         ball.physicsBody!.categoryBitMask = CollisionTypes.powerUpObject.rawValue
-        ball.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue
+        ball.physicsBody!.collisionBitMask = 0 //CollisionTypes.background.rawValue
         ball.physicsBody!.contactTestBitMask = 0
         parentScene.addChild(ball)
         let ballAnchorPoint: CGPoint = CGPoint(x: self.ball.frame.midX, y: self.ball.frame.maxY)
@@ -62,7 +63,7 @@ class BallAndChain: SKNode {
             ropeLink.size = CGSize(width: 9.0, height: 19.0)
             ropeLink.position = CGPoint(x: x, y: y)
             ropeLink.zRotation = CGFloat(angle + 1.57)
-            ropeLink.zPosition = -CGFloat(i)
+            ropeLink.zPosition = 20.0 + CGFloat(numLinks) - CGFloat(i)
             
             ropeLink.physicsBody = SKPhysicsBody(rectangleOf: ropeLink.size)
             
@@ -100,6 +101,9 @@ class BallAndChain: SKNode {
             return
         }
         scene.physicsWorld.remove(lastJoint)
+        
+        let ropeJoint: SKPhysicsJoint = self.joints.removeFirst()
+        scene.physicsWorld.remove(ropeJoint)
         
         let waitAction: SKAction = SKAction.wait(forDuration: 1.1)
         let removeAction: SKAction = SKAction.run { [unowned self, unowned scene] in
