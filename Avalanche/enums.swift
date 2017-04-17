@@ -53,7 +53,7 @@ enum PowerUpTypes: String {
     case jetPack = "jetPack"
     case ballAndChain = "ballAndChain"
     
-    static var allTypes = [/*PowerUpTypes.timeSlow, PowerUpTypes.jetPack,*/ PowerUpTypes.ballAndChain]
+    static var allTypes = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.ballAndChain]
     static func returnRandomType() -> PowerUpTypes {
         let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.allTypes.count - 1)
         return PowerUpTypes.allTypes[randomIndex]
@@ -84,6 +84,7 @@ enum CollisionTypes: UInt32 {
     case lava = 8
     case powerUp = 16
     case powerUpObject = 32
+    case edgeBody = 64
 }
 
 enum Orientation {

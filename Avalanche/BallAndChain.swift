@@ -26,7 +26,7 @@ class BallAndChain: SKNode {
         ball.physicsBody!.mass = 5
         ball.physicsBody!.restitution = 0
         ball.physicsBody!.categoryBitMask = CollisionTypes.powerUpObject.rawValue
-        ball.physicsBody!.collisionBitMask = 0 //CollisionTypes.background.rawValue
+        ball.physicsBody!.collisionBitMask =  CollisionTypes.powerUpObject.rawValue | CollisionTypes.edgeBody.rawValue
         ball.physicsBody!.contactTestBitMask = 0
         parentScene.addChild(ball)
         let ballAnchorPoint: CGPoint = CGPoint(x: self.ball.frame.midX, y: self.ball.frame.maxY)
@@ -75,7 +75,6 @@ class BallAndChain: SKNode {
             
             if let pNode = previousNode {
                 let anchorPoint: CGPoint = CGPoint(x: 0.5 * (pNode.position.x + ropeLink.position.x), y: 0.5 * (pNode.position.y + ropeLink.position.y))
-//                let anchorPoint: CGPoint = CGPoint(x: ropeLink.frame.midX, y: ropeLink.frame.midY)
                 let pin = SKPhysicsJointPin.joint(withBodyA: pNode.physicsBody!, bodyB: ropeLink.physicsBody!, anchor: anchorPoint)
                 self.joints.append(pin)
                 

@@ -116,6 +116,8 @@ class ArcadeModeScene: GameScene {
     
     override func didMove(to view: SKView) {
         //Create stuff
+        
+        
         createWorld()
         createMellow()
         createFloor()
@@ -181,7 +183,7 @@ class ArcadeModeScene: GameScene {
         
         if current > nextPowerUp {
             self.generateRandomPowerUp()
-            nextPowerUp = current + RandomInt(min: 10, max: 20)
+            nextPowerUp = current + RandomInt(min: 40, max: 80≥)
         }
         
         guard mellow != nil else {
@@ -329,6 +331,10 @@ class ArcadeModeScene: GameScene {
             let ballPos: CGPoint = CGPoint(x: mellow.position.x, y: mellow.position.y + 60.0)
             ballAndChain.setup(attachedToNode: mellow, atPoint: ballPos, toParentScene: self)
             self.addChild(ballAndChain)
+            self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
+            self.physicsBody!.categoryBitMask = CollisionTypes.edgeBody.rawValue
+            self.physicsBody!.collisionBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.powerUpObject.rawValue
+            self.physicsBody!.contactTestBitMask = 0
         }
         
         let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .ballAndChain))
@@ -343,6 +349,7 @@ class ArcadeModeScene: GameScene {
         if let ballAndChain = self.childNode(withName: "ballAndChain") as? BallAndChain {
             ballAndChain.removeFrom(parentScene: self)
         }
+        self.physicsBody = nil
     }
     
     func addJetPack() {
