@@ -182,7 +182,7 @@ class ArcadeModeScene: GameScene {
         super.update(currentTime)
         
         if current > nextPowerUp {
-            self.generateRandomPowerUp()
+            self.generateRandomPowerUpEvent()
             nextPowerUp = current + RandomInt(min: 40, max: 80)
         }
         
@@ -231,18 +231,64 @@ class ArcadeModeScene: GameScene {
     }
     
     //MARK: PowerUp Methods
-    func generateRandomPowerUp() {
-        let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
-        let yVal: CGFloat = 100.0 + self.size.height - worldNode.position.y
-        let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
-        
-        let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomType()
-        
-        let powerUp: PowerUp = PowerUp(imageNamed: "")
-        
-        powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
-        
-        worldNode.addChild(powerUp)
+    func generateRandomPowerUpEvent() {
+        switch PowerUpPattern.returnRandomPattern() {
+        case .normalPositive:
+            let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
+            let yVal: CGFloat = 100.0 + self.size.height - worldNode.position.y
+            let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
+            
+            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomPositive()
+            
+            let powerUp: PowerUp = PowerUp(imageNamed: "")
+            
+            powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
+            
+            worldNode.addChild(powerUp)
+            
+        case .normalNegative:
+            let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
+            let yVal: CGFloat = 100.0 + self.size.height - worldNode.position.y
+            let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
+            
+            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomNegative()
+            
+            let powerUp: PowerUp = PowerUp(imageNamed: "")
+            
+            powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
+            
+            worldNode.addChild(powerUp)
+            
+        case .waveNegative:
+            for i in 1...3 {
+                let randomXVal: CGFloat = self.frame.width * 0.25 * CGFloat(i) + RandomCGFloat(min: -20.0, max: 20.0)
+                let yVal: CGFloat = 100.0 + self.size.height - worldNode.position.y
+                let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
+                
+                let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomNegative()
+                
+                let powerUp: PowerUp = PowerUp(imageNamed: "")
+                
+                powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
+                
+                worldNode.addChild(powerUp)
+            }
+            
+        case .waveRandom:
+            for i in 1...4 {
+                let randomXVal: CGFloat = self.frame.width * 0.2 * CGFloat(i) + RandomCGFloat(min: -15.0, max: 15.0)
+                let yVal: CGFloat = 100.0 + self.size.height - worldNode.position.y
+                let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
+                
+                let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomType()
+                
+                let powerUp: PowerUp = PowerUp(imageNamed: "")
+                
+                powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
+                
+                worldNode.addChild(powerUp)
+            }
+        }
     }
     
     override func didBeginRemainingContact(withBody firstBody: SKPhysicsBody, andBody secondbody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
@@ -301,9 +347,11 @@ class ArcadeModeScene: GameScene {
         addPowerUpIcon(type: type)
         switch type {
         case .timeSlow:
-            powerUpTimeSlow()
+            addTimeSlow()
         case .jetPack:
             addJetPack()
+        case .ghost:
+            addGhost()
         case .ballAndChain:
             addBallAndChain()
         }
@@ -318,7 +366,17 @@ class ArcadeModeScene: GameScene {
             removeJetPack()
         case .ballAndChain:
             removeBallAndChain()
+        case .ghost:
+            removeGhost()
         }
+        
+    }
+    
+    func addGhost() {
+        
+    }
+    
+    func removeGhost() {
         
     }
     
@@ -366,7 +424,7 @@ class ArcadeModeScene: GameScene {
         self.isJetPacking = false
     }
     
-    func powerUpTimeSlow() {
+    func addTimeSlow() {
         if self.action(forKey: PowerUpTypes.timeSlow.rawValue) != nil {
             self.removeAction(forKey: PowerUpTypes.timeSlow.rawValue)
         } else {

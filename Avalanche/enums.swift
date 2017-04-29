@@ -52,8 +52,22 @@ enum PowerUpTypes: String {
     case timeSlow = "timeSlow"
     case jetPack = "jetPack"
     case ballAndChain = "ballAndChain"
+    case ghost = "ghost"
     
-    static var allTypes = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.ballAndChain]
+    static let positiveTypes = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.ghost]
+    static let negativeTypes = [PowerUpTypes.ballAndChain]
+    static let allTypes = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.ballAndChain]
+    
+    static func returnRandomPositive() -> PowerUpTypes {
+        let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.positiveTypes.count - 1)
+        return PowerUpTypes.positiveTypes[randomIndex]
+    }
+    
+    static func returnRandomNegative() -> PowerUpTypes {
+        let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.negativeTypes.count - 1)
+        return PowerUpTypes.negativeTypes[randomIndex]
+    }
+    
     static func returnRandomType() -> PowerUpTypes {
         let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.allTypes.count - 1)
         return PowerUpTypes.allTypes[randomIndex]
@@ -65,8 +79,30 @@ enum PowerUpTypes: String {
             return 7.0
         case .jetPack:
             return 4.0
+        case .ghost:
+            return 6.0
         case .ballAndChain:
             return 4.0;
+        }
+    }
+}
+
+enum PowerUpPattern: Double {
+    case normalPositive = 0.4
+    case normalNegative = 0.6
+    case waveNegative = 0.8
+    case waveRandom = 1.0
+    
+    static func returnRandomPattern() -> PowerUpPattern {
+        let randomIndex: Double = RandomDouble(min: 0.0, max: 1.0)
+        if randomIndex <= PowerUpPattern.normalPositive.rawValue {
+            return PowerUpPattern.normalPositive
+        } else if randomIndex <= PowerUpPattern.normalNegative.rawValue {
+            return PowerUpPattern.normalNegative
+        } else if randomIndex <= PowerUpPattern.waveNegative.rawValue {
+            return PowerUpPattern.waveNegative
+        } else {
+            return PowerUpPattern.waveRandom
         }
     }
 }

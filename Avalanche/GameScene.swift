@@ -641,6 +641,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func mellowDestroyed(_ by: DeathTypes) {
         //Remove the mellow's physicsBody so it doesn't slide
         mellow.physicsBody = nil
+        self.physicsBody = nil
         //Animate through the crushed textures
         var crushedTextures: [SKTexture] = [SKTexture]()
         for i in 1...7 {
