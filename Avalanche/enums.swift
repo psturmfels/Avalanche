@@ -51,12 +51,12 @@ enum ButtonStates {
 enum PowerUpTypes: String {
     case timeSlow = "timeSlow"
     case jetPack = "jetPack"
+    case mellowSlow = "mellowSlow"
     case ballAndChain = "ballAndChain"
-    case ghost = "ghost"
     
-    static let positiveTypes = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.ghost]
-    static let negativeTypes = [PowerUpTypes.ballAndChain]
-    static let allTypes = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.ballAndChain]
+    static let positiveTypes = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack]
+    static let negativeTypes = [PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain]
+    static let allTypes = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain]
     
     static func returnRandomPositive() -> PowerUpTypes {
         let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.positiveTypes.count - 1)
@@ -79,8 +79,8 @@ enum PowerUpTypes: String {
             return 7.0
         case .jetPack:
             return 4.0
-        case .ghost:
-            return 6.0
+        case .mellowSlow:
+            return 5.0
         case .ballAndChain:
             return 4.0;
         }
@@ -121,6 +121,7 @@ enum CollisionTypes: UInt32 {
     case powerUp = 16
     case powerUpObject = 32
     case edgeBody = 64
+    case screenBoundary = 128
 }
 
 enum Orientation {

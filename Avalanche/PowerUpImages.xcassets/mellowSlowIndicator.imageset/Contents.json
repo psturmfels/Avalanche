@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "ghostIndicator.png",
+      "filename" : "mellowSlowIndicator.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "ghostIndicator@2x.png",
+      "filename" : "mellowSlowIndicator@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "ghostIndicator@3x.png",
+      "filename" : "mellowSlowIndicator@3x.png",
       "scale" : "3x"
     }
   ],

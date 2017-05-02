@@ -74,7 +74,7 @@ class MellowNode: SKSpriteNode {
         
         //Make sure the mellow only collides with background and falling blocks
         self.physicsBody!.categoryBitMask = CollisionTypes.mellow.rawValue
-        self.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.edgeBody.rawValue
+        self.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.edgeBody.rawValue | CollisionTypes.screenBoundary.rawValue
         self.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue
         self.physicsBody!.friction = 0.2
         self.physicsBody!.usesPreciseCollisionDetection = true

@@ -133,12 +133,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.removeAction(forKey: "genBlocks")
         self.minFallSpeed = -180.0  - 15.0 * Float(self.currentDifficulty)
         self.maxFallSpeed = self.minFallSpeed + 60.0
-        let timeDuration: TimeInterval = 0.75 - 0.04 * Double(self.currentDifficulty)
-        let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
         
         if sandBoxMode { //TODO: Get rid of me
             self.lavaMaxSpeed = 0
         } else {
+            let timeDuration: TimeInterval = 0.75 - 0.04 * Double(self.currentDifficulty)
+            let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
             self.initBlocks(timeDuration, withRange: timeRange)
             self.lavaMaxSpeed = 50.0 + 3.0 * CGFloat(self.currentDifficulty)
         }
@@ -578,60 +578,63 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
             //If the first body was the mellow and the second body was the background or a falling block
-        else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
+        else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && (secondBody.categoryBitMask == CollisionTypes.background.rawValue || secondBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue) {
+            mellowBlockContact(withBody: secondBody, atPoint: contactPoint)
+        } else {
+            didBeginRemainingContact(withBody: firstBody, andBody: secondBody, atPoint: contactPoint)
+        }
+    }
+    
+    func mellowBlockContact(withBody secondBody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
+        guard mellow.physicsBody != nil else {
+            return
+        }
+        
+        //Calculate the various physical aspects of the second body
+        let block: RoundedBlockNode = secondBody.node! as! RoundedBlockNode
+        let blockYPos: CGFloat = block.position.y + worldNode.position.y
+        let blockTopEdge: CGFloat = blockYPos + block.physicsSize.height * 0.35
+        let blockLeftEdge: CGFloat = block.position.x - block.physicsSize.width * 0.35
+        let blockRightEdge: CGFloat = block.position.x + block.physicsSize.width * 0.35
+        let blockBotEdge: CGFloat = blockYPos - block.physicsSize.height * 0.35
+        
+        //Calculate the various physical aspects of the mellow
+        let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.35
+        let mellowRightEdge: CGFloat = mellow.position.x + mellow.physicsSize.width * 0.35
+        let mellowLeftEdge: CGFloat = mellow.position.x - mellow.physicsSize.width * 0.35
+        let mellowTopEdge: CGFloat = mellow.position.y + mellow.physicsSize.height * 0.35
+        
+        //Calculate differences between physical aspects of the two bodies
+        let blockTopLessMellowBot: Bool = blockTopEdge < mellowBotEdge
+        let yPosDiff: CGFloat = abs(blockYPos - mellow.position.y)
+        let xPosDiff: CGFloat = abs(block.position.x - mellow.position.x)
+        let combinedHeights: CGFloat = block.physicsSize.height * 0.5 + mellow.physicsSize.height * 0.5
+        let combinedWidths: CGFloat = block.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
+        
+        //If mellow landed on a piece of scenery
+        if blockTopLessMellowBot && xPosDiff < combinedWidths {
+            mellow.bottomSideInContact += 1
+        }
+        else if blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
+            //If the mellow's left edge touched a piece of scenery
+            mellow.leftSideInContact += 1
+        }
+        else if mellowRightEdge < blockLeftEdge && yPosDiff < combinedHeights {
+            //If the mellow's right edge touched a piece of scenery
+            mellow.rightSideInContact += 1
+        }
             
-            guard mellow.physicsBody != nil else {
-                return
-            }
-            
-            //Calculate the various physical aspects of the second body
-            let block: RoundedBlockNode = secondBody.node! as! RoundedBlockNode
-            let blockYPos: CGFloat = block.position.y + worldNode.position.y
-            let blockTopEdge: CGFloat = blockYPos + block.physicsSize.height * 0.35
-            let blockLeftEdge: CGFloat = block.position.x - block.physicsSize.width * 0.35
-            let blockRightEdge: CGFloat = block.position.x + block.physicsSize.width * 0.35
-            let blockBotEdge: CGFloat = blockYPos - block.physicsSize.height * 0.35
-            
-            //Calculate the various physical aspects of the mellow
-            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.35
-            let mellowRightEdge: CGFloat = mellow.position.x + mellow.physicsSize.width * 0.35
-            let mellowLeftEdge: CGFloat = mellow.position.x - mellow.physicsSize.width * 0.35
-            let mellowTopEdge: CGFloat = mellow.position.y + mellow.physicsSize.height * 0.35
-            
-            //Calculate differences between physical aspects of the two bodies
-            let blockTopLessMellowBot: Bool = blockTopEdge < mellowBotEdge
-            let yPosDiff: CGFloat = abs(blockYPos - mellow.position.y)
-            let xPosDiff: CGFloat = abs(block.position.x - mellow.position.x)
-            let combinedHeights: CGFloat = block.physicsSize.height * 0.5 + mellow.physicsSize.height * 0.5
-            let combinedWidths: CGFloat = block.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
-            
-            //If mellow landed on a piece of scenery
-            if blockTopLessMellowBot && xPosDiff < combinedWidths {
-                mellow.bottomSideInContact += 1
-            }
-            else if blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
-                //If the mellow's left edge touched a piece of scenery
-                mellow.leftSideInContact += 1
-            }
-            else if mellowRightEdge < blockLeftEdge && yPosDiff < combinedHeights {
-                //If the mellow's right edge touched a piece of scenery
-                mellow.rightSideInContact += 1
-            }
-                
-                //If the mellow got crushed by a block
-            else if mellow.bottomSideInContact > 0 {
-                if contactPoint.y > mellowTopEdge {
-                    if let block = secondBody.node as? RoundedBlockNode , block.physicsBody!.categoryBitMask == CollisionTypes.fallingBlock.rawValue {
-                        if contactPoint.y < blockBotEdge {
-                            if abs(mellow.physicsBody!.velocity.dy) < 10 {
-                                mellowDestroyed(.crushed)
-                            }
+            //If the mellow got crushed by a block
+        else if mellow.bottomSideInContact > 0 {
+            if contactPoint.y > mellowTopEdge {
+                if let block = secondBody.node as? RoundedBlockNode , block.physicsBody!.categoryBitMask == CollisionTypes.fallingBlock.rawValue {
+                    if contactPoint.y < blockBotEdge {
+                        if abs(mellow.physicsBody!.velocity.dy) < 10 {
+                            mellowDestroyed(.crushed)
                         }
                     }
                 }
             }
-        } else {
-            didBeginRemainingContact(withBody: firstBody, andBody: secondBody, atPoint: contactPoint)
         }
     }
     

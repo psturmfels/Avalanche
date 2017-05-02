@@ -48,6 +48,10 @@ class ArcadeModeScene: GameScene {
         }
         
         self.physicsWorld.speed = 1.0
+        if self.action(forKey: PowerUpTypes.mellowSlow.rawValue) != nil {
+            self.physicsWorld.speed = 0.5
+        }
+        
         if let action = self.action(forKey: "genBlocks") {
             action.speed = 1.0
         }
@@ -151,6 +155,16 @@ class ArcadeModeScene: GameScene {
         self.isJetPacking = false
     }
     
+    //MARK: Overriden Contact Methods
+    override func didBeginRemainingContact(withBody firstBody: SKPhysicsBody, andBody secondbody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
+        if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondbody.categoryBitMask == CollisionTypes.powerUp.rawValue {
+            if let powerUpNode = secondbody.node as? PowerUp {
+                runPowerUp(type: powerUpNode.type!)
+                powerUpNode.removeFromParent()
+            }
+        }
+    }
+    
     //MARK: Overriden Update Methods
     override func mellowAccel() {
         //Make the mellow move to the left or right depending on the tilt of the screen
@@ -175,6 +189,10 @@ class ArcadeModeScene: GameScene {
             return
         }
         
+        guard self.action(forKey: PowerUpTypes.mellowSlow.rawValue) == nil else {
+            return
+        }
+        
         super.updateCurrentDifficulty()
     }
     
@@ -195,7 +213,7 @@ class ArcadeModeScene: GameScene {
         
         
         if isJetPacking {
-            let forceAction: SKAction = SKAction.applyForce(CGVector(dx: 0, dy: 4500), duration: 0.01)
+            let forceAction: SKAction = SKAction.applyForce(CGVector(dx: 0, dy: 5000), duration: 0.01)
             self.mellow.run(forceAction)
             if self.mellow.physicsBody!.velocity.dy > 120 {
                 self.mellow.physicsBody!.velocity.dy = 120
@@ -291,15 +309,6 @@ class ArcadeModeScene: GameScene {
         }
     }
     
-    override func didBeginRemainingContact(withBody firstBody: SKPhysicsBody, andBody secondbody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
-        if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondbody.categoryBitMask == CollisionTypes.powerUp.rawValue {
-            if let powerUpNode = secondbody.node as? PowerUp {
-                runPowerUp(type: powerUpNode.type!)
-                powerUpNode.removeFromParent()
-            }
-        }
-    }
-    
     func addPowerUpIcon(type: PowerUpTypes) {
         let searchIndex: Int? = currentPowerUps.index { (powerUp) -> Bool in
             return powerUp.type == type
@@ -350,8 +359,8 @@ class ArcadeModeScene: GameScene {
             addTimeSlow()
         case .jetPack:
             addJetPack()
-        case .ghost:
-            addGhost()
+        case .mellowSlow:
+            addMellowSlow()
         case .ballAndChain:
             addBallAndChain()
         }
@@ -364,21 +373,56 @@ class ArcadeModeScene: GameScene {
             removeTimeSlow()
         case .jetPack:
             removeJetPack()
+        case .mellowSlow:
+            removeMellowSlow()
         case .ballAndChain:
             removeBallAndChain()
-        case .ghost:
-            removeGhost()
         }
         
     }
     
-    func addGhost() {
-        
+    func addMellowSlow() {
+        if self.action(forKey: PowerUpTypes.mellowSlow.rawValue) != nil {
+            self.removeAction(forKey: PowerUpTypes.mellowSlow.rawValue)
+        } else {
+            self.removeAction(forKey: "genBlocks")
+            self.physicsWorld.speed = 0.5
+            self.lavaMaxSpeed = self.lavaMaxSpeed * 2.0
+            self.minFallSpeed = self.minFallSpeed * 2.0
+            self.maxFallSpeed = self.maxFallSpeed * 2.0
+            
+            let timeDuration: TimeInterval = 0.75 - 0.04 * Double(self.currentDifficulty)
+            let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
+            self.initBlocks(timeDuration, withRange: timeRange)
+            
+            for node in self.worldNode.children {
+                if node.name == "fallingBlock" {
+                    if let fallingBlock = node as? RoundedBlockNode {
+                        fallingBlock.fallSpeed = fallingBlock.fallSpeed * 2.0
+                    }
+                }
+            }
+        }
+        let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .mellowSlow))
+        let removeSlow = SKAction.run { [unowned self] in
+            self.endPowerUp(type: .mellowSlow)
+        }
+        let sequence: SKAction = SKAction.sequence([wait, removeSlow])
+        self.run(sequence, withKey: PowerUpTypes.mellowSlow.rawValue)
     }
     
-    func removeGhost() {
-        
+    func removeMellowSlow() {
+        self.physicsWorld.speed = 1.0
+        for node in self.worldNode.children {
+            if node.name == "fallingBlock" {
+                if let fallingBlock = node as? RoundedBlockNode {
+                    fallingBlock.fallSpeed = fallingBlock.fallSpeed * 0.5
+                }
+            }
+        }
+        super.updateCurrentDifficulty()
     }
+    
     
     func addBallAndChain() {
         if self.action(forKey: PowerUpTypes.ballAndChain.rawValue) != nil  {
@@ -390,7 +434,7 @@ class ArcadeModeScene: GameScene {
             ballAndChain.setup(attachedToNode: mellow, atPoint: ballPos, toParentScene: self)
             self.addChild(ballAndChain)
             self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
-            self.physicsBody!.categoryBitMask = CollisionTypes.edgeBody.rawValue
+            self.physicsBody!.categoryBitMask = CollisionTypes.screenBoundary.rawValue
             self.physicsBody!.collisionBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.powerUpObject.rawValue
             self.physicsBody!.contactTestBitMask = 0
         }
@@ -429,7 +473,6 @@ class ArcadeModeScene: GameScene {
             self.removeAction(forKey: PowerUpTypes.timeSlow.rawValue)
         } else {
             self.backgroundMusic.run(SKAction.changePlaybackRate(to: 0.5, duration: 0.0))
-            self.mellow.speed = 0.5
             self.removeAction(forKey: "genBlocks")
             self.lavaMaxSpeed = self.lavaMaxSpeed * 0.5
             self.minFallSpeed = self.minFallSpeed * 0.5
@@ -453,7 +496,6 @@ class ArcadeModeScene: GameScene {
     }
     
     func removeTimeSlow() {
-        self.mellow.speed = 1.0
         self.backgroundMusic.run(SKAction.changePlaybackRate(to: 1.0, duration: 0.0))
         for node in self.worldNode.children {
             if node.name == "fallingBlock" {
@@ -462,12 +504,6 @@ class ArcadeModeScene: GameScene {
                 }
             }
         }
-        self.removeAction(forKey: "genBlocks")
-        self.minFallSpeed = -200.0  - 15.0 * Float(self.currentDifficulty)
-        self.maxFallSpeed = self.minFallSpeed + 60.0
-        let timeDuration: TimeInterval = 0.9 - 0.05 * Double(self.currentDifficulty)
-        let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
-        self.initBlocks(timeDuration, withRange: timeRange)
-        self.lavaMaxSpeed = 40.0 + 3.0 * CGFloat(self.currentDifficulty)
+        self.updateCurrentDifficulty()
     }
 }
