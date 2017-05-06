@@ -363,6 +363,8 @@ class ArcadeModeScene: GameScene {
             addMellowSlow()
         case .ballAndChain:
             addBallAndChain()
+        case .night:
+            addNight()
         }
     }
     
@@ -377,8 +379,51 @@ class ArcadeModeScene: GameScene {
             removeMellowSlow()
         case .ballAndChain:
             removeBallAndChain()
+        case .night:
+            removeNight()
+        }
+    }
+    
+    func addNight() {
+        if self.action(forKey: PowerUpTypes.night.rawValue) != nil {
+            self.removeAction(forKey: PowerUpTypes.night.rawValue)
+        } else {
+            let lightNode: SKLightNode = SKLightNode()
+            lightNode.name = "lightNode"
+            lightNode.ambientColor = UIColor.black
+            lightNode.falloff = 0.01
+            
+            let fadeInLight: SKAction = SKAction.customAction(withDuration: 1.0, actionBlock: { (node, elapsedTime) in
+                if let lightNode = node as? SKLightNode {
+                    if lightNode.falloff < 1.0 {
+                        lightNode.falloff += 0.005
+                        print(lightNode.falloff)
+                    }
+                }
+            })
+            
+            lightNode.run(fadeInLight)
+            
+            mellow.addChild(lightNode)
         }
         
+        self.run(waitSequence(withType: .night), withKey: PowerUpTypes.night.rawValue)
+    }
+    
+    func removeNight() {
+        if let lightNode = mellow.childNode(withName: "lightNode") {
+            let fadeOutLight: SKAction = SKAction.customAction(withDuration: 1.0, actionBlock: { (node, elapsedTime) in
+                if let lightNode = node as? SKLightNode {
+                    if lightNode.falloff > 0.01 {
+                        lightNode.falloff -= 0.005
+                        print(lightNode.falloff)
+                    }
+                }
+            })
+            lightNode.run(fadeOutLight) {
+                lightNode.removeFromParent()
+            }
+        }
     }
     
     func addMellowSlow() {
@@ -403,12 +448,7 @@ class ArcadeModeScene: GameScene {
                 }
             }
         }
-        let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .mellowSlow))
-        let removeSlow = SKAction.run { [unowned self] in
-            self.endPowerUp(type: .mellowSlow)
-        }
-        let sequence: SKAction = SKAction.sequence([wait, removeSlow])
-        self.run(sequence, withKey: PowerUpTypes.mellowSlow.rawValue)
+        self.run(waitSequence(withType: .mellowSlow), withKey: PowerUpTypes.mellowSlow.rawValue)
     }
     
     func removeMellowSlow() {
@@ -438,13 +478,7 @@ class ArcadeModeScene: GameScene {
             self.physicsBody!.collisionBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.powerUpObject.rawValue
             self.physicsBody!.contactTestBitMask = 0
         }
-        
-        let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .ballAndChain))
-        let removeBallAndChain: SKAction = SKAction.run { [unowned self] in
-            self.endPowerUp(type: .ballAndChain)
-        }
-        let sequence: SKAction = SKAction.sequence([wait, removeBallAndChain])
-        self.run(sequence, withKey: PowerUpTypes.ballAndChain.rawValue)
+        self.run(waitSequence(withType: .ballAndChain), withKey: PowerUpTypes.ballAndChain.rawValue)
     }
     
     func removeBallAndChain() {
@@ -456,12 +490,7 @@ class ArcadeModeScene: GameScene {
     
     func addJetPack() {
         self.removeAction(forKey: PowerUpTypes.jetPack.rawValue)
-        let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .jetPack))
-        let removeJetPack: SKAction = SKAction.run { [unowned self] in
-            self.endPowerUp(type: .jetPack)
-        }
-        let sequence: SKAction = SKAction.sequence([wait, removeJetPack])
-        self.run(sequence, withKey: PowerUpTypes.jetPack.rawValue)
+        self.run(waitSequence(withType: .jetPack), withKey: PowerUpTypes.jetPack.rawValue)
     }
     
     func removeJetPack() {
@@ -472,7 +501,6 @@ class ArcadeModeScene: GameScene {
         if self.action(forKey: PowerUpTypes.timeSlow.rawValue) != nil {
             self.removeAction(forKey: PowerUpTypes.timeSlow.rawValue)
         } else {
-            self.backgroundMusic.run(SKAction.changePlaybackRate(to: 0.5, duration: 0.0))
             self.removeAction(forKey: "genBlocks")
             self.lavaMaxSpeed = self.lavaMaxSpeed * 0.5
             self.minFallSpeed = self.minFallSpeed * 0.5
@@ -487,16 +515,10 @@ class ArcadeModeScene: GameScene {
                 }
             }
         }
-        let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: .timeSlow))
-        let removeSlow = SKAction.run { [unowned self] in
-            self.endPowerUp(type: .timeSlow)
-        }
-        let sequence: SKAction = SKAction.sequence([wait, removeSlow])
-        self.run(sequence, withKey: PowerUpTypes.timeSlow.rawValue)
+        self.run(waitSequence(withType: .timeSlow), withKey: PowerUpTypes.timeSlow.rawValue)
     }
     
     func removeTimeSlow() {
-        self.backgroundMusic.run(SKAction.changePlaybackRate(to: 1.0, duration: 0.0))
         for node in self.worldNode.children {
             if node.name == "fallingBlock" {
                 if let fallingBlock = node as? RoundedBlockNode {
@@ -504,6 +526,15 @@ class ArcadeModeScene: GameScene {
                 }
             }
         }
-        self.updateCurrentDifficulty()
+        super.updateCurrentDifficulty()
+    }
+    
+    func waitSequence(withType type: PowerUpTypes) -> SKAction {
+        let wait: SKAction = SKAction.wait(forDuration: PowerUpTypes.duration(ofType: type))
+        let removeType = SKAction.run { [unowned self] in
+            self.endPowerUp(type: type)
+        }
+        let sequence: SKAction = SKAction.sequence([wait, removeType])
+        return sequence
     }
 }

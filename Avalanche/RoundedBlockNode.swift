@@ -42,6 +42,10 @@ class RoundedBlockNode: SKSpriteNode {
         
         self.fallSpeed = RandomCGFloat(min: minFallSpeed, max: maxFallSpeed)
         self.originalFallSpeed = fallSpeed
+        
+        self.lightingBitMask = 1
+        self.shadowedBitMask = 1
+        self.shadowCastBitMask = 1
     }
     
     //MARK: Game Methods

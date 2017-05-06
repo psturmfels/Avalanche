@@ -458,6 +458,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         backgroundGradient.color = UIColor.red
         backgroundGradient.colorBlendFactor = 0.0
         
+        backgroundGradient.lightingBitMask = 1
+        
         self.addChild(backgroundGradient)
     }
     
@@ -512,6 +514,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //But I should be notified if the lava touhes stuff
         risingLava.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.powerUp.rawValue
         risingLava.name = "lava"
+        
+        risingLava.lightingBitMask = 1
         worldNode.addChild(risingLava)
     }
     
@@ -565,7 +569,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //If two falling blocks collide
         else if firstBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue && secondBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue {
             if let first = firstBody.node as? RoundedBlockNode, let second = secondBody.node as? RoundedBlockNode {
-                if first.fallSpeed > second.fallSpeed {
+                if first.fallSpeed < second.fallSpeed {
                     first.fallSpeed = second.fallSpeed
                 } else {
                     second.fallSpeed = first.fallSpeed
