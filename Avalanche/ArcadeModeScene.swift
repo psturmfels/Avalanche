@@ -433,9 +433,9 @@ class ArcadeModeScene: GameScene {
         }
         else {
             if mellow.xScale == 1.0 {
-                self.mellow.setScale(0.5)
-            } else if mellow.xScale == 1.5 {
-                self.mellow.setScale(1.0)
+                self.mellow.run(SKAction.scale(to: 0.5, duration: 0.25))
+            } else if mellow.xScale > 1.0 {
+                self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
             }
         }
         
@@ -443,10 +443,10 @@ class ArcadeModeScene: GameScene {
     }
     
     func removeShrink() {
-        if mellow.xScale == 0.5 {
-            self.mellow.setScale(1.0)
+        if mellow.xScale < 1.0 {
+            self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
         } else if mellow.xScale == 1.0 {
-            self.mellow.setScale(1.5)
+            self.mellow.run(SKAction.scale(to: 1.5, duration: 0.25))
         }
     }
     
@@ -456,9 +456,9 @@ class ArcadeModeScene: GameScene {
         }
         else {
             if mellow.xScale == 1.0 {
-                self.mellow.setScale(1.5)
-            } else if mellow.xScale == 0.5 {
-                self.mellow.setScale(1.0)
+                self.mellow.run(SKAction.scale(to: 1.5, duration: 0.25))
+            } else if mellow.xScale < 1.0 {
+                self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
             }
             
         }
@@ -467,10 +467,10 @@ class ArcadeModeScene: GameScene {
     }
     
     func removeGrow() {
-        if mellow.xScale == 1.5 {
-            self.mellow.setScale(1.0)
+        if mellow.xScale > 1.0 {
+            self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
         } else if mellow.xScale == 1.0 {
-            self.mellow.setScale(0.5)
+            self.mellow.run(SKAction.scale(to: 0.5, duration: 0.25))
         }
     }
     
