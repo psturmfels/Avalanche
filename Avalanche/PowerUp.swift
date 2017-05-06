@@ -45,6 +45,9 @@ class PowerUp: SKSpriteNode {
         self.physicsBody!.collisionBitMask = 0
         self.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue
         
+        self.lightingBitMask = 1
+        self.shadowedBitMask = 1
+        
         let upVector: CGVector = CGVector(dx: 0.0, dy: 8.0)
         let downVector: CGVector = CGVector(dx: 0.0, dy: -8.0)
         let wobbleUp: SKAction = SKAction.move(by: upVector, duration: 0.6)
