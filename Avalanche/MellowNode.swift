@@ -39,7 +39,22 @@ class MellowNode: SKSpriteNode {
     var bottomSideInContact: Int = 0
     var leftSideInContact: Int = 0
     var rightSideInContact: Int = 0
-    var physicsSize: CGSize!
+    var physicsSize: CGSize {
+        get {
+            return CGSize(width: self.texture!.size().width * 0.93 * self.yScale, height: self.texture!.size().height * 0.93 * self.xScale)
+        }
+    }
+    
+    var upJumpForce: CGFloat  {
+        get {
+            return 70000.0
+        }
+    }
+    var sideJumpForce: CGFloat {
+        get {
+            return 60000.0
+        }
+    }
     
     var trailingNum: Int = 0
     
@@ -63,8 +78,7 @@ class MellowNode: SKSpriteNode {
         
         self.position = position
         
-        physicsSize = CGSize(width: self.texture!.size().width * 0.93, height: self.texture!.size().height * 0.93)
-        self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsSize)
+        self.physicsBody = SKPhysicsBody(texture: self.texture!, size: self.physicsSize)
         
         //The mellow should not bounce
         self.physicsBody!.restitution = 0.0
@@ -100,7 +114,7 @@ class MellowNode: SKSpriteNode {
             //Jump upwards, using the correct animations depending on
             //which direction the mellow is facing
             bottomSideInContact = 0
-            let forceAction: SKAction = SKAction.applyForce(CGVector(dx: 0, dy: 70000), duration: 0.01)
+            let forceAction: SKAction = SKAction.applyForce(CGVector(dx: 0, dy: upJumpForce), duration: 0.01)
             var jumpAction: SKAction
             if direction == .right {
                 jumpAction = SKAction.animate(with: rightJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
@@ -118,7 +132,7 @@ class MellowNode: SKSpriteNode {
             bottomSideInContact = 0
             self.physicsBody!.velocity.dy = 0
             let jumpAction = SKAction.animate(with: leftWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
-            let forceAction = SKAction.applyForce(CGVector(dx: 60000, dy: 70000), duration: 0.01)
+            let forceAction = SKAction.applyForce(CGVector(dx: sideJumpForce, dy: upJumpForce), duration: 0.01)
             let actionSequence = SKAction.sequence([jumpAction, forceAction])
             self.run(actionSequence, withKey: "isJumping")
         }
@@ -128,7 +142,7 @@ class MellowNode: SKSpriteNode {
             bottomSideInContact = 0
             self.physicsBody!.velocity.dy = 0
             let jumpAction = SKAction.animate(with: rightWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
-            let forceAction = SKAction.applyForce(CGVector(dx: -60000, dy: 70000), duration: 0.01)
+            let forceAction = SKAction.applyForce(CGVector(dx: -sideJumpForce, dy: upJumpForce), duration: 0.01)
             let actionSequence = SKAction.sequence([jumpAction, forceAction])
             self.run(actionSequence, withKey: "isJumping")
         }

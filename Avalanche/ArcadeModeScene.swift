@@ -23,7 +23,13 @@ class ArcadeModeScene: GameScene {
                 let jetpackTrail: SKEmitterNode = SKEmitterNode(fileNamed: "JetpackTrail")!
                 jetpackTrail.name = "jetpackTrail"
                 jetpackTrail.position.x = 0.0
-                jetpackTrail.position.y = -mellow.size.height * 0.52
+                jetpackTrail.position.y = -mellow.size.height * 0.5
+                if mellow.xScale > 1.0 {
+                    jetpackTrail.position.y += 20.0
+                }
+                if mellow.xScale < 1.0 {
+                    jetpackTrail.position.y -= 5.0
+                }
                 jetpackTrail.zPosition = 0
                 self.mellow.addChild(jetpackTrail)
             } else {
@@ -120,7 +126,6 @@ class ArcadeModeScene: GameScene {
     
     override func didMove(to view: SKView) {
         //Create stuff
-        
         
         createWorld()
         createMellow()
@@ -248,6 +253,36 @@ class ArcadeModeScene: GameScene {
         self.scene!.view!.presentScene(gameOverScene, transition: transition)
     }
     
+    //MARK: Mellow Method
+    func mellowTeleport() {
+        guard mellow.physicsBody != nil else {
+            return
+        }
+        
+        let leftEdge: CGFloat = self.mellow.position.x - self.mellow.frame.width * 0.5
+        let rightEdge: CGFloat = self.mellow.position.x + self.mellow.frame.width * 0.5
+        
+        let botEdge: CGFloat = self.mellow.position.y - self.mellow.frame.height * 0.5 + 150.0 - self.worldNode.position.y
+        let topEdge: CGFloat = self.mellow.position.y + self.mellow.frame.height * 0.5 + 150.0 - self.worldNode.position.y
+        
+        var bottomLeft: CGPoint = CGPoint(x: leftEdge, y: botEdge)
+        var bottomRight: CGPoint = CGPoint(x: rightEdge, y: botEdge)
+        var topLeft: CGPoint = CGPoint(x: leftEdge, y: topEdge)
+        var topRight: CGPoint = CGPoint(x: rightEdge, y: topEdge)
+        
+        while !self.worldNode.nodes(at: bottomLeft).isEmpty && !self.worldNode.nodes(at: bottomRight).isEmpty && !self.worldNode.nodes(at: topRight).isEmpty && !self.worldNode.nodes(at: topLeft).isEmpty {
+            bottomLeft.y += 15.0
+            bottomRight.y += 15.0
+            topLeft.y += 15.0
+            topRight.y += 15.0
+        }
+        
+        let mellowX: CGFloat = bottomLeft.x + self.mellow.frame.width * 0.5
+        let mellowY: CGFloat = bottomLeft.y + self.mellow.frame.height * 0.5 + self.worldNode.position.y
+        let mellowDestination: CGPoint = CGPoint(x: mellowX, y: mellowY)
+        mellow.position = mellowDestination
+    }
+    
     //MARK: PowerUp Methods
     func generateRandomPowerUpEvent() {
         switch PowerUpPattern.returnRandomPattern() {
@@ -359,12 +394,16 @@ class ArcadeModeScene: GameScene {
             addTimeSlow()
         case .jetPack:
             addJetPack()
+        case .shrink:
+            addShrink()
         case .mellowSlow:
             addMellowSlow()
         case .ballAndChain:
             addBallAndChain()
         case .night:
             addNight()
+        case .grow:
+            addGrow()
         }
     }
     
@@ -375,12 +414,63 @@ class ArcadeModeScene: GameScene {
             removeTimeSlow()
         case .jetPack:
             removeJetPack()
+        case .shrink:
+            removeShrink()
         case .mellowSlow:
             removeMellowSlow()
         case .ballAndChain:
             removeBallAndChain()
         case .night:
             removeNight()
+        case .grow:
+            removeGrow()
+        }
+    }
+    
+    func addShrink() {
+        if self.action(forKey: PowerUpTypes.shrink.rawValue) != nil {
+            self.removeAction(forKey: PowerUpTypes.shrink.rawValue)
+        }
+        else {
+            if mellow.xScale == 1.0 {
+                self.mellow.setScale(0.5)
+            } else if mellow.xScale == 1.5 {
+                self.mellow.setScale(1.0)
+            }
+        }
+        
+        self.run(waitSequence(withType: .shrink), withKey: PowerUpTypes.shrink.rawValue)
+    }
+    
+    func removeShrink() {
+        if mellow.xScale == 0.5 {
+            self.mellow.setScale(1.0)
+        } else if mellow.xScale == 1.0 {
+            self.mellow.setScale(1.5)
+        }
+    }
+    
+    func addGrow() {
+        if self.action(forKey: PowerUpTypes.grow.rawValue) != nil {
+            self.removeAction(forKey: PowerUpTypes.grow.rawValue)
+        }
+        else {
+            if mellow.xScale == 1.0 {
+                self.mellow.setScale(1.5)
+            } else if mellow.xScale == 0.5 {
+                self.mellow.setScale(1.0)
+            }
+            
+        }
+        
+        self.run(waitSequence(withType: .grow), withKey: PowerUpTypes.grow.rawValue)
+    }
+    
+    func removeGrow() {
+        if mellow.xScale == 1.5 {
+            self.mellow.setScale(1.0)
+        } else if mellow.xScale == 1.0 {
+            self.mellow.setScale(0.5)
         }
     }
     

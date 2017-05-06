@@ -12,6 +12,7 @@
 		020C08471E7F5E4800561BA6 /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020C08461E7F5E4800561BA6 /* PowerUp.swift */; };
 		020C08491E7F75AB00561BA6 /* PowerUpImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */; };
 		024985641E994F280014D3FD /* ButtonClick.wav in Resources */ = {isa = PBXBuildFile; fileRef = 024985631E994F280014D3FD /* ButtonClick.wav */; };
+		024CBBAA1EBE2D33009D7EBF /* TeleportParticleUp.sks in Resources */ = {isa = PBXBuildFile; fileRef = 024CBBA81EBE2D33009D7EBF /* TeleportParticleUp.sks */; };
 		0272A00E1E9DB24C00E17618 /* BallAndChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0272A00D1E9DB24C00E17618 /* BallAndChain.swift */; };
 		027546501E7F13A100159F8F /* Achievements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0275464F1E7F13A100159F8F /* Achievements.plist */; };
 		027546521E7F13BD00159F8F /* LocalScores.plist in Resources */ = {isa = PBXBuildFile; fileRef = 027546511E7F13BD00159F8F /* LocalScores.plist */; };
@@ -60,6 +61,7 @@
 		020C08461E7F5E4800561BA6 /* PowerUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerUp.swift; sourceTree = "<group>"; };
 		020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = PowerUpImages.xcassets; sourceTree = "<group>"; };
 		024985631E994F280014D3FD /* ButtonClick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ButtonClick.wav; sourceTree = "<group>"; };
+		024CBBA81EBE2D33009D7EBF /* TeleportParticleUp.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = TeleportParticleUp.sks; sourceTree = "<group>"; };
 		0272A00D1E9DB24C00E17618 /* BallAndChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BallAndChain.swift; sourceTree = "<group>"; };
 		0275464F1E7F13A100159F8F /* Achievements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Achievements.plist; sourceTree = "<group>"; };
 		027546511E7F13BD00159F8F /* LocalScores.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = LocalScores.plist; sourceTree = "<group>"; };
@@ -250,6 +252,7 @@
 			isa = PBXGroup;
 			children = (
 				1AAB5D431CE0D6EF00F820F0 /* MellowCrushed.sks */,
+				024CBBA81EBE2D33009D7EBF /* TeleportParticleUp.sks */,
 				020A37211E91E5C200CBB595 /* JetpackTrail.sks */,
 				1A0E90C71CE8E3BC00ED018E /* MellowBurned.sks */,
 				1A51C6B51D722D8F005F6D1A /* spark.png */,
@@ -339,6 +342,7 @@
 				024985641E994F280014D3FD /* ButtonClick.wav in Resources */,
 				027546521E7F13BD00159F8F /* LocalScores.plist in Resources */,
 				1A0584E31CDD27C300B3DF8B /* RoundedBlock.atlas in Resources */,
+				024CBBAA1EBE2D33009D7EBF /* TeleportParticleUp.sks in Resources */,
 				1AFD037F1D63697F00A54640 /* DreamsOfAbove.mp3 in Resources */,
 				1AAB5D451CE0D6EF00F820F0 /* MellowCrushed.sks in Resources */,
 				020C08491E7F75AB00561BA6 /* PowerUpImages.xcassets in Resources */,

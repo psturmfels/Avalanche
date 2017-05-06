@@ -188,9 +188,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let yPoint: CGFloat = 2.0 * self.size.height + currentHighestPoint
         var generationPoint: CGPoint = CGPoint(x: randomXVal, y: yPoint)
         
-        if self.worldNode.nodes(at: generationPoint).count > 0 {
+        let leftPoint: CGPoint = CGPoint(x: randomXVal - 50.0, y: yPoint - 50.0)
+        let rightPoint: CGPoint = CGPoint(x: randomXVal + 50.0, y: yPoint - 50.0)
+        
+        if self.worldNode.nodes(at: generationPoint).count > 0 || self.worldNode.nodes(at: leftPoint).count > 0 || self.worldNode.nodes(at: rightPoint).count > 0 {
             randomXVal = self.size.width * XMultiplier
-            generationPoint = CGPoint(x: randomXVal, y: yPoint)
+            generationPoint = CGPoint(x: randomXVal, y: yPoint + 200.0)
         }
         
         let randomColor: Int = RandomInt(min: 1, max: 8)
@@ -674,6 +677,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
                 mellowCrushedExplosion.position = self.mellow.position
                 mellowCrushedExplosion.zPosition = 20
+                mellowCrushedExplosion.setScale(self.mellow.xScale)
                 self.addChild(mellowCrushedExplosion)
                 self.mellow.removeFromParent()
             })
@@ -691,6 +695,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 mellowBurned.zPosition = 20
                 mellowBurned.position = self.mellow.position
                 mellowBurned.position.y -= self.mellow.physicsSize.height * 0.3
+                mellowBurned.setScale(self.mellow.xScale)
                 self.addChild(mellowBurned)
                 self.mellow.removeFromParent()
             })
@@ -709,6 +714,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
                 mellowCrushedExplosion.position = self.mellow.position
                 mellowCrushedExplosion.zPosition = 20
+                mellowCrushedExplosion.setScale(self.mellow.xScale)
                 self.addChild(mellowCrushedExplosion)
                 self.mellow.removeFromParent()
             })
