@@ -480,15 +480,14 @@ class ArcadeModeScene: GameScene {
         } else {
             let lightNode: SKLightNode = SKLightNode()
             lightNode.name = "lightNode"
-            lightNode.ambientColor = UIColor.black
-            lightNode.falloff = 0.01
+            lightNode.ambientColor = UIColor.white
             
-            let fadeInLight: SKAction = SKAction.customAction(withDuration: 1.0, actionBlock: { (node, elapsedTime) in
+            let fadeDuration: TimeInterval = 1.0
+            
+            let fadeInLight: SKAction = SKAction.customAction(withDuration: fadeDuration, actionBlock: { (node, elapsedTime) in
                 if let lightNode = node as? SKLightNode {
-                    if lightNode.falloff < 1.0 {
-                        lightNode.falloff += 0.005
-                        print(lightNode.falloff)
-                    }
+                    let newGrayScale: CGFloat = 1 - elapsedTime / CGFloat(fadeDuration)
+                    lightNode.ambientColor = UIColor(white: newGrayScale, alpha: 1.0)
                 }
             })
             
@@ -502,14 +501,17 @@ class ArcadeModeScene: GameScene {
     
     func removeNight() {
         if let lightNode = mellow.childNode(withName: "lightNode") {
-            let fadeOutLight: SKAction = SKAction.customAction(withDuration: 1.0, actionBlock: { (node, elapsedTime) in
+            lightNode.name = nil
+            
+            let fadeDuration: TimeInterval = 0.5
+            
+            let fadeOutLight: SKAction = SKAction.customAction(withDuration: fadeDuration, actionBlock: { (node, elapsedTime) in
                 if let lightNode = node as? SKLightNode {
-                    if lightNode.falloff > 0.01 {
-                        lightNode.falloff -= 0.005
-                        print(lightNode.falloff)
-                    }
+                    let newGrayScale: CGFloat = elapsedTime / CGFloat(fadeDuration)
+                    lightNode.ambientColor = UIColor(white: newGrayScale, alpha: 1.0)
                 }
             })
+            
             lightNode.run(fadeOutLight) {
                 lightNode.removeFromParent()
             }
