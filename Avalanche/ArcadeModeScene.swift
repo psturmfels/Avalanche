@@ -544,17 +544,23 @@ class ArcadeModeScene: GameScene {
     }
     
     func removeMellowSlow() {
-        self.physicsWorld.speed = 1.0
-        for node in self.worldNode.children {
-            if node.name == "fallingBlock" {
-                if let fallingBlock = node as? RoundedBlockNode {
-                    fallingBlock.fallSpeed = fallingBlock.fallSpeed * 0.5
+        self.run(SKAction.run { [unowned self] in
+            self.physicsWorld.speed = 1.0
+            for node in self.worldNode.children {
+                if node.name == "fallingBlock" {
+                    if let fallingBlock = node as? RoundedBlockNode {
+                        fallingBlock.fallSpeed = fallingBlock.fallSpeed * 0.5
+                    }
                 }
             }
+        }) { [unowned self] in
+            self.superUpdateCurrentDifficulty()
         }
-        super.updateCurrentDifficulty()
     }
     
+    func superUpdateCurrentDifficulty() {
+        super.updateCurrentDifficulty()
+    }
     
     func addBallAndChain() {
         if self.action(forKey: PowerUpTypes.ballAndChain.rawValue) != nil  {
@@ -611,14 +617,18 @@ class ArcadeModeScene: GameScene {
     }
     
     func removeTimeSlow() {
-        for node in self.worldNode.children {
-            if node.name == "fallingBlock" {
-                if let fallingBlock = node as? RoundedBlockNode {
-                    fallingBlock.fallSpeed = fallingBlock.fallSpeed * 2.0
+        self.run(SKAction.run { [unowned self] in
+            for node in self.worldNode.children {
+                if node.name == "fallingBlock" {
+                    if let fallingBlock = node as? RoundedBlockNode {
+                        fallingBlock.fallSpeed = fallingBlock.fallSpeed * 2.0
+                    }
                 }
             }
+        }) { 
+            [unowned self] in
+            self.superUpdateCurrentDifficulty()
         }
-        super.updateCurrentDifficulty()
     }
     
     func waitSequence(withType type: PowerUpTypes) -> SKAction {
