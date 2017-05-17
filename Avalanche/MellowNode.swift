@@ -30,10 +30,11 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 
 class MellowNode: SKSpriteNode {
-    var leftJumpTextures = [SKTexture]()
-    var rightJumpTextures = [SKTexture]()
-    var leftWallJumpTextures = [SKTexture]()
-    var rightWallJumpTextures = [SKTexture]()
+    var leftJumpTextures: [SKTexture] = [SKTexture]()
+    var rightJumpTextures: [SKTexture] = [SKTexture]()
+    var leftWallJumpTextures: [SKTexture] = [SKTexture]()
+    var rightWallJumpTextures: [SKTexture] = [SKTexture]()
+    let standingTexture: SKTexture = SKTexture(imageNamed: "standing")
     
     var direction: Orientation = .left
     var bottomSideInContact: Int = 0
@@ -192,7 +193,7 @@ class MellowNode: SKSpriteNode {
             self.trailingNum = 0
             if self.action(forKey: "isJumping") == nil
             {
-                self.texture = SKTexture(imageNamed: "standing")
+                self.texture = self.standingTexture
             }
         }
     }

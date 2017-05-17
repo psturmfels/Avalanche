@@ -144,7 +144,8 @@ class ArcadeModeScene: GameScene {
         if self.action(forKey: PowerUpTypes.jetPack.rawValue) != nil {
             self.isJetPacking = true
         } else {
-            mellow.jump()
+            mellowTeleport()
+//            mellow.jump()
         }
     }
     
@@ -259,11 +260,32 @@ class ArcadeModeScene: GameScene {
             return
         }
         
+        let touchingGround: Bool = mellow.bottomSideInContact > 0 && mellow.physicsBody!.velocity.dy < 10
+        let touchingLeft: Bool = mellow.leftSideInContact > 0 && abs(mellow.physicsBody!.velocity.dx) < 10
+        let touchingRight: Bool = mellow.rightSideInContact > 0 && abs(mellow.physicsBody!.velocity.dx) < 10
+        let shouldTeleport: Bool = touchingGround || touchingLeft || touchingRight
+
+        guard shouldTeleport else {
+            return
+        }
+        
+        mellow.bottomSideInContact = 0
+        mellow.rightSideInContact = 0
+        mellow.leftSideInContact = 0
+        
+        var teleportTextures: [SKTexture] = []
+        for i in 1...6 {
+            teleportTextures.append(SKTexture(imageNamed: "teleport\(i)"))
+        }
+        
+        mellow.physicsBody!.categoryBitMask = 0
+        mellow.physicsBody!.collisionBitMask = 0
+        mellow.physicsBody!.contactTestBitMask = 0
         let leftEdge: CGFloat = self.mellow.position.x - self.mellow.frame.width * 0.5
         let rightEdge: CGFloat = self.mellow.position.x + self.mellow.frame.width * 0.5
         
-        let botEdge: CGFloat = self.mellow.position.y - self.mellow.frame.height * 0.5 + 150.0 - self.worldNode.position.y
-        let topEdge: CGFloat = self.mellow.position.y + self.mellow.frame.height * 0.5 + 150.0 - self.worldNode.position.y
+        let botEdge: CGFloat = self.mellow.position.y - self.mellow.frame.height * 0.5 + 175.0 - self.worldNode.position.y
+        let topEdge: CGFloat = self.mellow.position.y + self.mellow.frame.height * 0.5 + 175.0 - self.worldNode.position.y
         
         var bottomLeft: CGPoint = CGPoint(x: leftEdge, y: botEdge)
         var bottomRight: CGPoint = CGPoint(x: rightEdge, y: botEdge)
@@ -277,10 +299,26 @@ class ArcadeModeScene: GameScene {
             topRight.y += 15.0
         }
         
-        let mellowX: CGFloat = bottomLeft.x + self.mellow.frame.width * 0.5
+        let targetX: CGFloat = bottomLeft.x + self.mellow.frame.width * 0.5 + 0.2 * self.mellow.physicsBody!.velocity.dx
+        let mellowX: CGFloat = min(self.frame.width - 32.0, max(targetX, 32.0))
         let mellowY: CGFloat = bottomLeft.y + self.mellow.frame.height * 0.5 + self.worldNode.position.y
         let mellowDestination: CGPoint = CGPoint(x: mellowX, y: mellowY)
-        mellow.position = mellowDestination
+        
+        let teleportUpAnimation: SKAction = SKAction.animate(with: teleportTextures, timePerFrame: 0.02, resize: true, restore: true)
+        let restorePhysics: SKAction = SKAction.run { 
+            self.mellow.physicsBody!.categoryBitMask = CollisionTypes.mellow.rawValue
+            self.mellow.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.edgeBody.rawValue | CollisionTypes.screenBoundary.rawValue
+            self.mellow.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue
+        }
+        let moveAnimation: SKAction = SKAction.move(to: mellowDestination, duration: 0.0)
+        let teleportDownAnimation: SKAction = SKAction.animate(with: teleportTextures.reversed(), timePerFrame: 0.02, resize: true, restore: true)
+        let restoreNormalTexture: SKAction = SKAction.setTexture(mellow.standingTexture, resize: true)
+        let sequence: SKAction = SKAction.sequence([teleportUpAnimation, restorePhysics, moveAnimation, teleportDownAnimation, restoreNormalTexture])
+        
+        let adjustAmount: CGVector = CGVector(dx: 0.0, dy: 50.0)
+        let mellowAdjust: SKAction = SKAction.move(by: adjustAmount, duration: 0.06)
+        mellow.run(mellowAdjust, withKey: "teleportAdjust")
+        mellow.run(sequence, withKey: "teleport")
     }
     
     //MARK: PowerUp Methods
