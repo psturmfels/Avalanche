@@ -52,14 +52,15 @@ enum PowerUpTypes: String {
     case timeSlow = "timeSlow"
     case jetPack = "jetPack"
     case shrink = "shrink"
+    case teleport = "teleport"
     case mellowSlow = "mellowSlow"
     case ballAndChain = "ballAndChain"
     case night = "night"
     case grow = "grow"
     
-    static let positiveTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink]
+    static let positiveTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink, PowerUpTypes.teleport]
     static let negativeTypes: [PowerUpTypes] = [PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain, PowerUpTypes.night, PowerUpTypes.grow]
-    static let allTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink, PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain, PowerUpTypes.night, PowerUpTypes.grow]
+    static let allTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink, PowerUpTypes.teleport, PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain, PowerUpTypes.night, PowerUpTypes.grow]
     
     static func returnRandomPositive() -> PowerUpTypes {
         let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.positiveTypes.count - 1)
@@ -83,6 +84,8 @@ enum PowerUpTypes: String {
         case .jetPack:
             return 4.0
         case .shrink:
+            return 7.0
+        case .teleport:
             return 7.0
         case .mellowSlow:
             return 5.0

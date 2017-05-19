@@ -14,6 +14,8 @@ class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
     var nextPowerUp: Int = 30
     var currentPowerUps: [PowerUp] = []
+    var teleportTextures: [SKTexture] = []
+    var canTeleport: Bool = false
     var isJetPacking: Bool = false {
         didSet {
             if isJetPacking {
@@ -137,15 +139,20 @@ class ArcadeModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
+        generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.7)
     }
     
     //MARK: Overriden Touch Methods
     override func noButtonsTapped() {
         if self.action(forKey: PowerUpTypes.jetPack.rawValue) != nil {
+            if canTeleport {
+                mellowTeleport()
+            }
             self.isJetPacking = true
-        } else {
+        } else if canTeleport {
             mellowTeleport()
-//            mellow.jump()
+        } else {
+            mellow.jump()
         }
     }
     
@@ -206,8 +213,8 @@ class ArcadeModeScene: GameScene {
         super.update(currentTime)
         
         if current > nextPowerUp {
-            self.generateRandomPowerUpEvent()
-            nextPowerUp = current + RandomInt(min: 40, max: 80)
+            self.generateRandomPowerUpEvent(atPoint: 100.0 + self.size.height)
+            nextPowerUp = current + RandomInt(min: 20, max: 60)
         }
         
         guard mellow != nil else {
@@ -273,11 +280,6 @@ class ArcadeModeScene: GameScene {
         mellow.rightSideInContact = 0
         mellow.leftSideInContact = 0
         
-        var teleportTextures: [SKTexture] = []
-        for i in 1...6 {
-            teleportTextures.append(SKTexture(imageNamed: "teleport\(i)"))
-        }
-        
         mellow.physicsBody!.categoryBitMask = 0
         mellow.physicsBody!.collisionBitMask = 0
         mellow.physicsBody!.contactTestBitMask = 0
@@ -292,11 +294,12 @@ class ArcadeModeScene: GameScene {
         var topLeft: CGPoint = CGPoint(x: leftEdge, y: topEdge)
         var topRight: CGPoint = CGPoint(x: rightEdge, y: topEdge)
         
-        while !self.worldNode.nodes(at: bottomLeft).isEmpty && !self.worldNode.nodes(at: bottomRight).isEmpty && !self.worldNode.nodes(at: topRight).isEmpty && !self.worldNode.nodes(at: topLeft).isEmpty {
-            bottomLeft.y += 15.0
-            bottomRight.y += 15.0
-            topLeft.y += 15.0
-            topRight.y += 15.0
+        while !self.worldNode.nodes(at: bottomLeft).isEmpty || !self.worldNode.nodes(at: bottomRight).isEmpty || !self.worldNode.nodes(at: topRight).isEmpty || !self.worldNode.nodes(at: topLeft).isEmpty {
+            bottomLeft.y += 10.0
+            bottomRight.y += 10.0
+            topLeft.y += 10.0
+            topRight.y += 10.0
+            mellow.bottomSideInContact = 1
         }
         
         let targetX: CGFloat = bottomLeft.x + self.mellow.frame.width * 0.5 + 0.2 * self.mellow.physicsBody!.velocity.dx
@@ -322,11 +325,11 @@ class ArcadeModeScene: GameScene {
     }
     
     //MARK: PowerUp Methods
-    func generateRandomPowerUpEvent() {
+    func generateRandomPowerUpEvent(atPoint generatePointY: CGFloat) {
         switch PowerUpPattern.returnRandomPattern() {
         case .normalPositive:
             let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
-            let yVal: CGFloat = 100.0 + self.size.height - worldNode.position.y
+            let yVal: CGFloat = generatePointY - worldNode.position.y
             let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
             
             let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomPositive()
@@ -339,7 +342,7 @@ class ArcadeModeScene: GameScene {
             
         case .normalNegative:
             let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
-            let yVal: CGFloat = 100.0 + self.size.height - worldNode.position.y
+            let yVal: CGFloat = generatePointY - worldNode.position.y
             let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
             
             let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomNegative()
@@ -353,7 +356,7 @@ class ArcadeModeScene: GameScene {
         case .waveNegative:
             for i in 1...3 {
                 let randomXVal: CGFloat = self.frame.width * 0.25 * CGFloat(i) + RandomCGFloat(min: -20.0, max: 20.0)
-                let yVal: CGFloat = 100.0 + self.size.height - worldNode.position.y
+                let yVal: CGFloat = generatePointY - worldNode.position.y + RandomCGFloat(min: -150.0, max: 150.0)
                 let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
                 
                 let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomNegative()
@@ -368,7 +371,7 @@ class ArcadeModeScene: GameScene {
         case .waveRandom:
             for i in 1...4 {
                 let randomXVal: CGFloat = self.frame.width * 0.2 * CGFloat(i) + RandomCGFloat(min: -15.0, max: 15.0)
-                let yVal: CGFloat = 100.0 + self.size.height - worldNode.position.y
+                let yVal: CGFloat = generatePointY - worldNode.position.y + RandomCGFloat(min: -150.0, max: 150.0)
                 let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
                 
                 let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomType()
@@ -434,6 +437,8 @@ class ArcadeModeScene: GameScene {
             addJetPack()
         case .shrink:
             addShrink()
+        case .teleport:
+            addTeleport()
         case .mellowSlow:
             addMellowSlow()
         case .ballAndChain:
@@ -454,6 +459,8 @@ class ArcadeModeScene: GameScene {
             removeJetPack()
         case .shrink:
             removeShrink()
+        case .teleport():
+            removeTeleport()
         case .mellowSlow:
             removeMellowSlow()
         case .ballAndChain:
@@ -463,6 +470,25 @@ class ArcadeModeScene: GameScene {
         case .grow:
             removeGrow()
         }
+    }
+    
+    func addTeleport() {
+        if teleportTextures.isEmpty {
+            for i in 1...6 {
+                teleportTextures.append(SKTexture(imageNamed: "teleport\(i)"))
+            }
+        }
+        
+        if self.action(forKey: PowerUpTypes.teleport.rawValue) != nil {
+            self.removeAction(forKey: PowerUpTypes.teleport.rawValue)
+        } else {
+            self.canTeleport = true
+        }
+        self.run(waitSequence(withType: .teleport), withKey: PowerUpTypes.teleport.rawValue)
+    }
+    
+    func removeTeleport() {
+        self.canTeleport = false
     }
     
     func addShrink() {
