@@ -16,6 +16,7 @@ class ArcadeModeScene: GameScene {
     var currentPowerUps: [PowerUp] = []
     var teleportTextures: [SKTexture] = []
     var canTeleport: Bool = false
+    var isFlipped: Bool = false
     var isJetPacking: Bool = false {
         didSet {
             if isJetPacking {
@@ -183,7 +184,11 @@ class ArcadeModeScene: GameScene {
         //Make the mellow move to the left or right depending on the tilt of the screen
         
         if let data = self.motionManager.accelerometerData {
-            mellow.setdx(withAcceleration: data.acceleration.x)
+            if isFlipped {
+                mellow.setdx(withAcceleration: -data.acceleration.x)
+            } else {
+                mellow.setdx(withAcceleration: data.acceleration.x)
+            }
         }
         
         if mellow.bottomSideInContact == 0 && !self.isJetPacking {
@@ -447,6 +452,8 @@ class ArcadeModeScene: GameScene {
             addNight()
         case .grow:
             addGrow()
+        case .flip:
+            addFlip()
         }
     }
     
@@ -469,7 +476,22 @@ class ArcadeModeScene: GameScene {
             removeNight()
         case .grow:
             removeGrow()
+        case .flip:
+            removeFlip()
         }
+    }
+    
+    func addFlip() {
+        if self.action(forKey: PowerUpTypes.flip.rawValue) != nil {
+            self.removeAction(forKey: PowerUpTypes.flip.rawValue)
+        } else {
+            self.isFlipped = true
+        }
+        self.run(waitSequence(withType: .flip), withKey: PowerUpTypes.flip.rawValue)
+    }
+    
+    func removeFlip() {
+        self.isFlipped = false
     }
     
     func addTeleport() {
