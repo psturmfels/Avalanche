@@ -337,6 +337,7 @@ class ArcadeModeScene: GameScene {
         let respawnPoint: CGPoint = CGPoint(x: respawnX, y: respawnY)
         
         createMellow(atPoint: respawnPoint)
+        createExplosion(atPoint: respawnPoint, withScale: 1.0, withName: "MellowCrushed")
     }
     
     //MARK: PowerUp Methods
