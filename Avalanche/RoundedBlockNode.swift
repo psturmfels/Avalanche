@@ -36,8 +36,8 @@ class RoundedBlockNode: SKSpriteNode {
         
         self.physicsBody!.categoryBitMask = CollisionTypes.fallingBlock.rawValue
         
-        self.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.mellow.rawValue
-        self.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.mellow.rawValue | CollisionTypes.fallingBlock.rawValue
+        self.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue //| CollisionTypes.mellow.rawValue
+        self.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue // | CollisionTypes.mellow.rawValue
         self.name = "fallingBlock"
         
         self.fallSpeed = RandomCGFloat(min: minFallSpeed, max: maxFallSpeed)
