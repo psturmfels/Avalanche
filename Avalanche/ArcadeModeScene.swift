@@ -131,7 +131,8 @@ class ArcadeModeScene: GameScene {
         //Create stuff
         
         createWorld()
-        createMellow()
+        let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
+        createMellow(atPoint: mellowPoint)
         createFloor()
         createLava()
         createLabels()
@@ -327,6 +328,15 @@ class ArcadeModeScene: GameScene {
         let mellowAdjust: SKAction = SKAction.move(by: adjustAmount, duration: 0.06)
         mellow.run(mellowAdjust, withKey: "teleportAdjust")
         mellow.run(sequence, withKey: "teleport")
+    }
+    
+    //MARK: Destroy Methods
+    func respawn() {
+        let respawnY: CGFloat = self.currentHighestPoint.y + 100.0
+        let respawnX: CGFloat = self.currentHighestPoint.x
+        let respawnPoint: CGPoint = CGPoint(x: respawnX, y: respawnY)
+        
+        createMellow(atPoint: respawnPoint)
     }
     
     //MARK: PowerUp Methods

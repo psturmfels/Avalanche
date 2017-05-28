@@ -78,13 +78,6 @@ class TutorialScene: GameScene {
         self.addChild(menuButton)
     }
     
-    func createExplosion(atPoint point: CGPoint) {
-        let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
-        mellowCrushedExplosion.position = point
-        mellowCrushedExplosion.zPosition = 20
-        self.addChild(mellowCrushedExplosion)
-    }
-    
     func createCenterBlock(_ minFallSpeed: Float, maxFallSpeed: Float) {
         let centerX: CGFloat = self.frame.midX
         let randomColor: Int = RandomInt(min: 1, max: 8)
@@ -151,7 +144,8 @@ class TutorialScene: GameScene {
         
         switch tutorialIndex {
         case 0:
-            createMellow()
+            let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
+            createMellow(atPoint: mellowPoint)
             createExplosion(atPoint: self.mellow.position)
         case 2:
             createExplosion(atPoint: self.mellow.position)
@@ -159,7 +153,8 @@ class TutorialScene: GameScene {
             createExplosion(atPoint: self.mellow.position)
         case 4:
             if tutorialProgress < -1 {
-                createMellow()
+                let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
+                createMellow(atPoint: mellowPoint)
                 createExplosion(atPoint: self.mellow.position)
             }
         case 5:

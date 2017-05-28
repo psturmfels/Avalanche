@@ -16,7 +16,8 @@ class ClassicModeScene: GameScene {
     override func didMove(to view: SKView) {
         //Create stuff
         createWorld()
-        createMellow()
+        let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
+        createMellow(atPoint: mellowPoint)
         createFloor()
         createLava()
         createLabels()

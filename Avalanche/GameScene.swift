@@ -46,7 +46,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var minFallSpeed: Float = -250.0
     var maxFallSpeed: Float = -170.0
     
-    var currentHighestPoint: CGFloat = 10.0
+    var currentHighestPoint: CGPoint = CGPoint(x: 100.0, y: 10.0)
     
     var shouldContinueSpawning: Bool = true
     var currentGameState: GameStates = GameStates.gameInProgress {
@@ -177,7 +177,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Block Methods
     func turnToBackground(_ block: RoundedBlockNode) {
-        self.currentHighestPoint = max(block.position.y + block.frame.height * 0.5, self.currentHighestPoint)
+        let blockTopPos: CGFloat = block.position.y + block.frame.height * 0.5
+        if (blockTopPos > currentHighestPoint.y) {
+            currentHighestPoint = CGPoint(x: blockTopPos, y: block.position.x)
+        }
         block.becomeBackground()
     }
     
@@ -185,7 +188,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //Choose random paramters for the block
         let XMultiplier: CGFloat = CGFloat(self.blockPositionGenerator.nextUniform())
         var randomXVal: CGFloat = self.size.width * XMultiplier
-        let yPoint: CGFloat = 2.0 * self.size.height + currentHighestPoint
+        let yPoint: CGFloat = 2.0 * self.size.height + currentHighestPoint.y
         var generationPoint: CGPoint = CGPoint(x: randomXVal, y: yPoint)
         
         let leftPoint: CGPoint = CGPoint(x: randomXVal - 50.0, y: yPoint - 50.0)
@@ -299,7 +302,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if risingLava.physicsBody != nil {
             let lavaYPos: CGFloat = risingLava.position.y
             let lavaYTop: CGFloat = lavaYPos + risingLava.frame.height * 0.5
-            let distanceToLava: CGFloat = self.currentHighestPoint - lavaYTop
+            let distanceToLava: CGFloat = self.currentHighestPoint.y - lavaYTop
             let newLavaRisingSpeed: CGFloat = lavaMaxSpeed - (lavaMaxSpeed) * pow(3.14159, -0.003 * distanceToLava + 0.005)
             risingLava.physicsBody!.velocity.dy = newLavaRisingSpeed
         }
@@ -466,10 +469,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(backgroundGradient)
     }
     
-    func createMellow() {
+    func createMellow(atPoint point: CGPoint) {
         //Create the hero of the game!
         mellow = MellowNode(imageNamed: "standing")
-        let mellowPos: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
+        let mellowPos: CGPoint = point
         //Most of the initialization of the mellow is done in setup()
         mellow.setup(mellowPos)
         self.addChild(mellow)
@@ -490,7 +493,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floor.physicsBody!.collisionBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.fallingBlock.rawValue
         floor.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.fallingBlock.rawValue
         floor.name = "floor"
-        self.currentHighestPoint = floor.position.y + floor.frame.height * 0.5
+        self.currentHighestPoint = CGPoint(x: self.frame.width * 0.5 , y: floor.position.y + floor.frame.height * 0.5)
         worldNode.addChild(floor)
     }
     
@@ -674,11 +677,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.playSoundEffectNamed("MellowCrushed.wav", waitForCompletion: false)
                 
                 //Add the explosion after the crush
-                let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
-                mellowCrushedExplosion.position = self.mellow.position
-                mellowCrushedExplosion.zPosition = 20
-                mellowCrushedExplosion.setScale(self.mellow.xScale)
-                self.addChild(mellowCrushedExplosion)
+                self.createExplosion(atPoint: self.mellow.position, withScale: self.mellow.xScale, withName: "MellowCrushed")
                 self.mellow.removeFromParent()
             })
         case .lava:
@@ -691,12 +690,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.playSoundEffectNamed("MellowBurned.wav", waitForCompletion: false)
                 
                 //Add the fire after getting crushed
-                let mellowBurned = SKEmitterNode(fileNamed: "MellowBurned")!
-                mellowBurned.zPosition = 20
-                mellowBurned.position = self.mellow.position
-                mellowBurned.position.y -= self.mellow.physicsSize.height * 0.3
-                mellowBurned.setScale(self.mellow.xScale)
-                self.addChild(mellowBurned)
+                let burnedX: CGFloat = self.mellow.position.x
+                let burnedY: CGFloat = self.mellow.position.y - self.mellow.physicsSize.height * 0.3
+                let burnedPosition: CGPoint = CGPoint(x: burnedX, y: burnedY)
+                self.createExplosion(atPoint: burnedPosition, withScale: self.mellow.xScale, withName: "MellowBurned")
                 self.mellow.removeFromParent()
             })
         case .selfDestruct:
@@ -711,15 +708,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.playSoundEffectNamed("MellowCrushed.wav", waitForCompletion: false)
                 
                 //Add the explosion after the crush
-                let mellowCrushedExplosion = SKEmitterNode(fileNamed: "MellowCrushed")!
-                mellowCrushedExplosion.position = self.mellow.position
-                mellowCrushedExplosion.zPosition = 20
-                mellowCrushedExplosion.setScale(self.mellow.xScale)
-                self.addChild(mellowCrushedExplosion)
+                self.createExplosion(atPoint: self.mellow.position, withScale: self.mellow.xScale, withName: "MellowCrushed")
                 self.mellow.removeFromParent()
             })
         }
         self.currentGameState = .gameOver
+    }
+    
+    func createExplosion(atPoint point: CGPoint, withScale scale: CGFloat = 1.0, withName name: String = "MellowCrushed") {
+        let mellowCrushedExplosion = SKEmitterNode(fileNamed: name)!
+        mellowCrushedExplosion.position = point
+        mellowCrushedExplosion.zPosition = 20
+        mellowCrushedExplosion.setScale(scale)
+        self.addChild(mellowCrushedExplosion)
     }
     
     func didEnd(_ contact: SKPhysicsContact) {
