@@ -17,6 +17,10 @@ class ArcadeModeScene: GameScene {
     var teleportTextures: [SKTexture] = []
     var canTeleport: Bool = false
     var isFlipped: Bool = false
+    var isDay: Bool = false
+    var isNight: Bool = false
+    var isBig: Bool = false
+    var isSmall: Bool = false
     var isJetPacking: Bool = false {
         didSet {
             if isJetPacking {
@@ -43,6 +47,7 @@ class ArcadeModeScene: GameScene {
         }
     }
     
+    //MARK: Overriden Transition Functions
     override func switchedToInProgress() {
         self.controlButton.updateTextureSet(withNormalTextureName: "pauseNormal", highlightedTextureName: "pauseHighlighted")
         
@@ -81,6 +86,18 @@ class ArcadeModeScene: GameScene {
         self.motionManager.startAccelerometerUpdates()
     }
     
+    override func setGameStateAfterDestroy() {
+        if isDay && !isNight {
+            let waitAction: SKAction = SKAction.wait(forDuration: 1.0)
+            self.run(waitAction) {
+                self.removeAllPowerUps()
+                self.mellowRespawn()
+            }
+        } else {
+            self.currentGameState = .gameOver
+        }
+    }
+    
     override func switchedToOver() {
         self.controlButton.didRelease()
         
@@ -94,6 +111,7 @@ class ArcadeModeScene: GameScene {
         self.run(gameOverAction, completion: {
             self.transitionToGameOverScene()
         })
+        
     }
     
     override func switchedToPause() {
@@ -125,6 +143,15 @@ class ArcadeModeScene: GameScene {
             }
         }
         self.displayPauseNode()
+    }
+    
+    override func transitionToGameOverScene() {
+        let gameOverScene = GameOverScene(size: self.size)
+        gameOverScene.gameType = GameType.Arcade
+        gameOverScene.scaleMode = .resizeFill
+        gameOverScene.highScore = bestSoFar
+        let transition = SKTransition.crossFade(withDuration: 1.0)
+        self.scene!.view!.presentScene(gameOverScene, transition: transition)
     }
     
     override func didMove(to view: SKView) {
@@ -257,16 +284,6 @@ class ArcadeModeScene: GameScene {
         }
     }
     
-    //MARK: Overriden Return Methods
-    override func transitionToGameOverScene() {
-        let gameOverScene = GameOverScene(size: self.size)
-        gameOverScene.gameType = GameType.Arcade
-        gameOverScene.scaleMode = .resizeFill
-        gameOverScene.highScore = bestSoFar
-        let transition = SKTransition.crossFade(withDuration: 1.0)
-        self.scene!.view!.presentScene(gameOverScene, transition: transition)
-    }
-    
     //MARK: Mellow Method
     func mellowTeleport() {
         guard mellow.physicsBody != nil else {
@@ -277,7 +294,7 @@ class ArcadeModeScene: GameScene {
         let touchingLeft: Bool = mellow.leftSideInContact > 0 && abs(mellow.physicsBody!.velocity.dx) < 10
         let touchingRight: Bool = mellow.rightSideInContact > 0 && abs(mellow.physicsBody!.velocity.dx) < 10
         let shouldTeleport: Bool = touchingGround || touchingLeft || touchingRight
-
+        
         guard shouldTeleport else {
             return
         }
@@ -314,7 +331,7 @@ class ArcadeModeScene: GameScene {
         let mellowDestination: CGPoint = CGPoint(x: mellowX, y: mellowY)
         
         let teleportUpAnimation: SKAction = SKAction.animate(with: teleportTextures, timePerFrame: 0.02, resize: true, restore: true)
-        let restorePhysics: SKAction = SKAction.run { 
+        let restorePhysics: SKAction = SKAction.run {
             self.mellow.physicsBody!.categoryBitMask = CollisionTypes.mellow.rawValue
             self.mellow.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.edgeBody.rawValue | CollisionTypes.screenBoundary.rawValue
             self.mellow.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue
@@ -331,13 +348,22 @@ class ArcadeModeScene: GameScene {
     }
     
     //MARK: Destroy Methods
-    func respawn() {
-        let respawnY: CGFloat = self.currentHighestPoint.y + 100.0
+    func mellowRespawn() {
+        if self.mellow.parent != nil {
+            return
+        }
+        
+        let respawnY: CGFloat = self.currentHighestPoint.y + 100.0 + worldNode.position.y
         let respawnX: CGFloat = self.currentHighestPoint.x
         let respawnPoint: CGPoint = CGPoint(x: respawnX, y: respawnY)
         
+        self.mellow = nil
         createMellow(atPoint: respawnPoint)
         createExplosion(atPoint: respawnPoint, withScale: 1.0, withName: "MellowCrushed")
+        
+        if audioIsOn {
+            self.backgroundMusic.run(SKAction.play())
+        }
     }
     
     //MARK: PowerUp Methods
@@ -455,6 +481,8 @@ class ArcadeModeScene: GameScene {
             addShrink()
         case .teleport:
             addTeleport()
+        case .day:
+            addDay()
         case .mellowSlow:
             addMellowSlow()
         case .ballAndChain:
@@ -481,6 +509,8 @@ class ArcadeModeScene: GameScene {
             removeTeleport()
         case .mellowSlow:
             removeMellowSlow()
+        case .day:
+            removeDay()
         case .ballAndChain:
             removeBallAndChain()
         case .night:
@@ -489,6 +519,13 @@ class ArcadeModeScene: GameScene {
             removeGrow()
         case .flip:
             removeFlip()
+        }
+    }
+    
+    func removeAllPowerUps() {
+        for powerUp in currentPowerUps {
+            self.removeAction(forKey: powerUp.type.rawValue)
+            self.endPowerUp(type: powerUp.type)
         }
     }
     
@@ -529,21 +566,29 @@ class ArcadeModeScene: GameScene {
             self.removeAction(forKey: PowerUpTypes.shrink.rawValue)
         }
         else {
-            if mellow.xScale == 1.0 {
-                self.mellow.run(SKAction.scale(to: 0.5, duration: 0.25))
-            } else if mellow.xScale > 1.0 {
+            if isBig {
                 self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
+            } else if !isSmall {
+                self.mellow.run(SKAction.scale(to: 0.5, duration: 0.25))
             }
+            
+            self.isSmall = true
         }
         
         self.run(waitSequence(withType: .shrink), withKey: PowerUpTypes.shrink.rawValue)
     }
     
     func removeShrink() {
-        if mellow.xScale < 1.0 {
-            self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
-        } else if mellow.xScale == 1.0 {
+        self.isSmall = false
+        
+        guard mellow != nil else {
+            return
+        }
+        
+        if isBig {
             self.mellow.run(SKAction.scale(to: 1.5, duration: 0.25))
+        } else if isSmall {
+            self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
         }
     }
     
@@ -552,52 +597,148 @@ class ArcadeModeScene: GameScene {
             self.removeAction(forKey: PowerUpTypes.grow.rawValue)
         }
         else {
-            if mellow.xScale == 1.0 {
-                self.mellow.run(SKAction.scale(to: 1.5, duration: 0.25))
-            } else if mellow.xScale < 1.0 {
+            if isSmall {
                 self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
+            } else if !isBig {
+                self.mellow.run(SKAction.scale(to: 1.5, duration: 0.25))
             }
             
+            isBig = true
         }
         
         self.run(waitSequence(withType: .grow), withKey: PowerUpTypes.grow.rawValue)
     }
     
     func removeGrow() {
-        if mellow.xScale > 1.0 {
-            self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
-        } else if mellow.xScale == 1.0 {
-            self.mellow.run(SKAction.scale(to: 0.5, duration: 0.25))
+        isBig = false
+        
+        guard mellow != nil else {
+            return
         }
+        
+        if isSmall {
+            self.mellow.run(SKAction.scale(to: 0.5, duration: 0.25))
+        } else if isBig {
+            self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
+        }
+    }
+    
+    func addDay() {
+        if self.action(forKey: PowerUpTypes.day.rawValue) != nil {
+            self.removeAction(forKey: PowerUpTypes.day.rawValue)
+        } else {
+            if isNight {
+                fadeOutNight()
+            } else {
+                fadeInDay()
+            }
+            
+            isDay = true
+        }
+        
+        self.run(waitSequence(withType: .day), withKey: PowerUpTypes.day.rawValue)
+    }
+    
+    func removeDay() {
+        isDay = false
+        
+        guard mellow != nil else {
+            return
+        }
+        
+        if isNight {
+            fadeInNight()
+        } else {
+            fadeOutDay()
+        }
+    }
+    
+    func fadeOutDay() {
+        if let lightNode = mellow.childNode(withName: "dayNode") {
+            lightNode.name = nil
+            
+            let fadeDuration: TimeInterval = 0.5
+            
+            let desiredGreen: CGFloat = 1.0
+            let originalGreen: CGFloat = 0.5
+            let desiredBlue: CGFloat = 1.0
+            let originalBlue: CGFloat = 0.0
+            
+            let fadeOutLight: SKAction = SKAction.customAction(withDuration: fadeDuration, actionBlock: { (node, elapsedTime) in
+                if let lightNode = node as? SKLightNode {
+                    let timePercentage: CGFloat = elapsedTime / CGFloat(fadeDuration)
+                    
+                    let newGreen = originalGreen + (desiredGreen - originalGreen) * timePercentage
+                    let newBlue = originalBlue + (desiredBlue - originalBlue) * timePercentage
+                    
+                    lightNode.ambientColor = UIColor(red: 1.0, green: newGreen, blue: newBlue, alpha: 1.0)
+                }
+            })
+            
+            lightNode.run(fadeOutLight) {
+                lightNode.removeFromParent()
+            }
+        }
+    }
+    
+    func fadeInDay() {
+        let lightNode: SKLightNode = SKLightNode()
+        lightNode.name = "dayNode"
+        lightNode.ambientColor = UIColor.white
+        
+        let fadeDuration: TimeInterval = 1.0
+        
+        let desiredGreen: CGFloat = 0.5
+        let originalGreen: CGFloat = 1.0
+        let desiredBlue: CGFloat = 0.0
+        let originalBlue: CGFloat = 1.0
+        
+        let fadeInLight: SKAction = SKAction.customAction(withDuration: fadeDuration, actionBlock: { (node, elapsedTime) in
+            if let lightNode = node as? SKLightNode {
+                let timePercentage: CGFloat = elapsedTime / CGFloat(fadeDuration)
+                let newGreen: CGFloat = originalGreen + (desiredGreen - originalGreen) * timePercentage
+                let newBlue: CGFloat = originalBlue + (desiredBlue - originalBlue) * timePercentage
+                
+                lightNode.ambientColor = UIColor(red: 1.0, green: newGreen, blue: newBlue, alpha: 1.0)
+            }
+        })
+        
+        lightNode.run(fadeInLight)
+        mellow.addChild(lightNode)
     }
     
     func addNight() {
         if self.action(forKey: PowerUpTypes.night.rawValue) != nil {
             self.removeAction(forKey: PowerUpTypes.night.rawValue)
         } else {
-            let lightNode: SKLightNode = SKLightNode()
-            lightNode.name = "lightNode"
-            lightNode.ambientColor = UIColor.white
+            if isDay {
+                fadeOutDay()
+            } else {
+                fadeInNight()
+            }
             
-            let fadeDuration: TimeInterval = 1.0
-            
-            let fadeInLight: SKAction = SKAction.customAction(withDuration: fadeDuration, actionBlock: { (node, elapsedTime) in
-                if let lightNode = node as? SKLightNode {
-                    let newGrayScale: CGFloat = 1 - elapsedTime / CGFloat(fadeDuration)
-                    lightNode.ambientColor = UIColor(white: newGrayScale, alpha: 1.0)
-                }
-            })
-            
-            lightNode.run(fadeInLight)
-            
-            mellow.addChild(lightNode)
+            isNight = true
         }
         
         self.run(waitSequence(withType: .night), withKey: PowerUpTypes.night.rawValue)
     }
     
     func removeNight() {
-        if let lightNode = mellow.childNode(withName: "lightNode") {
+        isNight = false
+        
+        guard mellow != nil else {
+            return
+        }
+        
+        if isDay {
+            fadeInDay()
+        } else {
+            fadeOutNight()
+        }
+    }
+    
+    func fadeOutNight() {
+        if let lightNode = mellow.childNode(withName: "nightNode") {
             lightNode.name = nil
             
             let fadeDuration: TimeInterval = 0.5
@@ -613,6 +754,24 @@ class ArcadeModeScene: GameScene {
                 lightNode.removeFromParent()
             }
         }
+    }
+    
+    func fadeInNight() {
+        let lightNode: SKLightNode = SKLightNode()
+        lightNode.name = "nightNode"
+        lightNode.ambientColor = UIColor.white
+        
+        let fadeDuration: TimeInterval = 1.0
+        
+        let fadeInLight: SKAction = SKAction.customAction(withDuration: fadeDuration, actionBlock: { (node, elapsedTime) in
+            if let lightNode = node as? SKLightNode {
+                let newGrayScale: CGFloat = 1 - elapsedTime / CGFloat(fadeDuration)
+                lightNode.ambientColor = UIColor(white: newGrayScale, alpha: 1.0)
+            }
+        })
+        
+        lightNode.run(fadeInLight)
+        mellow.addChild(lightNode)
     }
     
     func addMellowSlow() {
@@ -722,7 +881,7 @@ class ArcadeModeScene: GameScene {
                     }
                 }
             }
-        }) { 
+        }) {
             [unowned self] in
             self.superUpdateCurrentDifficulty()
         }

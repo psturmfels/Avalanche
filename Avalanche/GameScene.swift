@@ -179,7 +179,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func turnToBackground(_ block: RoundedBlockNode) {
         let blockTopPos: CGFloat = block.position.y + block.frame.height * 0.5
         if (blockTopPos > currentHighestPoint.y) {
-            currentHighestPoint = CGPoint(x: blockTopPos, y: block.position.x)
+            currentHighestPoint = CGPoint(x: block.position.x, y: blockTopPos)
         }
         block.becomeBackground()
     }
@@ -672,7 +672,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 if self.backgroundMusic != nil {
                     self.backgroundMusic.run(SKAction.stop())
-                    self.backgroundMusic.removeFromParent()
                 }
                 self.playSoundEffectNamed("MellowCrushed.wav", waitForCompletion: false)
                 
@@ -685,7 +684,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 //Burned Sound Effects
                 if self.backgroundMusic != nil {
                     self.backgroundMusic.run(SKAction.stop())
-                    self.backgroundMusic.removeFromParent()
                 }
                 self.playSoundEffectNamed("MellowBurned.wav", waitForCompletion: false)
                 
@@ -703,7 +701,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 if self.backgroundMusic != nil {
                     self.backgroundMusic.run(SKAction.stop())
-                    self.backgroundMusic.removeFromParent()
                 }
                 self.playSoundEffectNamed("MellowCrushed.wav", waitForCompletion: false)
                 
@@ -712,15 +709,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.mellow.removeFromParent()
             })
         }
+        
+        setGameStateAfterDestroy()
+    }
+    
+    func setGameStateAfterDestroy() {
         self.currentGameState = .gameOver
     }
     
     func createExplosion(atPoint point: CGPoint, withScale scale: CGFloat = 1.0, withName name: String = "MellowCrushed") {
+        let adjustedY: CGFloat = point.y - worldNode.position.y
+        let adjustedPoint: CGPoint = CGPoint(x: point.x, y: adjustedY)
         let mellowCrushedExplosion = SKEmitterNode(fileNamed: name)!
-        mellowCrushedExplosion.position = point
+        mellowCrushedExplosion.position = adjustedPoint
         mellowCrushedExplosion.zPosition = 20
         mellowCrushedExplosion.setScale(scale)
-        self.addChild(mellowCrushedExplosion)
+        self.worldNode.addChild(mellowCrushedExplosion)
     }
     
     func didEnd(_ contact: SKPhysicsContact) {

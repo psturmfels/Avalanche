@@ -116,11 +116,15 @@ class BallAndChain: SKNode {
         }
         let sequence: SKAction = SKAction.sequence([waitAction, removeAction])
         
-        
         let fadeAction: SKAction = SKAction.fadeOut(withDuration: 1.0)
         for link in links {
             link.run(fadeAction)
         }
+        
+        if let ballBody = ball.physicsBody {
+            ballBody.collisionBitMask = 0
+        }
+        
         ball.run(fadeAction)
         scene.run(sequence) { [unowned self] in
             self.removeFromParent()
