@@ -59,24 +59,18 @@ enum PowerUpTypes: String {
     case night = "night"
     case grow = "grow"
     case flip = "flip"
+    case resetPowerUps = "resetPowerUps"
+    case doubleRandom = "doubleRandom"
+    case removeAll = "removeAll"
     
     static let positiveTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink, PowerUpTypes.teleport, PowerUpTypes.day]
     static let negativeTypes: [PowerUpTypes] = [PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain, PowerUpTypes.night, PowerUpTypes.grow, PowerUpTypes.flip]
-    static let allTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink, PowerUpTypes.teleport, PowerUpTypes.day, PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain, PowerUpTypes.night, PowerUpTypes.grow, PowerUpTypes.flip]
+    static let doubleTypes: [PowerUpTypes] = [PowerUpTypes.resetPowerUps, PowerUpTypes.doubleRandom, PowerUpTypes.removeAll]
+    static let allTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink, PowerUpTypes.teleport, PowerUpTypes.day, PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain, PowerUpTypes.night, PowerUpTypes.grow, PowerUpTypes.flip, PowerUpTypes.resetPowerUps, PowerUpTypes.doubleRandom, PowerUpTypes.removeAll]
     
-    static func returnRandomPositive() -> PowerUpTypes {
-        let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.positiveTypes.count - 1)
-        return PowerUpTypes.positiveTypes[randomIndex]
-    }
-    
-    static func returnRandomNegative() -> PowerUpTypes {
-        let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.negativeTypes.count - 1)
-        return PowerUpTypes.negativeTypes[randomIndex]
-    }
-    
-    static func returnRandomType() -> PowerUpTypes {
-        let randomIndex: Int = RandomInt(min: 0, max: PowerUpTypes.allTypes.count - 1)
-        return PowerUpTypes.allTypes[randomIndex]
+    static func returnRandomFrom(array: [PowerUpTypes]) -> PowerUpTypes {
+        let randomIndex: Int = RandomInt(min: 0, max: array.count - 1)
+        return array[randomIndex]
     }
     
     static func duration(ofType type: PowerUpTypes) -> TimeInterval {
@@ -101,15 +95,22 @@ enum PowerUpTypes: String {
             return 6.0
         case .flip:
             return 5.0
+        case .resetPowerUps:
+            return 0.0
+        case .doubleRandom:
+            return 0.0
+        case .removeAll:
+            return 0.0
         }
     }
 }
 
 enum PowerUpPattern: Double {
-    case normalPositive = 0.4
-    case normalNegative = 0.6
-    case waveNegative = 0.8
-    case waveRandom = 1.0
+    case normalPositive = 0.3
+    case normalNegative = 0.5
+    case waveNegative = 0.6
+    case waveRandom = 0.8
+    case double = 1.0
     
     static func returnRandomPattern() -> PowerUpPattern {
         let randomIndex: Double = RandomDouble(min: 0.0, max: 1.0)
@@ -119,8 +120,10 @@ enum PowerUpPattern: Double {
             return PowerUpPattern.normalNegative
         } else if randomIndex <= PowerUpPattern.waveNegative.rawValue {
             return PowerUpPattern.waveNegative
-        } else {
+        } else if randomIndex <= PowerUpPattern.waveRandom.rawValue {
             return PowerUpPattern.waveRandom
+        } else {
+            return PowerUpPattern.double
         }
     }
 }

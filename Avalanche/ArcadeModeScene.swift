@@ -374,7 +374,7 @@ class ArcadeModeScene: GameScene {
             let yVal: CGFloat = generatePointY - worldNode.position.y
             let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
             
-            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomPositive()
+            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.positiveTypes)
             
             let powerUp: PowerUp = PowerUp(imageNamed: "")
             
@@ -387,7 +387,7 @@ class ArcadeModeScene: GameScene {
             let yVal: CGFloat = generatePointY - worldNode.position.y
             let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
             
-            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomNegative()
+            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.negativeTypes)
             
             let powerUp: PowerUp = PowerUp(imageNamed: "")
             
@@ -401,7 +401,7 @@ class ArcadeModeScene: GameScene {
                 let yVal: CGFloat = generatePointY - worldNode.position.y + RandomCGFloat(min: -150.0, max: 150.0)
                 let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
                 
-                let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomNegative()
+                let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.negativeTypes)
                 
                 let powerUp: PowerUp = PowerUp(imageNamed: "")
                 
@@ -416,7 +416,7 @@ class ArcadeModeScene: GameScene {
                 let yVal: CGFloat = generatePointY - worldNode.position.y + RandomCGFloat(min: -150.0, max: 150.0)
                 let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
                 
-                let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomType()
+                let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.allTypes)
                 
                 let powerUp: PowerUp = PowerUp(imageNamed: "")
                 
@@ -424,6 +424,18 @@ class ArcadeModeScene: GameScene {
                 
                 worldNode.addChild(powerUp)
             }
+        case .double:
+            let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
+            let yVal: CGFloat = generatePointY - worldNode.position.y
+            let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
+            
+            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.doubleTypes)
+            
+            let powerUp: PowerUp = PowerUp(imageNamed: "")
+            
+            powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
+            
+            worldNode.addChild(powerUp)
         }
     }
     
@@ -471,7 +483,6 @@ class ArcadeModeScene: GameScene {
     }
     
     func runPowerUp(type: PowerUpTypes) {
-        addPowerUpIcon(type: type)
         switch type {
         case .timeSlow:
             addTimeSlow()
@@ -493,7 +504,18 @@ class ArcadeModeScene: GameScene {
             addGrow()
         case .flip:
             addFlip()
+        case .resetPowerUps:
+            resetAllPowerUps()
+            return
+        case .doubleRandom:
+            addDoubleRandom()
+            return
+        case .removeAll:
+            removeAllPowerUps()
+            return
         }
+        
+        addPowerUpIcon(type: type)
     }
     
     func endPowerUp(type: PowerUpTypes) {
@@ -519,6 +541,26 @@ class ArcadeModeScene: GameScene {
             removeGrow()
         case .flip:
             removeFlip()
+        case .resetPowerUps:
+            return
+        case .doubleRandom:
+            return
+        case .removeAll:
+            return
+        }
+    }
+    
+    func addDoubleRandom() {
+        let randomPositiveType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.positiveTypes)
+        let randomNegativeType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.negativeTypes)
+        
+        runPowerUp(type: randomPositiveType)
+        runPowerUp(type: randomNegativeType)
+    }
+    
+    func resetAllPowerUps() {
+        for powerUp in currentPowerUps {
+            self.runPowerUp(type: powerUp.type)
         }
     }
     
@@ -587,7 +629,7 @@ class ArcadeModeScene: GameScene {
         
         if isBig {
             self.mellow.run(SKAction.scale(to: 1.5, duration: 0.25))
-        } else if isSmall {
+        } else {
             self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
         }
     }
@@ -618,7 +660,7 @@ class ArcadeModeScene: GameScene {
         
         if isSmall {
             self.mellow.run(SKAction.scale(to: 0.5, duration: 0.25))
-        } else if isBig {
+        } else {
             self.mellow.run(SKAction.scale(to: 1.0, duration: 0.25))
         }
     }
