@@ -123,7 +123,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.displayPauseNode()
     }
     
-    var currentDifficulty: Int = -1 {
+    var currentDifficulty: Int = 1 {
         didSet {
             self.updateCurrentDifficulty()
         }
@@ -140,7 +140,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let timeDuration: TimeInterval = 0.75 - 0.04 * Double(self.currentDifficulty)
             let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
             self.initBlocks(timeDuration, withRange: timeRange)
-            self.lavaMaxSpeed = 50.0 + 3.0 * CGFloat(self.currentDifficulty)
+            self.lavaMaxSpeed = 60.0 + 3.0 * CGFloat(self.currentDifficulty)
         }
     }
     

@@ -26,5 +26,6 @@ class ClassicModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
+        updateCurrentDifficulty()
     }
 }

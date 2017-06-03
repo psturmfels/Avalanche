@@ -170,6 +170,7 @@ class ArcadeModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
+        updateCurrentDifficulty()
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.6)
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.9)
     }
@@ -242,7 +243,7 @@ class ArcadeModeScene: GameScene {
             return
         }
         
-        super.updateCurrentDifficulty()
+        superUpdateCurrentDifficulty()
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -805,7 +806,13 @@ class ArcadeModeScene: GameScene {
     }
     
     func superUpdateCurrentDifficulty() {
-        super.updateCurrentDifficulty()
+        self.removeAction(forKey: "genBlocks")
+        self.minFallSpeed = -140.0  - 20.0 * Float(self.currentDifficulty)
+        self.maxFallSpeed = self.minFallSpeed + 60.0
+        let timeDuration: TimeInterval = 1.0 - 0.03 * Double(self.currentDifficulty)
+        let timeRange: TimeInterval = 0.3 - 0.02 * Double(self.currentDifficulty)
+        self.initBlocks(timeDuration, withRange: timeRange)
+        self.lavaMaxSpeed = 60.0 + 3.0 * CGFloat(self.currentDifficulty)
     }
     
     func addBallAndChain() {
