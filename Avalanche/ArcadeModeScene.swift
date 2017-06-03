@@ -385,6 +385,18 @@ class ArcadeModeScene: GameScene {
             powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
             
             worldNode.addChild(powerUp)
+        case .positive:
+            let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
+            let yVal: CGFloat = generatePointY - worldNode.position.y
+            let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
+            
+            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.positiveTypes)
+            
+            let powerUp: PowerUp = PowerUp(imageNamed: "")
+            
+            powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
+            
+            worldNode.addChild(powerUp)
         }
     }
     
@@ -807,12 +819,12 @@ class ArcadeModeScene: GameScene {
     
     func superUpdateCurrentDifficulty() {
         self.removeAction(forKey: "genBlocks")
-        self.minFallSpeed = -140.0  - 20.0 * Float(self.currentDifficulty)
+        self.minFallSpeed = -130.0  - 15.0 * Float(self.currentDifficulty)
         self.maxFallSpeed = self.minFallSpeed + 60.0
-        let timeDuration: TimeInterval = 1.0 - 0.03 * Double(self.currentDifficulty)
+        let timeDuration: TimeInterval = 1.1 - 0.035 * Double(self.currentDifficulty)
         let timeRange: TimeInterval = 0.3 - 0.02 * Double(self.currentDifficulty)
         self.initBlocks(timeDuration, withRange: timeRange)
-        self.lavaMaxSpeed = 60.0 + 3.0 * CGFloat(self.currentDifficulty)
+        self.lavaMaxSpeed = 50.0 + 3.0 * CGFloat(self.currentDifficulty)
     }
     
     func addBallAndChain() {

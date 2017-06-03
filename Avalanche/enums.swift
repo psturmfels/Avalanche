@@ -106,11 +106,15 @@ enum PowerUpTypes: String {
 }
 
 enum PowerUpPattern: Double {
+    case positive = 0.2
     case normal = 1.0
     
     static func returnRandomPattern() -> PowerUpPattern {
         let randomIndex: Double = RandomDouble(min: 0.0, max: 1.0)
-        if randomIndex <= PowerUpPattern.normal.rawValue {
+        if randomIndex <= PowerUpPattern.positive.rawValue {
+            return .positive
+        }
+        else if randomIndex <= PowerUpPattern.normal.rawValue {
             return .normal
         }
         
