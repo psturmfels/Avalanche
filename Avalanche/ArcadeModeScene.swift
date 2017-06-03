@@ -12,6 +12,8 @@ import AVFoundation
 
 class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
+    let nextPowerUpMin: Int = 5
+    let nextPowerUpMax: Int = 20
     var nextPowerUp: Int = 30
     var currentPowerUps: [PowerUp] = []
     var teleportTextures: [SKTexture] = []
@@ -168,7 +170,8 @@ class ArcadeModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
-        generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.7)
+        generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.6)
+        generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.9)
     }
     
     //MARK: Overriden Touch Methods
@@ -247,7 +250,7 @@ class ArcadeModeScene: GameScene {
         
         if current > nextPowerUp {
             self.generateRandomPowerUpEvent(atPoint: 100.0 + self.size.height)
-            nextPowerUp = current + RandomInt(min: 20, max: 60)
+            nextPowerUp = current + RandomInt(min: nextPowerUpMin, max: nextPowerUpMax)
         }
         
         guard mellow != nil else {
@@ -369,67 +372,12 @@ class ArcadeModeScene: GameScene {
     //MARK: PowerUp Methods
     func generateRandomPowerUpEvent(atPoint generatePointY: CGFloat) {
         switch PowerUpPattern.returnRandomPattern() {
-        case .normalPositive:
+        case .normal:
             let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
             let yVal: CGFloat = generatePointY - worldNode.position.y
             let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
             
-            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.positiveTypes)
-            
-            let powerUp: PowerUp = PowerUp(imageNamed: "")
-            
-            powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
-            
-            worldNode.addChild(powerUp)
-            
-        case .normalNegative:
-            let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
-            let yVal: CGFloat = generatePointY - worldNode.position.y
-            let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
-            
-            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.negativeTypes)
-            
-            let powerUp: PowerUp = PowerUp(imageNamed: "")
-            
-            powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
-            
-            worldNode.addChild(powerUp)
-            
-        case .waveNegative:
-            for i in 1...3 {
-                let randomXVal: CGFloat = self.frame.width * 0.25 * CGFloat(i) + RandomCGFloat(min: -20.0, max: 20.0)
-                let yVal: CGFloat = generatePointY - worldNode.position.y + RandomCGFloat(min: -150.0, max: 150.0)
-                let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
-                
-                let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.negativeTypes)
-                
-                let powerUp: PowerUp = PowerUp(imageNamed: "")
-                
-                powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
-                
-                worldNode.addChild(powerUp)
-            }
-            
-        case .waveRandom:
-            for i in 1...4 {
-                let randomXVal: CGFloat = self.frame.width * 0.2 * CGFloat(i) + RandomCGFloat(min: -15.0, max: 15.0)
-                let yVal: CGFloat = generatePointY - worldNode.position.y + RandomCGFloat(min: -150.0, max: 150.0)
-                let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
-                
-                let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.allTypes)
-                
-                let powerUp: PowerUp = PowerUp(imageNamed: "")
-                
-                powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
-                
-                worldNode.addChild(powerUp)
-            }
-        case .double:
-            let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
-            let yVal: CGFloat = generatePointY - worldNode.position.y
-            let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
-            
-            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.doubleTypes)
+            let randomPowerUpType: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.allTypes)
             
             let powerUp: PowerUp = PowerUp(imageNamed: "")
             
