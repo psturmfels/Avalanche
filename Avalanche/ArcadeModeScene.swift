@@ -466,13 +466,23 @@ class ArcadeModeScene: GameScene {
         case .flip:
             addFlip()
         case .resetPowerUps:
-            resetAllPowerUps()
+            if currentPowerUps.isEmpty {
+                let randomPositive: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.positiveTypes)
+                runPowerUp(type: randomPositive)
+            } else {
+                resetAllPowerUps()
+            }
             return
         case .doubleRandom:
             addDoubleRandom()
             return
         case .removeAll:
-            removeAllPowerUps()
+            if currentPowerUps.isEmpty {
+                let randomPositive: PowerUpTypes = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.positiveTypes)
+                runPowerUp(type: randomPositive)
+            } else {
+                removeAllPowerUps()
+            }
             return
         }
         
