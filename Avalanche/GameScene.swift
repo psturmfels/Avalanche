@@ -652,6 +652,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func mellowDestroyed(_ by: DeathTypes) {
+        guard mellow.physicsBody != nil else {
+            return
+        }
+        
         //Remove the mellow's physicsBody so it doesn't slide
         mellow.physicsBody = nil
         self.physicsBody = nil
@@ -788,8 +792,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 removePowerUp.removeFromParent()
             }
         }
+        
+        didEndRemainingcontact(withBody: firstBody, andBody: secondBody, atPoint: contact.contactPoint)
     }
     
+    func didEndRemainingcontact(withBody firstBody: SKPhysicsBody, andBody secondbody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
+        
+    }
     
     //MARK: Touch Methods
     func noButtonsTapped() {

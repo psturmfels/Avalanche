@@ -43,7 +43,7 @@ class PowerUp: SKSpriteNode {
         
         self.physicsBody!.categoryBitMask = CollisionTypes.powerUp.rawValue
         self.physicsBody!.collisionBitMask = 0
-        self.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue
+        self.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.lava.rawValue
         
         self.lightingBitMask = 1
         self.shadowedBitMask = 1

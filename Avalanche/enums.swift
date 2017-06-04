@@ -63,6 +63,8 @@ enum PowerUpTypes: String {
     case doubleRandom = "doubleRandom"
     case removeAll = "removeAll"
     
+    case heart = "heart"
+    
     static let positiveTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink, PowerUpTypes.teleport, PowerUpTypes.day]
     static let negativeTypes: [PowerUpTypes] = [PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain, PowerUpTypes.night, PowerUpTypes.grow, PowerUpTypes.flip]
     static let doubleTypes: [PowerUpTypes] = [PowerUpTypes.resetPowerUps, PowerUpTypes.doubleRandom, PowerUpTypes.removeAll]
@@ -101,20 +103,24 @@ enum PowerUpTypes: String {
             return 0.0
         case .removeAll:
             return 0.0
+        case .heart:
+            return 0.0
         }
     }
 }
 
 enum PowerUpPattern: Double {
     case positive = 0.2
+    case heart = 0.25
     case normal = 1.0
     
     static func returnRandomPattern() -> PowerUpPattern {
         let randomIndex: Double = RandomDouble(min: 0.0, max: 1.0)
         if randomIndex <= PowerUpPattern.positive.rawValue {
             return .positive
-        }
-        else if randomIndex <= PowerUpPattern.normal.rawValue {
+        } else if randomIndex <= PowerUpPattern.heart.rawValue {
+            return .heart
+        } else if randomIndex <= PowerUpPattern.normal.rawValue {
             return .normal
         }
         

@@ -17,6 +17,9 @@ class ArcadeModeScene: GameScene {
     var nextPowerUp: Int = 30
     var currentPowerUps: [PowerUp] = []
     var teleportTextures: [SKTexture] = []
+    var numHeartsOnScreen: Int = 0
+    var livesLeft: Int = 0
+    var livesArray: [Heart] = []
     var canTeleport: Bool = false
     var isFlipped: Bool = false
     var isDay: Bool = false
@@ -45,6 +48,52 @@ class ArcadeModeScene: GameScene {
                 if let jetpackTrail = mellow.childNode(withName: "jetpackTrail") {
                     jetpackTrail.removeFromParent()
                 }
+            }
+        }
+    }
+    
+    //MARK: Lives Methods
+    func setupLivesArray() {
+        for _ in 1...3 {
+            addLife()
+        }
+    }
+    
+    func addLife() {
+        guard livesLeft < 3 else {
+            return
+        }
+        
+        let heartY: CGFloat = self.frame.height * 0.85
+        var heartX: CGFloat = self.frame.width * 0.91
+        let newHeart: Heart = Heart(imageNamed: "heartIcon")
+        newHeart.setup(atPoint: CGPoint.zero)
+        
+        if livesLeft >= 1 {
+            for _ in 1...livesLeft {
+                heartX -= newHeart.frame.width * 1.3
+            }
+        }
+        
+        let heartPoint: CGPoint = CGPoint(x: heartX, y: heartY)
+        newHeart.position = heartPoint
+        self.livesArray.append(newHeart)
+        self.addChild(newHeart)
+        
+        livesLeft += 1
+    }
+    
+    func removeLife() {
+        guard livesLeft > 0 else {
+            return
+        }
+        
+        livesLeft -= 1
+        
+        if let lastHeart = livesArray.popLast() {
+            let fadeAction = SKAction.fadeOut(withDuration: 0.5)
+            lastHeart.run(fadeAction) {
+                lastHeart.removeFromParent()
             }
         }
     }
@@ -95,6 +144,14 @@ class ArcadeModeScene: GameScene {
                 self.removeAllPowerUps()
                 self.mellowRespawn()
             }
+        } else if livesLeft > 0 {
+            let waitAction: SKAction = SKAction.wait(forDuration: 1.0)
+            self.run(waitAction) {
+                self.removeAllPowerUps()
+                self.mellowRespawn()
+            }
+            
+            removeLife()
         } else {
             self.currentGameState = .gameOver
         }
@@ -171,6 +228,7 @@ class ArcadeModeScene: GameScene {
         createBackgroundNotifications()
         startMusic()
         updateCurrentDifficulty()
+        setupLivesArray()
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.6)
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.9)
     }
@@ -207,6 +265,19 @@ class ArcadeModeScene: GameScene {
             if let powerUpNode = secondbody.node as? PowerUp {
                 runPowerUp(type: powerUpNode.type!)
                 powerUpNode.removeFromParent()
+            }
+        }
+        
+        if firstBody.categoryBitMask == CollisionTypes.lava.rawValue && secondbody.categoryBitMask == CollisionTypes.powerUp.rawValue {
+            if let powerUpNode = secondbody.node as? PowerUp {
+                if powerUpNode.type == .heart {
+                    numHeartsOnScreen -= 1
+                    powerUpNode.type = PowerUpTypes.removeAll
+                }
+                let fadeAction: SKAction = SKAction.fadeOut(withDuration: 0.5)
+                powerUpNode.run(fadeAction) {
+                    powerUpNode.removeFromParent()
+                }
             }
         }
     }
@@ -248,6 +319,7 @@ class ArcadeModeScene: GameScene {
     
     override func update(_ currentTime: TimeInterval) {
         super.update(currentTime)
+        print(numHeartsOnScreen)
         
         if current > nextPowerUp {
             self.generateRandomPowerUpEvent(atPoint: 100.0 + self.size.height)
@@ -385,6 +457,24 @@ class ArcadeModeScene: GameScene {
             powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
             
             worldNode.addChild(powerUp)
+        case .heart:
+            let randomPowerUpType: PowerUpTypes
+            if (livesLeft + numHeartsOnScreen) >= 3 {
+                randomPowerUpType = PowerUpTypes.returnRandomFrom(array: PowerUpTypes.positiveTypes)
+            } else {
+                randomPowerUpType = PowerUpTypes.heart
+                numHeartsOnScreen += 1
+            }
+            
+            let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
+            let yVal: CGFloat = generatePointY - worldNode.position.y
+            let setupPoint: CGPoint = CGPoint(x: randomXVal, y: yVal)
+            
+            let powerUp: PowerUp = PowerUp(imageNamed: "")
+            
+            powerUp.setup(atPoint: setupPoint, withType: randomPowerUpType)
+            
+            worldNode.addChild(powerUp)
         case .positive:
             let randomXVal: CGFloat = RandomCGFloat(min: 40.0, max: Float(self.size.width) - 40.0)
             let yVal: CGFloat = generatePointY - worldNode.position.y
@@ -484,6 +574,10 @@ class ArcadeModeScene: GameScene {
                 removeAllPowerUps()
             }
             return
+        case .heart:
+            numHeartsOnScreen -= 1
+            addLife()
+            return
         }
         
         addPowerUpIcon(type: type)
@@ -517,6 +611,8 @@ class ArcadeModeScene: GameScene {
         case .doubleRandom:
             return
         case .removeAll:
+            return
+        case .heart:
             return
         }
     }
@@ -834,7 +930,7 @@ class ArcadeModeScene: GameScene {
         let timeDuration: TimeInterval = 1.1 - 0.035 * Double(self.currentDifficulty)
         let timeRange: TimeInterval = 0.3 - 0.02 * Double(self.currentDifficulty)
         self.initBlocks(timeDuration, withRange: timeRange)
-        self.lavaMaxSpeed = 50.0 + 3.0 * CGFloat(self.currentDifficulty)
+        self.lavaMaxSpeed = 48.0 + 3.0 * CGFloat(self.currentDifficulty)
     }
     
     func addBallAndChain() {

@@ -11,6 +11,7 @@
 		020A37231E91E5C200CBB595 /* JetpackTrail.sks in Resources */ = {isa = PBXBuildFile; fileRef = 020A37211E91E5C200CBB595 /* JetpackTrail.sks */; };
 		020C08471E7F5E4800561BA6 /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020C08461E7F5E4800561BA6 /* PowerUp.swift */; };
 		020C08491E7F75AB00561BA6 /* PowerUpImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */; };
+		021832141EE3C24000914438 /* HeartNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021832131EE3C24000914438 /* HeartNode.swift */; };
 		024985641E994F280014D3FD /* ButtonClick.wav in Resources */ = {isa = PBXBuildFile; fileRef = 024985631E994F280014D3FD /* ButtonClick.wav */; };
 		024CBBAA1EBE2D33009D7EBF /* TeleportParticleUp.sks in Resources */ = {isa = PBXBuildFile; fileRef = 024CBBA81EBE2D33009D7EBF /* TeleportParticleUp.sks */; };
 		0272A00E1E9DB24C00E17618 /* BallAndChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0272A00D1E9DB24C00E17618 /* BallAndChain.swift */; };
@@ -61,6 +62,7 @@
 		020A37211E91E5C200CBB595 /* JetpackTrail.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = JetpackTrail.sks; sourceTree = "<group>"; };
 		020C08461E7F5E4800561BA6 /* PowerUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerUp.swift; sourceTree = "<group>"; };
 		020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = PowerUpImages.xcassets; sourceTree = "<group>"; };
+		021832131EE3C24000914438 /* HeartNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeartNode.swift; sourceTree = "<group>"; };
 		024985631E994F280014D3FD /* ButtonClick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ButtonClick.wav; sourceTree = "<group>"; };
 		024CBBA81EBE2D33009D7EBF /* TeleportParticleUp.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = TeleportParticleUp.sks; sourceTree = "<group>"; };
 		0272A00D1E9DB24C00E17618 /* BallAndChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BallAndChain.swift; sourceTree = "<group>"; };
@@ -234,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				1AF88CD31CD6B2EF00028E3D /* MellowNode.swift */,
+				021832131EE3C24000914438 /* HeartNode.swift */,
 				1A0584E41CDD281E00B3DF8B /* RoundedBlockNode.swift */,
 				020C08461E7F5E4800561BA6 /* PowerUp.swift */,
 				0272A00D1E9DB24C00E17618 /* BallAndChain.swift */,
@@ -369,6 +372,7 @@
 				1A5387001CF38A4700226092 /* MenuScene.swift in Sources */,
 				0272A00E1E9DB24C00E17618 /* BallAndChain.swift in Sources */,
 				02B20CAF1E633DC900534BCC /* LeaderboardTableViewCell.swift in Sources */,
+				021832141EE3C24000914438 /* HeartNode.swift in Sources */,
 				1AFE715C1DB6835C00E217EC /* TutorialScene.swift in Sources */,
 				1A0584E51CDD281E00B3DF8B /* RoundedBlockNode.swift in Sources */,
 				027546541E7F26F000159F8F /* ArcadeModeScene.swift in Sources */,
