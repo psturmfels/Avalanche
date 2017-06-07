@@ -14,7 +14,7 @@ class OneWayBridgeNode: SKSpriteNode {
     
     func setup(atPoint point: CGPoint) {
         self.position = point
-        self.zPosition = -5.0
+        self.zPosition = 11.0
         
         physicsSize = CGSize(width: self.frame.width * 0.98, height: self.frame.height * 0.98)
         
