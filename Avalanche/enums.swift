@@ -142,7 +142,8 @@ enum CollisionTypes: UInt32 {
     case powerUp = 16
     case powerUpObject = 32
     case screenBoundary = 64
-    
+    case oneWayDisabled = 128
+    case oneWayEnabled = 256
 }
 
 enum Orientation {

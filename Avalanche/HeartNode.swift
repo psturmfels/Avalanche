@@ -14,6 +14,6 @@ class Heart: SKSpriteNode {
         self.size.width = 26.0
         self.size.height = 26.0
         self.name = "heart"
-        self.zPosition = 30.0
+        self.zPosition = 20.0
     }
 }

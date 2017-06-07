@@ -231,6 +231,10 @@ class ArcadeModeScene: GameScene {
         setupLivesArray()
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.6)
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.9)
+        
+        let bridge: OneWayBridgeNode = OneWayBridgeNode(imageNamed: "oneWayBridge")
+        bridge.setup(atPoint: CGPoint(x: self.frame.width * 0.5, y: self.frame.height * 0.5 - worldNode.position.y))
+        self.addChild(bridge)
     }
     
     //MARK: Overriden Touch Methods
@@ -319,7 +323,6 @@ class ArcadeModeScene: GameScene {
     
     override func update(_ currentTime: TimeInterval) {
         super.update(currentTime)
-        print(numHeartsOnScreen)
         
         if current > nextPowerUp {
             self.generateRandomPowerUpEvent(atPoint: 100.0 + self.size.height)

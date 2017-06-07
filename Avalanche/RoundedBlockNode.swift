@@ -32,10 +32,9 @@ class RoundedBlockNode: SKSpriteNode {
         self.physicsBody!.mass = 1000000.0
         
         self.position = CGPoint(x: 256, y: 300)
-        self.zPosition = 10.0
+        self.zPosition = -10.0
         
         self.physicsBody!.categoryBitMask = CollisionTypes.fallingBlock.rawValue
-        
         self.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue
         self.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue 
         self.name = "fallingBlock"
