@@ -141,8 +141,8 @@ enum CollisionTypes: UInt32 {
     case lava = 8
     case powerUp = 16
     case powerUpObject = 32
-    case edgeBody = 64
-    case screenBoundary = 128
+    case screenBoundary = 64
+    
 }
 
 enum Orientation {

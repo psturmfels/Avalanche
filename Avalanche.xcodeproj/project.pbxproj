@@ -12,6 +12,8 @@
 		020C08471E7F5E4800561BA6 /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020C08461E7F5E4800561BA6 /* PowerUp.swift */; };
 		020C08491E7F75AB00561BA6 /* PowerUpImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */; };
 		021832141EE3C24000914438 /* HeartNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021832131EE3C24000914438 /* HeartNode.swift */; };
+		024159791EE79ECF00AFB848 /* ArcadeBlocks.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 024159781EE79ECF00AFB848 /* ArcadeBlocks.xcassets */; };
+		0241597B1EE79F4100AFB848 /* OneWayBridgeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0241597A1EE79F4100AFB848 /* OneWayBridgeNode.swift */; };
 		024985641E994F280014D3FD /* ButtonClick.wav in Resources */ = {isa = PBXBuildFile; fileRef = 024985631E994F280014D3FD /* ButtonClick.wav */; };
 		024CBBAA1EBE2D33009D7EBF /* TeleportParticleUp.sks in Resources */ = {isa = PBXBuildFile; fileRef = 024CBBA81EBE2D33009D7EBF /* TeleportParticleUp.sks */; };
 		0272A00E1E9DB24C00E17618 /* BallAndChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0272A00D1E9DB24C00E17618 /* BallAndChain.swift */; };
@@ -63,6 +65,8 @@
 		020C08461E7F5E4800561BA6 /* PowerUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerUp.swift; sourceTree = "<group>"; };
 		020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = PowerUpImages.xcassets; sourceTree = "<group>"; };
 		021832131EE3C24000914438 /* HeartNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeartNode.swift; sourceTree = "<group>"; };
+		024159781EE79ECF00AFB848 /* ArcadeBlocks.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = ArcadeBlocks.xcassets; path = ../ArcadeBlocks.xcassets; sourceTree = "<group>"; };
+		0241597A1EE79F4100AFB848 /* OneWayBridgeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneWayBridgeNode.swift; sourceTree = "<group>"; };
 		024985631E994F280014D3FD /* ButtonClick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ButtonClick.wav; sourceTree = "<group>"; };
 		024CBBA81EBE2D33009D7EBF /* TeleportParticleUp.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = TeleportParticleUp.sks; sourceTree = "<group>"; };
 		0272A00D1E9DB24C00E17618 /* BallAndChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BallAndChain.swift; sourceTree = "<group>"; };
@@ -172,6 +176,7 @@
 				1AFE71561DB67AB200E217EC /* Helpers */,
 				1AFE71581DB67ADA00E217EC /* Emitters */,
 				02A2B5321E50FF3F00E7D3B7 /* Views */,
+				024159781EE79ECF00AFB848 /* ArcadeBlocks.xcassets */,
 				1AAFB4CB1CA07D6100E7472B /* ButtonImages.xcassets */,
 				0208198C1E6A5BC70089C151 /* AchievementImages.xcassets */,
 				020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */,
@@ -236,6 +241,7 @@
 			isa = PBXGroup;
 			children = (
 				1AF88CD31CD6B2EF00028E3D /* MellowNode.swift */,
+				0241597A1EE79F4100AFB848 /* OneWayBridgeNode.swift */,
 				021832131EE3C24000914438 /* HeartNode.swift */,
 				1A0584E41CDD281E00B3DF8B /* RoundedBlockNode.swift */,
 				020C08461E7F5E4800561BA6 /* PowerUp.swift */,
@@ -352,6 +358,7 @@
 				024CBBAA1EBE2D33009D7EBF /* TeleportParticleUp.sks in Resources */,
 				1AFD037F1D63697F00A54640 /* DreamsOfAbove.mp3 in Resources */,
 				1AAB5D451CE0D6EF00F820F0 /* MellowCrushed.sks in Resources */,
+				024159791EE79ECF00AFB848 /* ArcadeBlocks.xcassets in Resources */,
 				020C08491E7F75AB00561BA6 /* PowerUpImages.xcassets in Resources */,
 				1AECBCA61CE11B7D007FDC94 /* crushed.atlas in Resources */,
 			);
@@ -379,6 +386,7 @@
 				02A2B5341E50FF5100E7D3B7 /* AchievementTableViewCell.swift in Sources */,
 				1AFE715E1DB684D900E217EC /* SKLabelNodeExtension.swift in Sources */,
 				02C4F2A41E5A84F00036FB19 /* LeaderboardTableViewHandler.swift in Sources */,
+				0241597B1EE79F4100AFB848 /* OneWayBridgeNode.swift in Sources */,
 				1AE976681D94A7D9002AEF97 /* GameOverScene.swift in Sources */,
 				1AEEF1F21DAB1CF4009A11CF /* ButtonLabelNode.swift in Sources */,
 				1AE976661D94A4F8002AEF97 /* PauseNode.swift in Sources */,

@@ -409,7 +409,7 @@ class ArcadeModeScene: GameScene {
         let teleportUpAnimation: SKAction = SKAction.animate(with: teleportTextures, timePerFrame: 0.02, resize: true, restore: true)
         let restorePhysics: SKAction = SKAction.run {
             self.mellow.physicsBody!.categoryBitMask = CollisionTypes.mellow.rawValue
-            self.mellow.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.edgeBody.rawValue | CollisionTypes.screenBoundary.rawValue
+            self.mellow.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.screenBoundary.rawValue
             self.mellow.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue
         }
         let moveAnimation: SKAction = SKAction.move(to: mellowDestination, duration: 0.0)
