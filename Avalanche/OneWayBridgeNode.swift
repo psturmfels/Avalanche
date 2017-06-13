@@ -11,10 +11,11 @@ import SpriteKit
 
 class OneWayBridgeNode: SKSpriteNode {
     var physicsSize: CGSize!
+    var detectorNode: SKNode!
     
     func setup(atPoint point: CGPoint) {
         self.position = point
-        self.zPosition = 11.0
+        self.zPosition = -20.0
         
         physicsSize = CGSize(width: self.frame.width * 0.98, height: self.frame.height * 0.98)
         
@@ -28,6 +29,18 @@ class OneWayBridgeNode: SKSpriteNode {
         
         self.lightingBitMask = 1
         self.shadowedBitMask = 1
+        
+        detectorNode = SKNode()
+        detectorNode.position = CGPoint.zero
+        let expandedSize: CGSize = CGSize(width: self.frame.width * 1.1, height: self.frame.height * 1.6)
+        detectorNode.physicsBody = SKPhysicsBody(rectangleOf: expandedSize)
+        detectorNode.physicsBody!.categoryBitMask = CollisionTypes.oneWayDisabled.rawValue
+        detectorNode.physicsBody!.collisionBitMask = 0
+        detectorNode.physicsBody!.contactTestBitMask = 0
+        detectorNode.physicsBody!.isDynamic = false
+        detectorNode.physicsBody!.restitution = 0.0
+        
+        self.addChild(detectorNode)
     }
     
     

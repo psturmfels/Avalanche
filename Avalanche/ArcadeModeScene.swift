@@ -227,13 +227,15 @@ class ArcadeModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
-        updateCurrentDifficulty()
+//        updateCurrentDifficulty() TODO: UNCOMMENT ME
         setupLivesArray()
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.6)
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.9)
         
+        
         let bridge: OneWayBridgeNode = OneWayBridgeNode(imageNamed: "oneWayBridge")
-        bridge.setup(atPoint: CGPoint(x: self.frame.width * 0.5, y: self.frame.height * 0.5 - worldNode.position.y))
+        bridge.size.width *= 0.5
+        bridge.setup(atPoint: CGPoint(x: self.frame.width * 0.5, y: self.frame.height * 0.3 - worldNode.position.y))
         self.addChild(bridge)
     }
     
@@ -264,16 +266,40 @@ class ArcadeModeScene: GameScene {
     }
     
     //MARK: Overriden Contact Methods
-    override func didBeginRemainingContact(withBody firstBody: SKPhysicsBody, andBody secondbody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
-        if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondbody.categoryBitMask == CollisionTypes.powerUp.rawValue {
-            if let powerUpNode = secondbody.node as? PowerUp {
+    override func didEndRemainingcontact(withBody firstBody: SKPhysicsBody, andBody secondBody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
+        if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayEnabled.rawValue {
+            
+            guard mellow.physicsBody != nil else {
+                return
+            }
+            
+            guard let oneWayBody = secondBody.node as? OneWayBridgeNode else {
+                return
+            }
+            
+            let mellowTopEdge: CGFloat = mellow.position.y + mellow.physicsSize.height * 0.35
+            
+            let oneWayYPos: CGFloat = oneWayBody.position.y + worldNode.position.y
+            let oneWayBotEdge: CGFloat = oneWayYPos - oneWayBody.physicsSize.height * 0.35
+            
+            let oneWayBotLessMellowTop: Bool = oneWayBotEdge < mellowTopEdge
+            let xPosDiff: CGFloat = abs(oneWayBody.position.x - mellow.position.x)
+            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
+            
+            if mellow.bottomSideInContact > 0 && oneWayBotLessMellowTop && xPosDiff < combinedWidths {
+                mellow.bottomSideInContact -= 1
+            }
+        }
+    }
+    
+    override func didBeginRemainingContact(withBody firstBody: SKPhysicsBody, andBody secondBody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
+        if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.powerUp.rawValue {
+            if let powerUpNode = secondBody.node as? PowerUp {
                 runPowerUp(type: powerUpNode.type!)
                 powerUpNode.removeFromParent()
             }
-        }
-        
-        if firstBody.categoryBitMask == CollisionTypes.lava.rawValue && secondbody.categoryBitMask == CollisionTypes.powerUp.rawValue {
-            if let powerUpNode = secondbody.node as? PowerUp {
+        } else if firstBody.categoryBitMask == CollisionTypes.lava.rawValue && secondBody.categoryBitMask == CollisionTypes.powerUp.rawValue {
+            if let powerUpNode = secondBody.node as? PowerUp {
                 if powerUpNode.type == .heart {
                     numHeartsOnScreen -= 1
                     powerUpNode.type = PowerUpTypes.removeAll
@@ -282,6 +308,51 @@ class ArcadeModeScene: GameScene {
                 powerUpNode.run(fadeAction) {
                     powerUpNode.removeFromParent()
                 }
+            }
+        } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDisabled.rawValue {
+            
+            guard mellow.physicsBody != nil else {
+                return
+            }
+            
+            guard let oneWayBody = secondBody.node?.parent as? OneWayBridgeNode else {
+                return
+            }
+            
+            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.35
+            
+            let oneWayYPos: CGFloat = oneWayBody.position.y + worldNode.position.y
+            let oneWayTopEdge: CGFloat = oneWayYPos + oneWayBody.physicsSize.height * 0.35
+            
+            let oneWayTopLessMellowBot: Bool = oneWayTopEdge < mellowBotEdge
+            let xPosDiff: CGFloat = abs(oneWayBody.position.x - mellow.position.x)
+            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
+
+            if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
+                oneWayBody.physicsBody!.categoryBitMask = CollisionTypes.oneWayEnabled.rawValue
+            } else {
+                oneWayBody.physicsBody!.categoryBitMask = 0
+            }
+        } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayEnabled.rawValue {
+            guard mellow.physicsBody != nil else {
+                return
+            }
+            
+            guard let oneWayBody = secondBody.node as? OneWayBridgeNode else {
+                return
+            }
+            
+            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.35
+            
+            let oneWayYPos: CGFloat = oneWayBody.position.y + worldNode.position.y
+            let oneWayTopEdge: CGFloat = oneWayYPos + oneWayBody.physicsSize.height * 0.35
+            
+            let oneWayTopLessMellowBot: Bool = oneWayTopEdge < mellowBotEdge
+            let xPosDiff: CGFloat = abs(oneWayBody.position.x - mellow.position.x)
+            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
+            
+            if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
+                mellow.bottomSideInContact += 1
             }
         }
     }
@@ -411,9 +482,8 @@ class ArcadeModeScene: GameScene {
         
         let teleportUpAnimation: SKAction = SKAction.animate(with: teleportTextures, timePerFrame: 0.02, resize: true, restore: true)
         let restorePhysics: SKAction = SKAction.run {
-            self.mellow.physicsBody!.categoryBitMask = CollisionTypes.mellow.rawValue
-            self.mellow.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.screenBoundary.rawValue
-            self.mellow.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue
+            self.mellow.setBitMasks()
+
         }
         let moveAnimation: SKAction = SKAction.move(to: mellowDestination, duration: 0.0)
         let teleportDownAnimation: SKAction = SKAction.animate(with: teleportTextures.reversed(), timePerFrame: 0.02, resize: true, restore: true)

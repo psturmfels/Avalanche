@@ -796,7 +796,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         didEndRemainingcontact(withBody: firstBody, andBody: secondBody, atPoint: contact.contactPoint)
     }
     
-    func didEndRemainingcontact(withBody firstBody: SKPhysicsBody, andBody secondbody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
+    func didEndRemainingcontact(withBody firstBody: SKPhysicsBody, andBody secondBody: SKPhysicsBody, atPoint contactPoint: CGPoint) {
         
     }
     

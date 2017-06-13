@@ -88,9 +88,7 @@ class MellowNode: SKSpriteNode {
         self.physicsBody!.mass = 1
         
         //Make sure the mellow only collides with background and falling blocks
-        self.physicsBody!.categoryBitMask = CollisionTypes.mellow.rawValue
-        self.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.screenBoundary.rawValue | CollisionTypes.oneWayEnabled.rawValue
-        self.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.oneWayEnabled.rawValue | CollisionTypes.oneWayDisabled.rawValue
+        setBitMasks()
         self.physicsBody!.friction = 0.2
         self.physicsBody!.usesPreciseCollisionDetection = true
         self.name = "mellow"
@@ -103,6 +101,16 @@ class MellowNode: SKSpriteNode {
          a separate class, it ended up being horizontal!
          The line above rotates it to the right orientation.
          */
+    }
+    
+    func setBitMasks() {
+        guard self.physicsBody != nil else {
+            return
+        }
+        
+        self.physicsBody!.categoryBitMask = CollisionTypes.mellow.rawValue
+        self.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.screenBoundary.rawValue | CollisionTypes.oneWayEnabled.rawValue
+        self.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.oneWayEnabled.rawValue | CollisionTypes.oneWayDisabled.rawValue
     }
     
     //MARK: Motion Methods
