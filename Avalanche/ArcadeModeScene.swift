@@ -289,6 +289,17 @@ class ArcadeModeScene: GameScene {
             if mellow.bottomSideInContact > 0 && oneWayBotLessMellowTop && xPosDiff < combinedWidths {
                 mellow.bottomSideInContact -= 1
             }
+        } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDisabled.rawValue {
+            
+            guard mellow.physicsBody != nil else {
+                return
+            }
+            
+            guard let oneWayBody = secondBody.node?.parent as? OneWayBridgeNode else {
+                return
+            }
+            
+            oneWayBody.physicsBody!.collisionBitMask = CollisionTypes.oneWayEnabled.rawValue
         }
     }
     
@@ -330,8 +341,10 @@ class ArcadeModeScene: GameScene {
 
             if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
                 oneWayBody.physicsBody!.categoryBitMask = CollisionTypes.oneWayEnabled.rawValue
+                print("Enabled platform")
             } else {
                 oneWayBody.physicsBody!.categoryBitMask = 0
+                print("Disabled platform")
             }
         } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayEnabled.rawValue {
             guard mellow.physicsBody != nil else {

@@ -23,7 +23,7 @@ class OneWayBridgeNode: SKSpriteNode {
         self.physicsBody!.restitution = 0.0
         self.physicsBody!.isDynamic = false
         
-        self.physicsBody!.categoryBitMask = CollisionTypes.oneWayDisabled.rawValue
+        self.physicsBody!.categoryBitMask = CollisionTypes.oneWayEnabled.rawValue
         self.physicsBody!.collisionBitMask = 0
         self.physicsBody!.contactTestBitMask = 0
         
@@ -32,8 +32,9 @@ class OneWayBridgeNode: SKSpriteNode {
         
         detectorNode = SKNode()
         detectorNode.position = CGPoint.zero
-        let expandedSize: CGSize = CGSize(width: self.frame.width * 1.1, height: self.frame.height * 1.6)
+        let expandedSize: CGSize = CGSize(width: self.frame.width * 1.1, height: self.frame.height * 3.0)
         detectorNode.physicsBody = SKPhysicsBody(rectangleOf: expandedSize)
+        detectorNode.physicsBody!.usesPreciseCollisionDetection = true
         detectorNode.physicsBody!.categoryBitMask = CollisionTypes.oneWayDisabled.rawValue
         detectorNode.physicsBody!.collisionBitMask = 0
         detectorNode.physicsBody!.contactTestBitMask = 0
