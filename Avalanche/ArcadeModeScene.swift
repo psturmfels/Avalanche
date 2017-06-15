@@ -341,10 +341,8 @@ class ArcadeModeScene: GameScene {
 
             if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
                 oneWayBody.physicsBody!.categoryBitMask = CollisionTypes.oneWayEnabled.rawValue
-                print("Enabled platform")
             } else {
                 oneWayBody.physicsBody!.categoryBitMask = 0
-                print("Disabled platform")
             }
         } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayEnabled.rawValue {
             guard mellow.physicsBody != nil else {
@@ -366,6 +364,7 @@ class ArcadeModeScene: GameScene {
             
             if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
                 mellow.bottomSideInContact += 1
+                secondBody.collisionBitMask = CollisionTypes.oneWayEnabled.rawValue
             }
         }
     }
