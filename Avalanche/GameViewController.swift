@@ -44,7 +44,7 @@ class GameViewController: UIViewController {
 //        self.gameCenterVC.leaderboardTimeScope = GKLeaderboardTimeScope.week
         
         let skView = self.view as! SKView
-        skView.showsPhysics = true
+        skView.showsPhysics = false
         skView.showsFPS = false
         skView.showsNodeCount = false
         skView.ignoresSiblingOrder = true

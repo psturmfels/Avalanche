@@ -91,11 +91,23 @@ class ArcadeModeScene: GameScene {
         livesLeft -= 1
         
         if let lastHeart = livesArray.popLast() {
-            let fadeAction = SKAction.fadeOut(withDuration: 0.5)
+            let fadeAction: SKAction = SKAction.fadeOut(withDuration: 0.5)
             lastHeart.run(fadeAction) {
                 lastHeart.removeFromParent()
             }
         }
+    }
+    
+    func createRespawnPlatform(atPoint point: CGPoint, fadeInDuration: CGFloat = 0.0) {
+        let respawnPlatform: OneWayBridgeNode = OneWayBridgeNode(imageNamed: "oneWayBridge")
+        respawnPlatform.setup(atPoint: point)
+        respawnPlatform.name = "respawnPlatform"
+        
+        respawnPlatform.alpha = 0.0
+        let fadeInAction: SKAction = SKAction.fadeIn(withDuration: 0.5)
+        respawnPlatform.run(fadeInAction)
+        
+        self.worldNode.addChild(respawnPlatform)
     }
     
     //MARK: Overriden Transition Functions
@@ -142,7 +154,7 @@ class ArcadeModeScene: GameScene {
             let waitAction: SKAction = SKAction.wait(forDuration: 1.0)
             self.run(waitAction) {
                 self.removeAllPowerUps()
-                self.mellowRespawn()
+                self.sunRespawn()
             }
         } else if livesLeft > 0 {
             let waitAction: SKAction = SKAction.wait(forDuration: 1.0)
@@ -227,16 +239,10 @@ class ArcadeModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
-//        updateCurrentDifficulty() TODO: UNCOMMENT ME
+        updateCurrentDifficulty()
         setupLivesArray()
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.6)
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.9)
-        
-        
-        let bridge: OneWayBridgeNode = OneWayBridgeNode(imageNamed: "oneWayBridge")
-        bridge.size.width *= 0.5
-        bridge.setup(atPoint: CGPoint(x: self.frame.width * 0.5, y: self.frame.height * 0.3 - worldNode.position.y))
-        self.addChild(bridge)
     }
     
     //MARK: Overriden Touch Methods
@@ -289,7 +295,7 @@ class ArcadeModeScene: GameScene {
             if mellow.bottomSideInContact > 0 && oneWayBotLessMellowTop && xPosDiff < combinedWidths {
                 mellow.bottomSideInContact -= 1
             }
-        } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDisabled.rawValue {
+        } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDetector.rawValue {
             
             guard mellow.physicsBody != nil else {
                 return
@@ -320,7 +326,18 @@ class ArcadeModeScene: GameScene {
                     powerUpNode.removeFromParent()
                 }
             }
-        } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDisabled.rawValue {
+        } else if firstBody.categoryBitMask == CollisionTypes.lava.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDetector.rawValue {
+            
+            guard let oneWayBody = secondBody.node?.parent as? OneWayBridgeNode else {
+                return
+            }
+            
+            let fadeAction: SKAction = SKAction.fadeOut(withDuration: 0.5)
+            oneWayBody.run(fadeAction) {
+                oneWayBody.removeFromParent()
+            }
+            
+        } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDetector.rawValue {
             
             guard mellow.physicsBody != nil else {
                 return
@@ -337,12 +354,12 @@ class ArcadeModeScene: GameScene {
             
             let oneWayTopLessMellowBot: Bool = oneWayTopEdge < mellowBotEdge
             let xPosDiff: CGFloat = abs(oneWayBody.position.x - mellow.position.x)
-            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
-
+            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.35
+            
             if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
                 oneWayBody.physicsBody!.categoryBitMask = CollisionTypes.oneWayEnabled.rawValue
             } else {
-                oneWayBody.physicsBody!.categoryBitMask = 0
+                oneWayBody.physicsBody!.categoryBitMask = CollisionTypes.oneWayDisabled.rawValue
             }
         } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayEnabled.rawValue {
             guard mellow.physicsBody != nil else {
@@ -365,6 +382,10 @@ class ArcadeModeScene: GameScene {
             if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
                 mellow.bottomSideInContact += 1
                 secondBody.collisionBitMask = CollisionTypes.oneWayEnabled.rawValue
+            }
+        } else if firstBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue && (secondBody.categoryBitMask == CollisionTypes.oneWayDisabled.rawValue || secondBody.categoryBitMask == CollisionTypes.oneWayEnabled.rawValue) {
+            if let block = firstBody.node as? RoundedBlockNode {
+                turnToBackground(block)
             }
         }
     }
@@ -495,7 +516,7 @@ class ArcadeModeScene: GameScene {
         let teleportUpAnimation: SKAction = SKAction.animate(with: teleportTextures, timePerFrame: 0.02, resize: true, restore: true)
         let restorePhysics: SKAction = SKAction.run {
             self.mellow.setBitMasks()
-
+            
         }
         let moveAnimation: SKAction = SKAction.move(to: mellowDestination, duration: 0.0)
         let teleportDownAnimation: SKAction = SKAction.animate(with: teleportTextures.reversed(), timePerFrame: 0.02, resize: true, restore: true)
@@ -509,21 +530,61 @@ class ArcadeModeScene: GameScene {
     }
     
     //MARK: Destroy Methods
-    func mellowRespawn() {
-        if self.mellow.parent != nil {
-            return
-        }
-        
+    func sunRespawn() {
         let respawnY: CGFloat = self.currentHighestPoint.y + 100.0 + worldNode.position.y
         let respawnX: CGFloat = self.currentHighestPoint.x
         let respawnPoint: CGPoint = CGPoint(x: respawnX, y: respawnY)
         
         self.mellow = nil
-        createMellow(atPoint: respawnPoint)
-        createExplosion(atPoint: respawnPoint, withScale: 1.0, withName: "MellowCrushed")
+        self.createMellow(atPoint: respawnPoint)
+        self.createExplosion(atPoint: respawnPoint, withScale: 1.0, withName: "MellowCrushed")
         
-        if audioIsOn {
+        if self.audioIsOn {
             self.backgroundMusic.run(SKAction.play())
+        }
+    }
+    
+    func mellowRespawn() {
+        if self.mellow.parent != nil {
+            return
+        }
+        
+        for node in self.worldNode.children {
+            if let fallingBlock = node as? RoundedBlockNode, fallingBlock.name == "fallingBlock" {
+                let fadeAction: SKAction = SKAction.fadeOut(withDuration: 0.5)
+                fallingBlock.run(fadeAction) {
+                    fallingBlock.removeFromParent()
+                }
+            }
+            if let respawnPlatform = node as? OneWayBridgeNode, respawnPlatform.name == "respawnPlatform" {
+                let fadeAction: SKAction = SKAction.fadeOut(withDuration: 0.2)
+                respawnPlatform.run(fadeAction) {
+                    respawnPlatform.removeFromParent()
+                }
+            }
+        }
+        
+        let platformY: CGFloat = self.currentHighestPoint.y + 50.0
+        let platformX: CGFloat = self.frame.width * 0.5
+        let platformPoint: CGPoint = CGPoint(x: platformX, y: platformY)
+        
+        let platformYVisual: CGFloat = self.frame.height * 0.3 - self.worldNode.position.y
+        let platformYDifference: CGFloat = platformYVisual - platformY
+        let moveWorldAction: SKAction = SKAction.moveBy(x: 0.0, y: platformYDifference, duration: 0.5)
+        self.worldNode.run(moveWorldAction) {
+            self.createRespawnPlatform(atPoint: platformPoint, fadeInDuration: 0.5)
+            let respawnY: CGFloat = self.currentHighestPoint.y + 150.0 + self.worldNode.position.y
+            let respawnPoint: CGPoint = CGPoint(x: platformX, y: respawnY)
+            let respawnAction: SKAction = SKAction.run {
+                self.mellow = nil
+                self.createMellow(atPoint: respawnPoint)
+                self.createExplosion(atPoint: respawnPoint, withScale: 1.0, withName: "MellowCrushed")
+                
+                if self.audioIsOn {
+                    self.backgroundMusic.run(SKAction.play())
+                }
+            }
+            self.run(respawnAction, withKey: "mellowRespawn")
         }
     }
     

@@ -26,7 +26,7 @@ class BallAndChain: SKNode {
         ball.physicsBody!.mass = 5
         ball.physicsBody!.restitution = 0
         ball.physicsBody!.categoryBitMask = CollisionTypes.powerUpObject.rawValue
-        ball.physicsBody!.collisionBitMask =  CollisionTypes.powerUpObject.rawValue | CollisionTypes.screenBoundary.rawValue | CollisionTypes.background.rawValue
+        ball.physicsBody!.collisionBitMask =  CollisionTypes.powerUpObject.rawValue | CollisionTypes.screenBoundary.rawValue | CollisionTypes.background.rawValue | CollisionTypes.oneWayDisabled.rawValue | CollisionTypes.oneWayEnabled.rawValue
         ball.physicsBody!.contactTestBitMask = 0
         parentScene.addChild(ball)
         let ballAnchorPoint: CGPoint = CGPoint(x: self.ball.frame.midX, y: self.ball.frame.maxY)

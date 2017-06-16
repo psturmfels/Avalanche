@@ -10,7 +10,11 @@
 import SpriteKit
 
 class OneWayBridgeNode: SKSpriteNode {
-    var physicsSize: CGSize!
+    var physicsSize: CGSize {
+        get {
+            return CGSize(width: self.size.width * 0.98 * self.yScale, height: self.size.height * 0.98 * self.xScale)
+        }
+    }
     var detectorNodeLarge: SKNode!
     var detectorNodeSmall: SKNode!
     
@@ -18,9 +22,7 @@ class OneWayBridgeNode: SKSpriteNode {
         self.position = point
         self.zPosition = -20.0
         
-        physicsSize = CGSize(width: self.frame.width * 0.98, height: self.frame.height * 0.98)
-        
-        self.physicsBody = SKPhysicsBody(texture: self.texture!, size: physicsSize)
+        self.physicsBody = SKPhysicsBody(texture: self.texture!, size: self.physicsSize)
         self.physicsBody!.restitution = 0.0
         self.physicsBody!.isDynamic = false
         
@@ -36,7 +38,7 @@ class OneWayBridgeNode: SKSpriteNode {
         let expandedSizeLarge: CGSize = CGSize(width: self.frame.width * 1.1, height: self.frame.height * 3.0)
         detectorNodeLarge.physicsBody = SKPhysicsBody(rectangleOf: expandedSizeLarge)
         detectorNodeLarge.physicsBody!.usesPreciseCollisionDetection = true
-        detectorNodeLarge.physicsBody!.categoryBitMask = CollisionTypes.oneWayDisabled.rawValue
+        detectorNodeLarge.physicsBody!.categoryBitMask = CollisionTypes.oneWayDetector.rawValue
         detectorNodeLarge.physicsBody!.collisionBitMask = 0
         detectorNodeLarge.physicsBody!.contactTestBitMask = 0
         detectorNodeLarge.physicsBody!.isDynamic = false
@@ -46,10 +48,10 @@ class OneWayBridgeNode: SKSpriteNode {
         
         detectorNodeSmall = SKNode()
         detectorNodeSmall.position = CGPoint.zero
-        let expandedSizeSmall: CGSize = CGSize(width: self.frame.width * 1.05, height: self.frame.height * 1.5)
+        let expandedSizeSmall: CGSize = CGSize(width: self.frame.width * 1.05 , height: self.frame.height * 1.5)
         detectorNodeSmall.physicsBody = SKPhysicsBody(rectangleOf: expandedSizeSmall)
         detectorNodeSmall.physicsBody!.usesPreciseCollisionDetection = true
-        detectorNodeSmall.physicsBody!.categoryBitMask = CollisionTypes.oneWayDisabled.rawValue
+        detectorNodeSmall.physicsBody!.categoryBitMask = CollisionTypes.oneWayDetector.rawValue
         detectorNodeSmall.physicsBody!.collisionBitMask = 0
         detectorNodeSmall.physicsBody!.contactTestBitMask = 0
         detectorNodeSmall.physicsBody!.isDynamic = false

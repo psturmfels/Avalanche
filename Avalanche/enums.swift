@@ -111,7 +111,7 @@ enum PowerUpTypes: String {
 
 enum PowerUpPattern: Double {
     case positive = 0.2
-    case heart = 0.25
+    case heart = 0.22
     case normal = 1.0
     
     static func returnRandomPattern() -> PowerUpPattern {
@@ -135,15 +135,16 @@ enum DeathTypes {
 }
 
 enum CollisionTypes: UInt32 {
-    case mellow = 1
-    case background = 2
-    case fallingBlock = 4
-    case lava = 8
-    case powerUp = 16
-    case powerUpObject = 32
+    case mellow         = 1
+    case background     = 2
+    case fallingBlock   = 4
+    case lava           = 8
+    case powerUp        = 16
+    case powerUpObject  = 32
     case screenBoundary = 64
-    case oneWayDisabled = 128
-    case oneWayEnabled = 256
+    case oneWayDetector = 128
+    case oneWayEnabled  = 256
+    case oneWayDisabled = 512
 }
 
 enum Orientation {

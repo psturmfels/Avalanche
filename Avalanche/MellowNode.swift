@@ -42,7 +42,7 @@ class MellowNode: SKSpriteNode {
     var rightSideInContact: Int = 0
     var physicsSize: CGSize {
         get {
-            return CGSize(width: self.texture!.size().width * 0.93 * self.yScale, height: self.texture!.size().height * 0.93 * self.xScale)
+            return CGSize(width: self.size.width * 0.93 * self.yScale, height: self.size.height * 0.93 * self.xScale)
         }
     }
     
@@ -110,7 +110,7 @@ class MellowNode: SKSpriteNode {
         
         self.physicsBody!.categoryBitMask = CollisionTypes.mellow.rawValue
         self.physicsBody!.collisionBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.screenBoundary.rawValue | CollisionTypes.oneWayEnabled.rawValue
-        self.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.oneWayEnabled.rawValue | CollisionTypes.oneWayDisabled.rawValue
+        self.physicsBody!.contactTestBitMask = CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.oneWayEnabled.rawValue | CollisionTypes.oneWayDetector.rawValue
     }
     
     //MARK: Motion Methods

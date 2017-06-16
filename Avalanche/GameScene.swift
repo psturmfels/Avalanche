@@ -518,7 +518,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         risingLava.physicsBody!.collisionBitMask = 0x00000000
         
         //But I should be notified if the lava touhes stuff
-        risingLava.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.powerUp.rawValue
+        risingLava.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.powerUp.rawValue | CollisionTypes.oneWayDetector.rawValue
         risingLava.name = "lava"
         
         risingLava.lightingBitMask = 1
