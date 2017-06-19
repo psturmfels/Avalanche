@@ -42,7 +42,7 @@ class MellowNode: SKSpriteNode {
     var rightSideInContact: Int = 0
     var physicsSize: CGSize {
         get {
-            return CGSize(width: self.size.width * 0.93 * self.yScale, height: self.size.height * 0.93 * self.xScale)
+            return CGSize(width: self.size.width * 0.93, height: self.size.height * 0.93)
         }
     }
     
