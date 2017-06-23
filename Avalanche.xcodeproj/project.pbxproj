@@ -16,6 +16,7 @@
 		0241597D1EE7A69400AFB848 /* ArcadeBlocks.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0241597C1EE7A69400AFB848 /* ArcadeBlocks.xcassets */; };
 		024985641E994F280014D3FD /* ButtonClick.wav in Resources */ = {isa = PBXBuildFile; fileRef = 024985631E994F280014D3FD /* ButtonClick.wav */; };
 		024CBBAA1EBE2D33009D7EBF /* TeleportParticleUp.sks in Resources */ = {isa = PBXBuildFile; fileRef = 024CBBA81EBE2D33009D7EBF /* TeleportParticleUp.sks */; };
+		02645E861EF768CC00AC9FDC /* OneWayPlatformNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02645E851EF768CC00AC9FDC /* OneWayPlatformNode.swift */; };
 		0272A00E1E9DB24C00E17618 /* BallAndChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0272A00D1E9DB24C00E17618 /* BallAndChain.swift */; };
 		027546501E7F13A100159F8F /* Achievements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0275464F1E7F13A100159F8F /* Achievements.plist */; };
 		027546521E7F13BD00159F8F /* LocalScores.plist in Resources */ = {isa = PBXBuildFile; fileRef = 027546511E7F13BD00159F8F /* LocalScores.plist */; };
@@ -69,6 +70,7 @@
 		0241597C1EE7A69400AFB848 /* ArcadeBlocks.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ArcadeBlocks.xcassets; sourceTree = "<group>"; };
 		024985631E994F280014D3FD /* ButtonClick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ButtonClick.wav; sourceTree = "<group>"; };
 		024CBBA81EBE2D33009D7EBF /* TeleportParticleUp.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = TeleportParticleUp.sks; sourceTree = "<group>"; };
+		02645E851EF768CC00AC9FDC /* OneWayPlatformNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneWayPlatformNode.swift; sourceTree = "<group>"; };
 		0272A00D1E9DB24C00E17618 /* BallAndChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BallAndChain.swift; sourceTree = "<group>"; };
 		0275464F1E7F13A100159F8F /* Achievements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Achievements.plist; sourceTree = "<group>"; };
 		027546511E7F13BD00159F8F /* LocalScores.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = LocalScores.plist; sourceTree = "<group>"; };
@@ -246,6 +248,7 @@
 				1A0584E41CDD281E00B3DF8B /* RoundedBlockNode.swift */,
 				020C08461E7F5E4800561BA6 /* PowerUp.swift */,
 				0272A00D1E9DB24C00E17618 /* BallAndChain.swift */,
+				02645E851EF768CC00AC9FDC /* OneWayPlatformNode.swift */,
 			);
 			name = GameNodes;
 			sourceTree = "<group>";
@@ -372,6 +375,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AAFB4C51CA07D6100E7472B /* GameScene.swift in Sources */,
+				02645E861EF768CC00AC9FDC /* OneWayPlatformNode.swift in Sources */,
 				1AB685D31DBA6D4900F81A72 /* GameKitController.swift in Sources */,
 				02A2B52F1E50F10600E7D3B7 /* AchievementTableViewHandler.swift in Sources */,
 				1AF88CD41CD6B2EF00028E3D /* MellowNode.swift in Sources */,

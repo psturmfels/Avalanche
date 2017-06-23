@@ -12,17 +12,27 @@ import SpriteKit
 class OneWayBridgeNode: SKSpriteNode {
     var physicsSize: CGSize {
         get {
-            return CGSize(width: self.size.width * 0.98 * self.yScale, height: self.size.height * 0.98 * self.xScale)
+            return CGSize(width: self.size.width * 0.98, height: self.size.height * 0.98)
         }
     }
     var detectorNodeLarge: SKNode!
     var detectorNodeSmall: SKNode!
+    var relativePosition: CGPoint {
+        get {
+            return self.position
+        }
+    }
     
     func setup(atPoint point: CGPoint) {
         self.position = point
         self.zPosition = -20.0
         
-        self.physicsBody = SKPhysicsBody(texture: self.texture!, size: self.physicsSize)
+        if let texture = self.texture {
+            self.physicsBody = SKPhysicsBody(texture: texture, size: self.physicsSize)
+        } else {
+            self.physicsBody = SKPhysicsBody(rectangleOf: self.physicsSize)
+        }
+        
         self.physicsBody!.restitution = 0.0
         self.physicsBody!.isDynamic = false
         
@@ -60,5 +70,38 @@ class OneWayBridgeNode: SKSpriteNode {
         self.addChild(detectorNodeSmall)
     }
     
+    func allowMovement() {
+        self.physicsBody!.isDynamic = true
+        self.physicsBody!.restitution = 0.0
+        self.physicsBody!.affectedByGravity = false
+        self.physicsBody!.allowsRotation = false
+        self.physicsBody!.linearDamping = 0.0
+        self.physicsBody!.mass = 1000000.0
+        
+        detectorNodeLarge.physicsBody!.isDynamic = true
+        detectorNodeLarge.physicsBody!.restitution = 0.0
+        detectorNodeLarge.physicsBody!.affectedByGravity = false
+        detectorNodeLarge.physicsBody!.allowsRotation = false
+        detectorNodeLarge.physicsBody!.linearDamping = 0.0
+        detectorNodeLarge.physicsBody!.mass = 1000000.0
+        
+        detectorNodeSmall.physicsBody!.isDynamic = true
+        detectorNodeSmall.physicsBody!.restitution = 0.0
+        detectorNodeSmall.physicsBody!.affectedByGravity = false
+        detectorNodeSmall.physicsBody!.allowsRotation = false
+        detectorNodeSmall.physicsBody!.linearDamping = 0.0
+        detectorNodeSmall.physicsBody!.mass = 1000000.0
+    }
     
+    func stopMovement() {
+        self.physicsBody!.isDynamic = false
+        detectorNodeLarge.physicsBody!.isDynamic = false
+        detectorNodeSmall.physicsBody!.isDynamic = false
+    }
+    
+    func setDownwardMotion(dy: CGFloat) {
+        self.physicsBody!.velocity.dy = dy
+        detectorNodeLarge.physicsBody!.velocity.dy = dy
+        detectorNodeSmall.physicsBody!.velocity.dy = dy
+    }
 }

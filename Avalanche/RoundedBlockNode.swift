@@ -12,10 +12,14 @@ class RoundedBlockNode: SKSpriteNode {
     var physicsSize: CGSize!
     var fallSpeed: CGFloat = -150.0 {
         didSet {
-            self.physicsBody!.velocity.dy = fallSpeed
+            setFallSpeed()
         }
     }
     var originalFallSpeed: CGFloat = -150.0
+    
+    func setFallSpeed() {
+        self.physicsBody!.velocity.dy = fallSpeed
+    }
     
     //MARK: Creation Method
     func setup(_ minFallSpeed: Float, maxFallSpeed: Float) {

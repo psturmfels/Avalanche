@@ -52,6 +52,59 @@ class ArcadeModeScene: GameScene {
         }
     }
     
+    func generateRandomOneWayPlatform(_ minFallSpeed: Float, maxFallSpeed: Float) {
+        //Choose random paramters for the block
+        let XMultiplier: CGFloat = CGFloat(self.blockPositionGenerator.nextUniform())
+        var randomXVal: CGFloat = self.size.width * XMultiplier
+        let yPoint: CGFloat = 2.0 * self.size.height + currentHighestPoint.y
+        var generationPoint: CGPoint = CGPoint(x: randomXVal, y: yPoint)
+        
+        let leftPoint: CGPoint = CGPoint(x: randomXVal - 50.0, y: yPoint - 50.0)
+        let rightPoint: CGPoint = CGPoint(x: randomXVal + 50.0, y: yPoint - 50.0)
+        
+        if self.worldNode.nodes(at: generationPoint).count > 0 || self.worldNode.nodes(at: leftPoint).count > 0 || self.worldNode.nodes(at: rightPoint).count > 0 {
+            randomXVal = self.size.width * XMultiplier
+            generationPoint = CGPoint(x: randomXVal, y: yPoint + 200.0)
+        }
+        
+        let roundedBlock: OneWayPlatformNode = OneWayPlatformNode(imageNamed: "oneWayPlatform")
+        
+        //Set the physics and scale of the block
+        roundedBlock.setup(minFallSpeed, maxFallSpeed: maxFallSpeed)
+        
+        //Set the block's position
+        roundedBlock.position = generationPoint
+        
+        worldNode.addChild(roundedBlock)
+    }
+    
+    override func generateRandomBlock(_ minFallSpeed: Float, maxFallSpeed: Float) {
+        //Choose random paramters for the block
+        let XMultiplier: CGFloat = CGFloat(self.blockPositionGenerator.nextUniform())
+        var randomXVal: CGFloat = self.size.width * XMultiplier
+        let yPoint: CGFloat = 2.0 * self.size.height + currentHighestPoint.y
+        var generationPoint: CGPoint = CGPoint(x: randomXVal, y: yPoint)
+        
+        let leftPoint: CGPoint = CGPoint(x: randomXVal - 50.0, y: yPoint - 50.0)
+        let rightPoint: CGPoint = CGPoint(x: randomXVal + 50.0, y: yPoint - 50.0)
+        
+        if self.worldNode.nodes(at: generationPoint).count > 0 || self.worldNode.nodes(at: leftPoint).count > 0 || self.worldNode.nodes(at: rightPoint).count > 0 {
+            randomXVal = self.size.width * XMultiplier
+            generationPoint = CGPoint(x: randomXVal, y: yPoint + 200.0)
+        }
+        
+        let randomColor: Int = RandomInt(min: 1, max: 8)
+        let roundedBlock: RoundedBlockNode = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
+        
+        //Set the physics and scale of the block
+        roundedBlock.setup(minFallSpeed, maxFallSpeed: maxFallSpeed)
+        
+        //Set the block's position
+        roundedBlock.position = generationPoint
+        
+        worldNode.addChild(roundedBlock)
+    }
+    
     //MARK: Lives Methods
     func setupLivesArray() {
         for _ in 1...3 {
@@ -239,10 +292,14 @@ class ArcadeModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
-        updateCurrentDifficulty()
+//        updateCurrentDifficulty() TODO: UNCOMMENT ME
         setupLivesArray()
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.6)
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.9)
+        generateRandomOneWayPlatform(self.minFallSpeed, maxFallSpeed: self.maxFallSpeed)
+        self.run(SKAction.wait(forDuration: 1.0)) { 
+            self.generateRandomOneWayPlatform(self.minFallSpeed, maxFallSpeed: self.maxFallSpeed)
+        }
     }
     
     //MARK: Overriden Touch Methods
@@ -285,11 +342,11 @@ class ArcadeModeScene: GameScene {
             
             let mellowTopEdge: CGFloat = mellow.position.y + mellow.physicsSize.height * 0.35
             
-            let oneWayYPos: CGFloat = oneWayBody.position.y + worldNode.position.y
+            let oneWayYPos: CGFloat = oneWayBody.relativePosition.y + worldNode.position.y
             let oneWayBotEdge: CGFloat = oneWayYPos - oneWayBody.physicsSize.height * 0.35
             
             let oneWayBotLessMellowTop: Bool = oneWayBotEdge < mellowTopEdge
-            let xPosDiff: CGFloat = abs(oneWayBody.position.x - mellow.position.x)
+            let xPosDiff: CGFloat = abs(oneWayBody.relativePosition.x - mellow.position.x)
             let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
             
             if mellow.bottomSideInContact > 0 && oneWayBotLessMellowTop && xPosDiff < combinedWidths {
@@ -306,6 +363,19 @@ class ArcadeModeScene: GameScene {
             }
             
             oneWayBody.physicsBody!.collisionBitMask = CollisionTypes.oneWayEnabled.rawValue
+        } else if firstBody.categoryBitMask == CollisionTypes.lava.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDetector.rawValue {
+            
+            guard let oneWayBody = secondBody.node?.parent as? OneWayBridgeNode else {
+                return
+            }
+            
+            oneWayBody.removeFromParent()
+        } else if firstBody.categoryBitMask == CollisionTypes.lava.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayPlatformBottom.rawValue {
+            guard let oneWayPlatform = secondBody.node as? OneWayPlatformNode else {
+                return
+            }
+            
+            oneWayPlatform.removeFromParent()
         }
     }
     
@@ -326,35 +396,24 @@ class ArcadeModeScene: GameScene {
                     powerUpNode.removeFromParent()
                 }
             }
-        } else if firstBody.categoryBitMask == CollisionTypes.lava.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDetector.rawValue {
-            
-            guard let oneWayBody = secondBody.node?.parent as? OneWayBridgeNode else {
-                return
-            }
-            
-            let fadeAction: SKAction = SKAction.fadeOut(withDuration: 0.5)
-            oneWayBody.run(fadeAction) {
-                oneWayBody.removeFromParent()
-            }
-            
         } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDetector.rawValue {
             
             guard mellow.physicsBody != nil else {
                 return
             }
-            
+
             guard let oneWayBody = secondBody.node?.parent as? OneWayBridgeNode else {
                 return
             }
             
-            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.35
+            let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.4
             
-            let oneWayYPos: CGFloat = oneWayBody.position.y + worldNode.position.y
-            let oneWayTopEdge: CGFloat = oneWayYPos + oneWayBody.physicsSize.height * 0.35
+            let oneWayYPos: CGFloat = oneWayBody.relativePosition.y + worldNode.position.y
+            let oneWayTopEdge: CGFloat = oneWayYPos + oneWayBody.physicsSize.height * 0.4
             
             let oneWayTopLessMellowBot: Bool = oneWayTopEdge < mellowBotEdge
-            let xPosDiff: CGFloat = abs(oneWayBody.position.x - mellow.position.x)
-            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.35
+            let xPosDiff: CGFloat = abs(oneWayBody.relativePosition.x - mellow.position.x)
+            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.4 + mellow.physicsSize.width * 0.35
             
             if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
                 oneWayBody.physicsBody!.categoryBitMask = CollisionTypes.oneWayEnabled.rawValue
@@ -372,12 +431,12 @@ class ArcadeModeScene: GameScene {
             
             let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.35
             
-            let oneWayYPos: CGFloat = oneWayBody.position.y + worldNode.position.y
+            let oneWayYPos: CGFloat = oneWayBody.relativePosition.y + worldNode.position.y
             let oneWayTopEdge: CGFloat = oneWayYPos + oneWayBody.physicsSize.height * 0.35
             
             let oneWayTopLessMellowBot: Bool = oneWayTopEdge < mellowBotEdge
-            let xPosDiff: CGFloat = abs(oneWayBody.position.x - mellow.position.x)
-            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
+            let xPosDiff: CGFloat = abs(oneWayBody.relativePosition.x - mellow.position.x)
+            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.4 + mellow.physicsSize.width * 0.35
             
             if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
                 mellow.bottomSideInContact += 1
@@ -385,7 +444,88 @@ class ArcadeModeScene: GameScene {
             }
         } else if firstBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue && (secondBody.categoryBitMask == CollisionTypes.oneWayDisabled.rawValue || secondBody.categoryBitMask == CollisionTypes.oneWayEnabled.rawValue) {
             if let block = firstBody.node as? RoundedBlockNode {
-                turnToBackground(block)
+                if let oneWayPlatform = secondBody.node?.parent as? OneWayPlatformNode {
+                    if oneWayPlatform.name == "fallingBlock" {
+                        if block.fallSpeed < oneWayPlatform.fallSpeed {
+                            block.fallSpeed = oneWayPlatform.fallSpeed
+                        } else {
+                            oneWayPlatform.fallSpeed = block.fallSpeed
+                        }
+                        if block.position.y > oneWayPlatform.position.y {
+                            block.position.y = oneWayPlatform.position.y + oneWayPlatform.frame.height * 0.5 + block.frame.height * 0.5
+                        } else {
+                            oneWayPlatform.position.y = block.position.y + block.frame.height * 0.5 + oneWayPlatform.frame.height * 0.5
+                        }
+                    } else {
+                        turnToBackground(block)
+                    }
+                } else {
+                    turnToBackground(block)
+                }
+            }
+        } else if firstBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayPlatformBottom.rawValue {
+            if let block = firstBody.node as? RoundedBlockNode {
+                if let oneWayPlatform = secondBody.node?.parent as? OneWayPlatformNode {
+                    if oneWayPlatform.name == "fallingBlock" {
+                        if block.fallSpeed < oneWayPlatform.fallSpeed {
+                            block.fallSpeed = oneWayPlatform.fallSpeed
+                        } else {
+                            oneWayPlatform.fallSpeed = block.fallSpeed
+                        }
+                        if block.position.y > oneWayPlatform.position.y {
+                            block.position.y = oneWayPlatform.position.y + oneWayPlatform.frame.height * 0.5 + block.frame.height * 0.5
+                        } else {
+                            oneWayPlatform.position.y = block.position.y + block.frame.height * 0.5 + oneWayPlatform.frame.height * 0.5
+                        }
+                    } else {
+                        turnToBackground(block)
+                    }
+                }
+            }
+        } else if firstBody.categoryBitMask == CollisionTypes.oneWayPlatformBottom.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayPlatformBottom.rawValue {
+            if let first = firstBody.node as? OneWayPlatformNode, let second = secondBody.node as? OneWayPlatformNode {
+                if first.name == "fallingBlock" && second.name == "fallingBlock" {
+                    if first.fallSpeed < second.fallSpeed {
+                        first.fallSpeed = second.fallSpeed
+                    } else {
+                        second.fallSpeed = first.fallSpeed
+                    }
+                    if first.position.y > second.position.y {
+                        first.position.y = second.position.y + second.frame.height * 0.5 + first.frame.height * 0.5
+                    } else {
+                        second.position.y = first.position.y + first.frame.height * 0.5 + second.frame.height * 0.5
+                    }
+                } else if first.name == "fallingBlock" {
+                    turnToBackground(first)
+                } else if second.name == "fallingBlock" {
+                    turnToBackground(second)
+                }
+            }
+        } else if firstBody.categoryBitMask == CollisionTypes.background.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayPlatformBottom.rawValue {
+            if let oneWayPlatform = secondBody.node as? OneWayPlatformNode {
+                turnToBackground(oneWayPlatform)
+            }
+        }
+        else if (firstBody.categoryBitMask == CollisionTypes.oneWayEnabled.rawValue || firstBody.categoryBitMask == CollisionTypes.oneWayDisabled.rawValue) && secondBody.categoryBitMask == CollisionTypes.oneWayPlatformBottom.rawValue {
+            if let oneWaySecond = secondBody.node as? OneWayPlatformNode {
+                if let oneWayFirst = firstBody.node?.parent as? OneWayPlatformNode {
+                    if oneWayFirst.name == "fallingBlock" {
+                        if oneWaySecond.fallSpeed < oneWayFirst.fallSpeed {
+                            oneWaySecond.fallSpeed = oneWayFirst.fallSpeed
+                        } else {
+                            oneWayFirst.fallSpeed = oneWaySecond.fallSpeed
+                        }
+                        if oneWaySecond.position.y > oneWayFirst.position.y {
+                            oneWaySecond.position.y = oneWayFirst.position.y + oneWayFirst.frame.height * 0.5 + oneWaySecond.frame.height * 0.5
+                        } else {
+                            oneWayFirst.position.y = oneWaySecond.position.y + oneWaySecond.frame.height * 0.5 + oneWayFirst.frame.height * 0.5
+                        }
+                    } else {
+                        turnToBackground(oneWaySecond)
+                    }
+                } else {
+                    turnToBackground(oneWaySecond)
+                }
             }
         }
     }
