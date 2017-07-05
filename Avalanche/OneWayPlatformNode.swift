@@ -10,6 +10,7 @@ import SpriteKit
 
 class OneWayPlatformNode: RoundedBlockNode {
     let topNode: OneWayPlatformTopNode = OneWayPlatformTopNode()
+    let fractionPhyiscs: CGFloat = 0.75
 
     override func setFallSpeed() {
         super.setFallSpeed()
@@ -18,12 +19,13 @@ class OneWayPlatformNode: RoundedBlockNode {
     
     //MARK: Creation Method
     override func setup(_ minFallSpeed: Float, maxFallSpeed: Float) {
-        let scale: CGFloat = CGFloat(RandomFloat(min: 1.0, max: 1.4))
-        self.setScale(scale)
+        physicsSize = CGSize(width: self.size.width * 0.98, height: self.size.height * fractionPhyiscs)
         
-        physicsSize = CGSize(width: self.size.width * 0.98, height: self.size.height * 0.98)
+        let physicsY: CGFloat = -0.5 * (self.size.height - self.physicsSize.height)
+        let physicsCenter: CGPoint = CGPoint(x: 0.0, y: physicsY)
+        self.physicsBody = SKPhysicsBody(rectangleOf: physicsSize, center: physicsCenter)
         
-        self.physicsBody = SKPhysicsBody(rectangleOf: physicsSize)
+        
         self.physicsBody!.restitution = 0.0
         self.physicsBody!.affectedByGravity = false
         self.physicsBody!.allowsRotation = false
@@ -41,20 +43,25 @@ class OneWayPlatformNode: RoundedBlockNode {
         
         self.lightingBitMask = 1
         self.shadowedBitMask = 1
-        self.shadowCastBitMask = 1
+        self.shadowCastBitMask = 0
         
+        let topNodeHeight: CGFloat = (1.1 - fractionPhyiscs) * physicsSize.height
+        let topNodeSize: CGSize = CGSize(width: physicsSize.width * 1.05, height: topNodeHeight)
         let topNodeX: CGFloat = 0.0
-        let topNodeY: CGFloat = 0.3 * physicsSize.height
+        let topNodeY: CGFloat = (fractionPhyiscs - 0.5) * self.physicsSize.height + 0.5 * topNodeHeight
         let topNodePos: CGPoint = CGPoint(x: topNodeX, y: topNodeY)
         
-        let topNodeSize: CGSize = CGSize(width: physicsSize.width, height: physicsSize.height * 0.15)
         topNode.size = topNodeSize
         topNode.setup(atPoint: topNodePos)
         topNode.allowMovement()
+        topNode.name = "topNode"
         self.addChild(topNode)
         
         self.fallSpeed = RandomCGFloat(min: minFallSpeed, max: maxFallSpeed)
         self.originalFallSpeed = fallSpeed
+        
+        let scale: CGFloat = CGFloat(RandomFloat(min: 1.0, max: 1.4))
+        self.setScale(scale)
     }
 
     
@@ -62,7 +69,10 @@ class OneWayPlatformNode: RoundedBlockNode {
         self.name = "backgroundBlock"
         self.physicsBody!.isDynamic = false
         topNode.stopMovement()
-        self.run(SKAction.move(by: CGVector(dx: 0, dy: -2.0), duration: 0.0))
+        
+        topNode.position.y += 5.0
+        let topNodeY: CGFloat = (fractionPhyiscs - 0.5) * self.physicsSize.height + 0.5 * topNode.size.height
+        topNode.position.y = topNodeY
     }
 }
 

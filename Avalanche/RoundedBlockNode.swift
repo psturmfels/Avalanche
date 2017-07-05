@@ -48,7 +48,7 @@ class RoundedBlockNode: SKSpriteNode {
         
         self.lightingBitMask = 1
         self.shadowedBitMask = 1
-        self.shadowCastBitMask = 1
+        self.shadowCastBitMask = 0
     }
     
     //MARK: Game Methods

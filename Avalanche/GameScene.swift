@@ -177,7 +177,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Block Methods
     func turnToBackground(_ block: RoundedBlockNode) {
-        let blockTopPos: CGFloat = block.position.y + block.frame.height * 0.5
+        let blockTopPos: CGFloat = block.position.y + block.physicsSize.height * 0.5
         if (blockTopPos > currentHighestPoint.y) {
             currentHighestPoint = CGPoint(x: block.position.x, y: blockTopPos)
         }
@@ -246,28 +246,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Update Methods
     override func update(_ currentTime: TimeInterval) {
-        guard mellow != nil else {
-            return
+        if mellow != nil {
+            if mellow.physicsBody != nil {
+                //I used to have a problem where the user could "double jump" occasionally.
+                //Although I think I've fixed the problem elsewhere,
+                //this ensures that double jumping is not really a possibility
+                if mellow.physicsBody!.velocity.dy > 700 {
+                    mellow.physicsBody!.velocity.dy *= 0.9
+                }
+                
+                mellowAccel()
+                mellowContain()
+                
+                if currentGameState != .tutorial {
+                    updateDistance()
+                }
+            }
         }
-        guard mellow.physicsBody != nil else {
-            return
-        }
-        
-        //I used to have a problem where the user could "double jump" occasionally.
-        //Although I think I've fixed the problem elsewhere,
-        //this ensures that double jumping is not really a possibility
-        if mellow.physicsBody!.velocity.dy > 700 {
-            mellow.physicsBody!.velocity.dy *= 0.9
-        }
-        
-        mellowAccel()
-        mellowContain()
-        
-        guard currentGameState != .tutorial else {
-            return
-        }
-        
-        updateDistance()
         
         guard risingLava != nil else {
             return
@@ -500,8 +495,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func createLava() {
         //Create the lava – a red semi-transparent rectangle that rises at variable speed
         let lavaColor: UIColor = UIColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 0.3)
-        let lavaWidth: CGFloat = self.size.width + mellow.physicsSize.width * 2.0
-        let lavaHeight: CGFloat = self.size.height + mellow.physicsSize.height
+        let lavaWidth: CGFloat = self.size.width + 200.0
+        let lavaHeight: CGFloat = self.size.height + 200.0
         let lavaSize: CGSize = CGSize(width: lavaWidth, height: lavaHeight)
         risingLava = SKSpriteNode(color: lavaColor, size: lavaSize)
         risingLava.position = CGPoint(x: lavaSize.width / 2.0, y: -lavaSize.height * 0.9)
@@ -518,7 +513,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         risingLava.physicsBody!.collisionBitMask = 0x00000000
         
         //But I should be notified if the lava touhes stuff
-        risingLava.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.powerUp.rawValue | CollisionTypes.oneWayDetector.rawValue | CollisionTypes.oneWayPlatformBottom.rawValue
+        risingLava.physicsBody!.contactTestBitMask = CollisionTypes.mellow.rawValue | CollisionTypes.background.rawValue | CollisionTypes.fallingBlock.rawValue | CollisionTypes.powerUp.rawValue | CollisionTypes.oneWayDetector.rawValue
         risingLava.name = "lava"
         
         risingLava.lightingBitMask = 1
@@ -747,7 +742,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         //If the mellow was the first body and the second was a piece of scenery
-        if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && (secondBody.categoryBitMask == 2 || secondBody.categoryBitMask == 4) {
+        if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && (secondBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue || secondBody.categoryBitMask == CollisionTypes.background.rawValue) {
             guard mellow.physicsBody != nil else {
                 return
             }
@@ -784,12 +779,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
             //If the rising lava and an object in the background lost contact, it means that that piece
             //of the background will never be seen and should be removed from the scene
-        else if firstBody.categoryBitMask != CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.lava.rawValue {
-            if let removeBlock = firstBody.node as? RoundedBlockNode , removeBlock.parent != nil {
+        else if (firstBody.categoryBitMask == CollisionTypes.background.rawValue || firstBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue) && secondBody.categoryBitMask == CollisionTypes.lava.rawValue {
+            if let removeBlock = firstBody.node as? RoundedBlockNode {
                 removeBlock.removeFromParent()
-            }
-            else if let removePowerUp = firstBody.node as? PowerUp, removePowerUp.parent != nil {
-                removePowerUp.removeFromParent()
             }
         }
         

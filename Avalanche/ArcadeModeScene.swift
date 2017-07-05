@@ -28,6 +28,10 @@ class ArcadeModeScene: GameScene {
     var isSmall: Bool = false
     var isJetPacking: Bool = false {
         didSet {
+            guard mellow != nil else {
+                return
+            }
+            
             if isJetPacking {
                 guard mellow.childNode(withName: "jetpackTrail") == nil else {
                     return
@@ -50,6 +54,18 @@ class ArcadeModeScene: GameScene {
                 }
             }
         }
+    }
+    
+    //MARK: Block Generation Methods
+    override func initBlocks(_ sec: TimeInterval, withRange durationRange: TimeInterval) {
+        let createBlock: SKAction = SKAction.run { [unowned self] in
+            self.generateRandomOneWayPlatform(self.minFallSpeed, maxFallSpeed: self.maxFallSpeed)
+        }
+        
+        let wait: SKAction = SKAction.wait(forDuration: sec, withRange: durationRange)
+        let sequence: SKAction = SKAction.sequence([createBlock, wait])
+        let repeatForever: SKAction = SKAction.repeatForever(sequence)
+        run(repeatForever, withKey: "genBlocks")
     }
     
     func generateRandomOneWayPlatform(_ minFallSpeed: Float, maxFallSpeed: Float) {
@@ -283,7 +299,8 @@ class ArcadeModeScene: GameScene {
         
         createWorld()
         let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
-        createMellow(atPoint: mellowPoint)
+//        createMellow(atPoint: mellowPoint) //TODO: FIX STUFF HERE
+        self.currentDifficulty = 2
         createFloor()
         createLava()
         createLabels()
@@ -292,18 +309,18 @@ class ArcadeModeScene: GameScene {
         createPauseNode()
         createBackgroundNotifications()
         startMusic()
-//        updateCurrentDifficulty() TODO: UNCOMMENT ME
+        updateCurrentDifficulty()
         setupLivesArray()
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.6)
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.9)
-        generateRandomOneWayPlatform(self.minFallSpeed, maxFallSpeed: self.maxFallSpeed)
-        self.run(SKAction.wait(forDuration: 1.0)) { 
-            self.generateRandomOneWayPlatform(self.minFallSpeed, maxFallSpeed: self.maxFallSpeed)
-        }
     }
     
     //MARK: Overriden Touch Methods
     override func noButtonsTapped() {
+        guard mellow != nil else {
+            return
+        }
+        
         if self.action(forKey: PowerUpTypes.jetPack.rawValue) != nil {
             if canTeleport {
                 mellowTeleport()
@@ -352,29 +369,22 @@ class ArcadeModeScene: GameScene {
             if mellow.bottomSideInContact > 0 && oneWayBotLessMellowTop && xPosDiff < combinedWidths {
                 mellow.bottomSideInContact -= 1
             }
-        } else if firstBody.categoryBitMask == CollisionTypes.mellow.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDetector.rawValue {
-            
-            guard mellow.physicsBody != nil else {
-                return
-            }
+        }
+        else if firstBody.categoryBitMask == CollisionTypes.lava.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDetector.rawValue {
             
             guard let oneWayBody = secondBody.node?.parent as? OneWayBridgeNode else {
                 return
             }
             
-            oneWayBody.physicsBody!.collisionBitMask = CollisionTypes.oneWayEnabled.rawValue
-        } else if firstBody.categoryBitMask == CollisionTypes.lava.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayDetector.rawValue {
-            
-            guard let oneWayBody = secondBody.node?.parent as? OneWayBridgeNode else {
-                return
+            if oneWayBody.name == "topNode", let oneWayPlatformNode = oneWayBody.parent as? OneWayPlatformNode {
+                oneWayPlatformNode.removeFromParent()
+            } else {
+                oneWayBody.removeFromParent()
             }
-            
-            oneWayBody.removeFromParent()
         } else if firstBody.categoryBitMask == CollisionTypes.lava.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayPlatformBottom.rawValue {
             guard let oneWayPlatform = secondBody.node as? OneWayPlatformNode else {
                 return
             }
-            
             oneWayPlatform.removeFromParent()
         }
     }
@@ -413,7 +423,7 @@ class ArcadeModeScene: GameScene {
             
             let oneWayTopLessMellowBot: Bool = oneWayTopEdge < mellowBotEdge
             let xPosDiff: CGFloat = abs(oneWayBody.relativePosition.x - mellow.position.x)
-            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.4 + mellow.physicsSize.width * 0.35
+            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
             
             if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
                 oneWayBody.physicsBody!.categoryBitMask = CollisionTypes.oneWayEnabled.rawValue
@@ -436,11 +446,12 @@ class ArcadeModeScene: GameScene {
             
             let oneWayTopLessMellowBot: Bool = oneWayTopEdge < mellowBotEdge
             let xPosDiff: CGFloat = abs(oneWayBody.relativePosition.x - mellow.position.x)
-            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.4 + mellow.physicsSize.width * 0.35
+            let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
             
             if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
                 mellow.bottomSideInContact += 1
-                secondBody.collisionBitMask = CollisionTypes.oneWayEnabled.rawValue
+            } else {
+                secondBody.collisionBitMask = CollisionTypes.oneWayDisabled.rawValue
             }
         } else if firstBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue && (secondBody.categoryBitMask == CollisionTypes.oneWayDisabled.rawValue || secondBody.categoryBitMask == CollisionTypes.oneWayEnabled.rawValue) {
             if let block = firstBody.node as? RoundedBlockNode {
@@ -567,6 +578,7 @@ class ArcadeModeScene: GameScene {
     
     override func update(_ currentTime: TimeInterval) {
         super.update(currentTime)
+        print("worldNode.position: \(worldNode.position) - lava.position: \(risingLava.position) - lava.speed: \(risingLava.physicsBody!.velocity.dy)")
         
         if current > nextPowerUp {
             self.generateRandomPowerUpEvent(atPoint: 100.0 + self.size.height)
