@@ -12,6 +12,7 @@ import AVFoundation
 
 class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
+    let platformProbability: CGFloat = 0.1
     let nextPowerUpMin: Int = 5
     let nextPowerUpMax: Int = 20
     var nextPowerUp: Int = 30
@@ -59,7 +60,12 @@ class ArcadeModeScene: GameScene {
     //MARK: Block Generation Methods
     override func initBlocks(_ sec: TimeInterval, withRange durationRange: TimeInterval) {
         let createBlock: SKAction = SKAction.run { [unowned self] in
-            self.generateRandomOneWayPlatform(self.minFallSpeed, maxFallSpeed: self.maxFallSpeed)
+            let randomCGFloat: CGFloat = RandomCGFloat(min: 0.0, max: 1.0)
+            if randomCGFloat <= self.platformProbability {
+                self.generateRandomOneWayPlatform(self.minFallSpeed, maxFallSpeed: self.maxFallSpeed)
+            } else {
+                self.generateRandomBlock(self.minFallSpeed, maxFallSpeed: self.maxFallSpeed)
+            }
         }
         
         let wait: SKAction = SKAction.wait(forDuration: sec, withRange: durationRange)
@@ -299,8 +305,7 @@ class ArcadeModeScene: GameScene {
         
         createWorld()
         let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
-//        createMellow(atPoint: mellowPoint) //TODO: FIX STUFF HERE
-        self.currentDifficulty = 2
+        createMellow(atPoint: mellowPoint)
         createFloor()
         createLava()
         createLabels()
@@ -476,7 +481,7 @@ class ArcadeModeScene: GameScene {
             }
         } else if firstBody.categoryBitMask == CollisionTypes.fallingBlock.rawValue && secondBody.categoryBitMask == CollisionTypes.oneWayPlatformBottom.rawValue {
             if let block = firstBody.node as? RoundedBlockNode {
-                if let oneWayPlatform = secondBody.node?.parent as? OneWayPlatformNode {
+                if let oneWayPlatform = secondBody.node as? OneWayPlatformNode {
                     if oneWayPlatform.name == "fallingBlock" {
                         if block.fallSpeed < oneWayPlatform.fallSpeed {
                             block.fallSpeed = oneWayPlatform.fallSpeed
@@ -578,7 +583,6 @@ class ArcadeModeScene: GameScene {
     
     override func update(_ currentTime: TimeInterval) {
         super.update(currentTime)
-        print("worldNode.position: \(worldNode.position) - lava.position: \(risingLava.position) - lava.speed: \(risingLava.physicsBody!.velocity.dy)")
         
         if current > nextPowerUp {
             self.generateRandomPowerUpEvent(atPoint: 100.0 + self.size.height)
