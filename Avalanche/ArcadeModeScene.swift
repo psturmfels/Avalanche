@@ -12,7 +12,7 @@ import AVFoundation
 
 class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
-    let platformProbability: CGFloat = 0.5
+    let platformProbability: CGFloat = 0.25
     let nextPowerUpMin: Int = 5
     let nextPowerUpMax: Int = 20
     var nextPowerUp: Int = 30
