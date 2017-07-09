@@ -48,7 +48,7 @@ class OneWayPlatformNode: RoundedBlockNode {
         let topNodeHeight: CGFloat = (1.1 - fractionPhyiscs) * physicsSize.height
         let topNodeSize: CGSize = CGSize(width: physicsSize.width * 1.05, height: topNodeHeight)
         let topNodeX: CGFloat = 0.0
-        let topNodeY: CGFloat = (fractionPhyiscs - 0.5) * self.physicsSize.height + 0.54 * topNodeHeight
+        let topNodeY: CGFloat = (fractionPhyiscs - 0.5) * self.physicsSize.height + 0.7 * topNodeHeight
         let topNodePos: CGPoint = CGPoint(x: topNodeX, y: topNodeY)
         
         topNode.size = topNodeSize
@@ -67,9 +67,11 @@ class OneWayPlatformNode: RoundedBlockNode {
     
     override func becomeBackground() {
         self.name = "backgroundBlock"
-        topNode.run(SKAction.move(by: CGVector(dx: 0, dy: 1.0), duration: 0.0))
         topNode.stopMovement()
         self.physicsBody!.isDynamic = false
+        
+        let topNodeY: CGFloat = (fractionPhyiscs - 0.5) * self.physicsSize.height + 0.7 * topNode.size.height
+        topNode.run(SKAction.moveTo(y: topNodeY, duration: 0.0))
     }
 }
 

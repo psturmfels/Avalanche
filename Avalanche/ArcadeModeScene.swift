@@ -12,7 +12,7 @@ import AVFoundation
 
 class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
-    let platformProbability: CGFloat = 0.1
+    let platformProbability: CGFloat = 0.5
     let nextPowerUpMin: Int = 5
     let nextPowerUpMax: Int = 20
     var nextPowerUp: Int = 30
@@ -424,7 +424,7 @@ class ArcadeModeScene: GameScene {
             let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.4
             
             let oneWayYPos: CGFloat = oneWayBody.relativePosition.y + worldNode.position.y
-            let oneWayTopEdge: CGFloat = oneWayYPos + oneWayBody.physicsSize.height * 0.4
+            let oneWayTopEdge: CGFloat = oneWayYPos + oneWayBody.physicsSize.height * 0.5
             
             let oneWayTopLessMellowBot: Bool = oneWayTopEdge < mellowBotEdge
             let xPosDiff: CGFloat = abs(oneWayBody.relativePosition.x - mellow.position.x)
