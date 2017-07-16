@@ -130,12 +130,14 @@ class LeaderboardTableViewCell: UITableViewCell {
         
         dateLabel.text = DateFormatter.localizedString(from: score.date, dateStyle: DateFormatter.Style.short, timeStyle: DateFormatter.Style.short)
         
+        scoreLabel.numberOfLines = 1
         userLabel.sizeToFit()
         scoreLabel.sizeToFit()
         dateLabel.sizeToFit()
         
         scoreLabel.frame.origin.x = whiteBackdrop.frame.origin.x + LeaderboardTableViewCell.leftScoreMargin
         scoreLabel.frame.origin.y = whiteBackdrop.frame.origin.y + whiteBackdrop.frame.height * 0.5 - scoreLabel.frame.height * 0.5
+        print("\(scoreLabel.text!) \(whiteBackdrop.frame.origin.y) \(whiteBackdrop.frame.height) \(scoreLabel.frame.height)")
         userLabel.frame.origin.x = scoreLabel.frame.origin.x + LeaderboardTableViewCell.scoreLabelWidth + LeaderboardTableViewCell.scoreUserPadding
         userLabel.frame.origin.y = whiteBackdrop.frame.origin.y + whiteBackdrop.frame.height * 0.5 - userLabel.frame.height * 0.5
         dateLabel.frame.origin.x = userLabel.frame.origin.x

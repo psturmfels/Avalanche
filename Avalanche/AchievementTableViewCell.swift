@@ -117,9 +117,13 @@ class AchievementTableViewCell: UITableViewCell {
         }
         
         if let title = achievement.title {
-            achievementTitleLabel.text = title
+            if achievementProgress == 100.0 {
+                achievementTitleLabel.text = title
+            } else {
+                achievementTitleLabel.text = "????????"
+            }
         } else {
-            achievementTitleLabel.text = "Achievement"
+            achievementTitleLabel.text = "????????"
         }
         
         achievementTitleLabel.sizeToFit()
