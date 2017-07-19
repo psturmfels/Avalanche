@@ -363,6 +363,9 @@ class MenuScene: SKScene {
         leaderboardTable.dataSource = leaderboardTableHandler
         leaderboardTable.delegate = leaderboardTableHandler
         leaderboardTable.register(LeaderboardTableViewCell.self, forCellReuseIdentifier: "LeaderboardTableViewCell")
+        
+        //leaderboardTableHandler.currentLeaderboard = "arcadeModeLeaderboard"
+        leaderboardTable.reloadData()
     }
     
     func createScoreButtons() {

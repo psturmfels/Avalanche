@@ -22,7 +22,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     
     var leaderboards: [GKLeaderboard]!
     var scores: [String: [GKScore]] = [String: [GKScore]]()
-    var currentLeaderboard: String!
+    var currentLeaderboard: String?
     
     override init() {
         super.init()
@@ -54,7 +54,9 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
                 return
             }
             
-            self.currentLeaderboard = defaultIdentifier
+            if self.currentLeaderboard == nil {
+                self.currentLeaderboard = defaultIdentifier
+            }
         }
         
         GKLeaderboard.loadLeaderboards { (leaderboards, error) in
@@ -99,7 +101,10 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         guard scoresAreLoaded else {
             return 0
         }
-        guard let scoreArray = self.scores[self.currentLeaderboard] else {
+        guard let currentLeaderboard = self.currentLeaderboard else {
+            return 0
+        }
+        guard let scoreArray = self.scores[currentLeaderboard] else {
             return 0
         }
         
@@ -110,7 +115,10 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         guard scoresAreLoaded else {
             return LeaderboardTableViewCell()
         }
-        guard let scoreArray = self.scores[self.currentLeaderboard] else {
+        guard let currentLeaderboard = self.currentLeaderboard else {
+            return LeaderboardTableViewCell()
+        }
+        guard let scoreArray = self.scores[currentLeaderboard] else {
             return LeaderboardTableViewCell()
         }
         
@@ -138,7 +146,10 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             guard scoresAreLoaded else {
                 return LeaderboardTableViewCell.defaultHeight
             }
-            guard let scoreArray = self.scores[self.currentLeaderboard] else {
+            guard let currentLeaderboard = self.currentLeaderboard else {
+                return LeaderboardTableViewCell.defaultHeight
+            }
+            guard let scoreArray = self.scores[currentLeaderboard] else {
                 return LeaderboardTableViewCell.defaultHeight
             }
             

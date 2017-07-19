@@ -48,7 +48,13 @@ class GameOverScene: SKScene {
         self.addChild(highScoreLabel)
         self.addChild(scoreLabel)
         
-        GameKitController.report(highScore, toLeaderboard: .classic)
+        switch gameType {
+        case GameType.Arcade:
+            GameKitController.report(highScore, toLeaderboard: .arcade)
+        case GameType.Classic:
+            GameKitController.report(highScore, toLeaderboard: .classic)
+        }
+        
         reportScoreAchievements()
     }
     
