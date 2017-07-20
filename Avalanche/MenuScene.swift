@@ -40,6 +40,8 @@ class MenuScene: SKScene {
     var soundEffectsButtonLabel: ButtonLabelNode!
     var menuButton: ButtonNode!
     
+    var classicLeaderboardButton: ButtonNode!
+    var arcadeLeaderboardButton: ButtonNode!
     var leaderboardButton: ButtonNode!
     var achievementButton: ButtonNode!
     var leaderboardTable: UITableView!
@@ -49,7 +51,6 @@ class MenuScene: SKScene {
     
     var titleLabel: LabelNode!
     var settingsLabel: LabelNode!
-    
     
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
@@ -154,6 +155,12 @@ class MenuScene: SKScene {
         leaderboardButton.run(reverseRightSequence) {
             self.leaderboardButton.name = "Leaderboard"
         }
+        arcadeLeaderboardButton.run(reverseRightSequence) {
+            self.arcadeLeaderboardButton.name = "ArcadeLeaderboard"
+        }
+        classicLeaderboardButton.run(reverseRightSequence) {
+            self.classicLeaderboardButton.name = "ClassicLeaderboard"
+        }
         
         animateRight(table: leaderboardTable)
         animateRight(table: achievementTable)
@@ -208,11 +215,14 @@ class MenuScene: SKScene {
     func returnFromScore() {
         achievementButton.name = ""
         leaderboardButton.name = ""
+        arcadeLeaderboardButton.name = ""
+        classicLeaderboardButton.name = ""
         let extraLeftSweep: SKAction = SKAction.moveBy(x: -self.frame.width - 35.0, y: 0.0, duration: 0.2)
         let reverseLeftSequence: SKAction = SKAction.sequence([MenuScene.rightShudder1, MenuScene.rightShudder2, MenuScene.rightShudder3, extraLeftSweep])
         achievementButton.run(reverseLeftSequence)
         leaderboardButton.run(reverseLeftSequence)
-        
+        arcadeLeaderboardButton.run(reverseLeftSequence)
+        classicLeaderboardButton.run(reverseLeftSequence)
         
         animateLeft(table: leaderboardTable)
         animateLeft(table: achievementTable)
@@ -333,20 +343,21 @@ class MenuScene: SKScene {
     }
     
     func createScoreTables() {
-        let leaderboardHeight: CGFloat = self.frame.height - leaderboardButton.frame.height - 60
+        let achievementHeight: CGFloat = self.frame.height - leaderboardButton.frame.height - 60
+        let leaderboardHeight: CGFloat = self.frame.height - leaderboardButton.frame.height - arcadeLeaderboardButton.frame.height - 80
         let rightPoint: CGFloat = 20.0 - self.frame.width
         
         leaderboardTable = UITableView(frame: self.frame, style: UITableViewStyle.plain)
         leaderboardTable.frame.size.width = self.frame.width - 40
         leaderboardTable.frame.size.height = leaderboardHeight
-        leaderboardTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + 40)
+        leaderboardTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + arcadeLeaderboardButton.frame.height + 60)
         leaderboardTable.isHidden = true
         leaderboardTable.separatorStyle = UITableViewCellSeparatorStyle.none
         leaderboardTable.backgroundColor = UIColor.clear
         
         achievementTable = UITableView(frame: self.frame, style: UITableViewStyle.plain)
         achievementTable.frame.size.width = self.frame.width - 40
-        achievementTable.frame.size.height = leaderboardHeight
+        achievementTable.frame.size.height = achievementHeight
         achievementTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + 40)
         achievementTable.separatorStyle = UITableViewCellSeparatorStyle.none
         achievementTable.backgroundColor = UIColor.clear
@@ -364,7 +375,7 @@ class MenuScene: SKScene {
         leaderboardTable.delegate = leaderboardTableHandler
         leaderboardTable.register(LeaderboardTableViewCell.self, forCellReuseIdentifier: "LeaderboardTableViewCell")
         
-        //leaderboardTableHandler.currentLeaderboard = "arcadeModeLeaderboard"
+        leaderboardTableHandler.currentLeaderboard = "classicModeLeaderboard"
         leaderboardTable.reloadData()
     }
     
@@ -387,6 +398,31 @@ class MenuScene: SKScene {
         
         self.addChild(leaderboardButton)
         self.addChild(achievementButton)
+        
+        arcadeLeaderboardButton = ButtonNode(imageNamed: "arcadeLeaderboard")
+        classicLeaderboardButton = ButtonNode(imageNamed: "classicLeaderboard")
+        
+        let midX: CGFloat = -self.frame.width * 0.5
+        let newRightX: CGFloat = midX + arcadeLeaderboardButton.frame.width * 0.5 + 10
+        let newLeftX: CGFloat = midX - classicLeaderboardButton.frame.width * 0.5 - 10
+        let newTopY: CGFloat = topY - leaderboardButton.frame.height * 0.5 - arcadeLeaderboardButton.frame.height * 0.5 - 20
+        
+        let arcadeLeaderboardButtonPos: CGPoint = CGPoint(x: newRightX, y: newTopY)
+        let classicLeaderboardButtonPos: CGPoint = CGPoint(x: newLeftX, y: newTopY)
+        
+        arcadeLeaderboardButton.setup(atPosition: arcadeLeaderboardButtonPos, withName: "", normalTextureName: "arcadeLeaderboard", highlightedTextureName: "arcadeLeaderboard")
+        classicLeaderboardButton.setup(atPosition: classicLeaderboardButtonPos, withName: "", normalTextureName: "classicLeaderboard", highlightedTextureName: "classicLeaderboard")
+        
+        arcadeLeaderboardButton.alpha = 0.5
+        arcadeLeaderboardButton.didRelease()
+        
+        classicLeaderboardButton.didPress()
+        
+        arcadeLeaderboardButton.isHidden = true
+        classicLeaderboardButton.isHidden = true
+        
+        self.addChild(arcadeLeaderboardButton)
+        self.addChild(classicLeaderboardButton)
     }
     
     func createSettingsButtons() {
@@ -558,6 +594,9 @@ class MenuScene: SKScene {
                     leaderboardButton.didRelease()
                     leaderboardButton.alpha = 0.5
                     leaderboardTable.isHidden = true
+                    
+                    arcadeLeaderboardButton.isHidden = true
+                    classicLeaderboardButton.isHidden = true
                 } else if object.name == "Leaderboard" {
                     achievementButton.didRelease()
                     achievementButton.alpha = 0.5
@@ -566,6 +605,27 @@ class MenuScene: SKScene {
                     leaderboardButton.didPress()
                     leaderboardButton.alpha = 1.0
                     leaderboardTable.isHidden = false
+                    
+                    arcadeLeaderboardButton.isHidden = false
+                    classicLeaderboardButton.isHidden = false
+                } else if object.name == "ArcadeLeaderboard" {
+                    classicLeaderboardButton.didRelease()
+                    classicLeaderboardButton.alpha = 0.5
+                    
+                    arcadeLeaderboardButton.didPress()
+                    arcadeLeaderboardButton.alpha = 1.0
+                    
+                    leaderboardTableHandler.currentLeaderboard = "arcadeModeLeaderboard"
+                    leaderboardTable.reloadData()
+                } else if object.name == "ClassicLeaderboard" {
+                    classicLeaderboardButton.didPress()
+                    classicLeaderboardButton.alpha = 1.0
+                    
+                    arcadeLeaderboardButton.didRelease()
+                    arcadeLeaderboardButton.alpha = 0.5
+                    
+                    leaderboardTableHandler.currentLeaderboard = "classicModeLeaderboard"
+                    leaderboardTable.reloadData()
                 }
             }
         }
