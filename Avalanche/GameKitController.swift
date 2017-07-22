@@ -17,30 +17,16 @@ class GameKitController: NSObject {
         }
     }
     
-    lazy var achievements: [GKAchievement] = {
-        var achievementArray: [GKAchievement] = []
-        GKAchievement.loadAchievements(completionHandler: { (fetchedAchievements, error) in
-            if error != nil {
-                NSLog("There was an error while fetching completed achievements: \(error!)")
-            }
-            if let unwrappedAchievements = fetchedAchievements {
-                achievementArray = unwrappedAchievements
-                for achievement in achievementArray {
-                    print(achievement)
-                }
-            }
-        })
-        return achievementArray
-    }()
+    static var achievements: [GKAchievement]?
     
     static let leaderboardTableHandler: LeaderboardTableViewHandler = LeaderboardTableViewHandler()
     static let achievementTableHandler: AchievementTableViewHandler = AchievementTableViewHandler()
     
-    class func report(_ score: Int, toLeaderboard leaderboard: LeaderboardTypes) {
+    static func report(_ score: Int, toLeaderboard leaderboard: LeaderboardTypes) {
         postNotification(withName: "reportScore", andUserInfo: ["highScore": score, "leaderboard": leaderboard.rawValue])
     }
     
-    class func report(_ achievement: Achievement, withPercentComplete percentComplete: Double) {
+    static func report(_ achievement: Achievement, withPercentComplete percentComplete: Double) {
         postNotification(withName: "reportAchievement", andUserInfo: ["achievementName": achievement.rawValue, "percentComplete": percentComplete])
     }
     
@@ -54,6 +40,46 @@ class GameKitController: NSObject {
     }
     
     //MARK: Achievements
+    static func getAchievementProgress(achievementType: Achievement) -> Double {
+        let achievementName: String = achievementType.rawValue
+        if let achievementArray = GameKitController.achievements, achievementArray.count > 0 {
+            for achievement in achievementArray {
+                if let identifier = achievement.identifier, identifier == achievementName {
+                    return achievement.percentComplete
+                }
+            }
+        } else  {
+            let achievementsDefaultsFile: URL = Bundle.main.url(forResource: "Achievements", withExtension: "plist")!
+            let achievementsDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: achievementsDefaultsFile)!
+            
+            let userDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+            if let achievementsDirectory = NSURL(fileURLWithPath: userDirectory).appendingPathComponent("Achievements.plist") {
+                if let achievementsDictionary = NSDictionary(contentsOf: achievementsDirectory) {
+                    let mutableAchievementsDictionary: NSMutableDictionary = achievementsDictionary.mutableCopy() as! NSMutableDictionary
+                    if let percentComplete = mutableAchievementsDictionary[achievementName] as? Double {
+                        return percentComplete
+                    }
+                } else {
+                    if let percentComplete = achievementsDefaultsDictionary[achievementName] as? Double {
+                        return percentComplete
+                    }
+                }
+            }
+        }
+        
+        return 0.0
+    }
+    
+    static func loadAchievementArray() {
+        GKAchievement.loadAchievements(completionHandler: { (fetchedAchievements, error) in
+            if error != nil {
+                NSLog("There was an error while fetching completed achievements: \(error!)")
+            }
+            if let unwrappedAchievements = fetchedAchievements {
+                GameKitController.achievements = unwrappedAchievements
+            }
+        })
+    }
     
     func reportAchievement(notification: Notification) {
         guard let dictionary = notification.userInfo as? [String: Any] else {
@@ -117,11 +143,12 @@ class GameKitController: NSObject {
     }
     
     //MARK: Authentication
-    class func authenticateLocalPlayer() {
+    static func authenticateLocalPlayer() {
         DispatchQueue.main.async {
             let localPlayer = GKLocalPlayer.localPlayer()
             if localPlayer.isAuthenticated {
                 postNotification(withName: "authenticationStatusChanged", andUserInfo: ["isAuthenticated":true])
+                loadAchievementArray()
                 return
             }
             
@@ -135,6 +162,7 @@ class GameKitController: NSObject {
                 }
                 else if localPlayer.isAuthenticated {
                     postNotification(withName: "authenticationStatusChanged", andUserInfo: ["isAuthenticated":true])
+                    loadAchievementArray()
                 }
                 else {
                     postNotification(withName: "authenticationStatusChanged", andUserInfo: ["isAuthenticated":false])

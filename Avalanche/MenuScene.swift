@@ -589,11 +589,13 @@ class MenuScene: SKScene {
                 } else if object.name == "Achievement" {
                     achievementButton.didPress()
                     achievementButton.alpha = 1.0
+                    achievementTable.reloadData()
                     achievementTable.isHidden = false
                     
                     leaderboardButton.didRelease()
                     leaderboardButton.alpha = 0.5
                     leaderboardTable.isHidden = true
+                    leaderboardTableHandler.expandedPath = nil
                     
                     arcadeLeaderboardButton.isHidden = true
                     classicLeaderboardButton.isHidden = true
@@ -601,9 +603,11 @@ class MenuScene: SKScene {
                     achievementButton.didRelease()
                     achievementButton.alpha = 0.5
                     achievementTable.isHidden = true
+                    achievementTableHandler.expandedPath = nil
                     
                     leaderboardButton.didPress()
                     leaderboardButton.alpha = 1.0
+                    leaderboardTable.reloadData()
                     leaderboardTable.isHidden = false
                     
                     arcadeLeaderboardButton.isHidden = false
@@ -616,6 +620,7 @@ class MenuScene: SKScene {
                     arcadeLeaderboardButton.alpha = 1.0
                     
                     leaderboardTableHandler.currentLeaderboard = "arcadeModeLeaderboard"
+                    leaderboardTableHandler.expandedPath = nil
                     leaderboardTable.reloadData()
                 } else if object.name == "ClassicLeaderboard" {
                     classicLeaderboardButton.didPress()
@@ -625,6 +630,7 @@ class MenuScene: SKScene {
                     arcadeLeaderboardButton.alpha = 0.5
                     
                     leaderboardTableHandler.currentLeaderboard = "classicModeLeaderboard"
+                    leaderboardTableHandler.expandedPath = nil
                     leaderboardTable.reloadData()
                 }
             }
