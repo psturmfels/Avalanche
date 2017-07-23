@@ -30,8 +30,8 @@ class GameKitController: NSObject {
         postNotification(withName: "reportAchievement", andUserInfo: ["achievementName": achievement.rawValue, "percentComplete": percentComplete])
     }
     
-    var mutableAchievementsDictionary: NSMutableDictionary!
-    var achievementDictionaryURL: URL!
+    static var mutableAchievementsDictionary: NSMutableDictionary!
+    static var achievementDictionaryURL: URL!
     
     override init() {        
         super.init()
@@ -77,6 +77,13 @@ class GameKitController: NSObject {
             }
             if let unwrappedAchievements = fetchedAchievements {
                 GameKitController.achievements = unwrappedAchievements
+                for achievement in unwrappedAchievements {
+                    if let identifier = achievement.identifier {
+                        let percentComplete: Double = achievement.percentComplete
+                        GameKitController.mutableAchievementsDictionary.setValue(percentComplete, forKey: identifier)
+                    }
+                }
+                GameKitController.mutableAchievementsDictionary.write(to: GameKitController.achievementDictionaryURL, atomically: true)
             }
         })
     }
@@ -94,8 +101,8 @@ class GameKitController: NSObject {
             return
         }
         
-        self.mutableAchievementsDictionary.setValue(percentComplete, forKey: achievementName)
-        self.mutableAchievementsDictionary.write(to: self.achievementDictionaryURL, atomically: true)
+        GameKitController.mutableAchievementsDictionary.setValue(percentComplete, forKey: achievementName)
+        GameKitController.mutableAchievementsDictionary.write(to: GameKitController.achievementDictionaryURL, atomically: true)
         
         let localPlayer = GKLocalPlayer.localPlayer()
         guard localPlayer.isAuthenticated else {

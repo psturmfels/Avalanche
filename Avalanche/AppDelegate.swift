@@ -22,19 +22,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let achievementsDefaultsFile: URL = Bundle.main.url(forResource: "Achievements", withExtension: "plist")!
         let achievementsDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: achievementsDefaultsFile)!
         
-        gameKitController = GameKitController()
         let userDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         if let achievementsDirectory = NSURL(fileURLWithPath: userDirectory).appendingPathComponent("Achievements.plist") {
-            gameKitController.achievementDictionaryURL = achievementsDirectory
+            GameKitController.achievementDictionaryURL = achievementsDirectory
             
             if let achievementsDictionary = NSDictionary(contentsOf: achievementsDirectory) {
-                gameKitController.mutableAchievementsDictionary = achievementsDictionary.mutableCopy() as! NSMutableDictionary
+                GameKitController.mutableAchievementsDictionary = achievementsDictionary.mutableCopy() as! NSMutableDictionary
             } else {
                 achievementsDefaultsDictionary.write(to: achievementsDirectory, atomically: true)
-                gameKitController.mutableAchievementsDictionary = achievementsDefaultsDictionary.mutableCopy() as! NSMutableDictionary
+                GameKitController.mutableAchievementsDictionary = achievementsDefaultsDictionary.mutableCopy() as! NSMutableDictionary
             }
         }
         
+        gameKitController = GameKitController()
         //Initialize the GameCenter Player
         GameKitController.authenticateLocalPlayer()
         
