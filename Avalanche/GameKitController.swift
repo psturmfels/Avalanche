@@ -29,6 +29,18 @@ class GameKitController: NSObject {
         }
     }
     
+    static var lastMoveDate: Date? {
+        didSet {
+            if let previousMoveDate = oldValue, let currentMoveDate = lastMoveDate {
+                let secondsSinceLastMove: Double = currentMoveDate.timeIntervalSince(previousMoveDate)
+                print("secondsSinceLastMove: \(secondsSinceLastMove)")
+                if secondsSinceLastMove > 10.0 {
+                    GameKitController.report(Achievement.Stoic, withPercentComplete: 100.0)
+                }
+            }
+        }
+    }
+    
     //MARK: Helper Properties
     static var achievements: [GKAchievement]?
     

@@ -59,6 +59,8 @@ class MellowNode: SKSpriteNode {
     
     var trailingNum: Int = 0
     
+    var isMoving: Bool = false
+    
     //Mark: Creation Method
     func setup(_ position: CGPoint) {
         var i = 1
@@ -159,6 +161,11 @@ class MellowNode: SKSpriteNode {
     
     func setdx(withAcceleration accel: Double) {
         if fabs(accel) > 0.1 {
+            if !isMoving {
+                isMoving = true
+                GameKitController.lastMoveDate = Date()
+            }
+            
             var trailingNum: Int = Int(fabs(accel) * 5.0 + 1.0)
             if trailingNum > 3 {
                 trailingNum = 3
@@ -197,6 +204,9 @@ class MellowNode: SKSpriteNode {
             //self.physicsBody!.velocity.dx = CGFloat(accel) * 800.0 - 80
         }
         else {
+            if isMoving {
+                isMoving = false
+            }
             self.physicsBody?.velocity.dx = 0
             self.trailingNum = 0
             if self.action(forKey: "isJumping") == nil
