@@ -17,6 +17,19 @@ class GameKitController: NSObject {
         }
     }
     
+    //MARK: Achievement-specific properties
+    static var lastJumpDate: Date? {
+        didSet {
+            if let previousJumpDate = oldValue, let currentJumpDate = lastJumpDate {
+                let secondsSinceLastJump: Double = currentJumpDate.timeIntervalSince(previousJumpDate)
+                if secondsSinceLastJump > 10.0 {
+                    GameKitController.report(Achievement.EarthBound, withPercentComplete: 100.0)
+                }
+            }
+        }
+    }
+    
+    //MARK: Helper Properties
     static var achievements: [GKAchievement]?
     
     static let leaderboardTableHandler: LeaderboardTableViewHandler = LeaderboardTableViewHandler()

@@ -326,6 +326,8 @@ class ArcadeModeScene: GameScene {
             return
         }
         
+        GameKitController.lastJumpDate = Date()
+        
         if self.action(forKey: PowerUpTypes.jetPack.rawValue) != nil {
             if canTeleport {
                 mellowTeleport()

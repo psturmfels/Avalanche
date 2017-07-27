@@ -794,6 +794,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: Touch Methods
     func noButtonsTapped() {
+        GameKitController.lastJumpDate = Date()
         mellow.jump()
     }
     

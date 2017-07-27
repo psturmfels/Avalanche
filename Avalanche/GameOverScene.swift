@@ -60,6 +60,10 @@ class GameOverScene: SKScene {
     
     //MARK: Achievements
     func reportScoreAchievements() {
+        guard gameType == .Classic else {
+            return
+        }
+        
         if highScore <= 14 {
             GameKitController.report(Achievement.Clueless, withPercentComplete: 100.0)
         }
