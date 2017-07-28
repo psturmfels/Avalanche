@@ -18,6 +18,9 @@ enum Achievement: String {
     case Clueless = "Clueless"
     case Stoic = "Stoic"
     case EarthBound = "EarthBound"
+    case Smores = "Smores"
+    case Singed = "Singed"
+    case Pyromaniac = "Pyromaniac"
 }
 
 enum LeaderboardTypes: String {

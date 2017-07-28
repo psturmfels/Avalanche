@@ -33,7 +33,6 @@ class GameKitController: NSObject {
         didSet {
             if let previousMoveDate = oldValue, let currentMoveDate = lastMoveDate {
                 let secondsSinceLastMove: Double = currentMoveDate.timeIntervalSince(previousMoveDate)
-                print("secondsSinceLastMove: \(secondsSinceLastMove)")
                 if secondsSinceLastMove > 10.0 {
                     GameKitController.report(Achievement.Stoic, withPercentComplete: 100.0)
                 }
@@ -95,6 +94,50 @@ class GameKitController: NSObject {
         return 0.0
     }
     
+    static func updateAchievementProgress(achievementType: Achievement, percentComplete: Double) {
+        let achievementName: String = achievementType.rawValue
+        if let achievementArray = GameKitController.achievements {
+            for index in 0..<achievementArray.count {
+                if achievementArray[index].identifier == achievementName {
+                    GameKitController.achievements![index].percentComplete = percentComplete
+                }
+            }
+        }
+        
+        GameKitController.mutableAchievementsDictionary.setValue(percentComplete, forKey: achievementName)
+        GameKitController.mutableAchievementsDictionary.write(to: GameKitController.achievementDictionaryURL, atomically: true)
+    }
+    
+    static func madeProgressTowardsAchievement(achievementType: Achievement) {
+        switch achievementType {
+        case .Smores, .Singed, .Pyromaniac:
+            let numDeathsByFire: Int = Int(getAchievementProgress(achievementType: .Pyromaniac))
+            let percentComplete: Double = Double(numDeathsByFire + 1)
+            if numDeathsByFire < 25 {
+                if numDeathsByFire == 24 {
+                    GameKitController.report(.Smores, withPercentComplete: 100.0)
+                } else {
+                    GameKitController.report(.Smores, withPercentComplete: percentComplete)
+                }
+                
+                GameKitController.report(.Singed, withPercentComplete: percentComplete)
+                GameKitController.report(.Pyromaniac, withPercentComplete: percentComplete)
+            } else if numDeathsByFire < 50 {
+                if numDeathsByFire == 49 {
+                    GameKitController.report(.Singed, withPercentComplete: 100.0)
+                } else {
+                    GameKitController.report(.Singed, withPercentComplete: percentComplete)
+                }
+                
+                GameKitController.report(.Pyromaniac, withPercentComplete: percentComplete)
+            } else if numDeathsByFire < 100 {
+                GameKitController.report(.Pyromaniac, withPercentComplete: percentComplete)
+            }
+        default:
+            return
+        }
+    }
+    
     static func loadAchievementArray() {
         GKAchievement.loadAchievements(completionHandler: { (fetchedAchievements, error) in
             if error != nil {
@@ -126,8 +169,9 @@ class GameKitController: NSObject {
             return
         }
         
-        GameKitController.mutableAchievementsDictionary.setValue(percentComplete, forKey: achievementName)
-        GameKitController.mutableAchievementsDictionary.write(to: GameKitController.achievementDictionaryURL, atomically: true)
+        if let achievementType = Achievement(rawValue: achievementName) {
+            GameKitController.updateAchievementProgress(achievementType: achievementType, percentComplete: percentComplete)
+        }
         
         let localPlayer = GKLocalPlayer.localPlayer()
         guard localPlayer.isAuthenticated else {
@@ -171,7 +215,6 @@ class GameKitController: NSObject {
                 NSLog("Could not report score \(scoreObject) to leaderboard \(leaderboardIdentifier)")
             }
         })
-        
     }
     
     //MARK: Authentication
