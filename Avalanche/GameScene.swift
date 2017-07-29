@@ -666,6 +666,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         switch by {
         case .crushed:
+            GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.Pancaked)
             mellow.run(crushedAction, completion: {
                 //Crushed sound effects
                 

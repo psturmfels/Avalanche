@@ -133,6 +133,30 @@ class GameKitController: NSObject {
             } else if numDeathsByFire < 100 {
                 GameKitController.report(.Pyromaniac, withPercentComplete: percentComplete)
             }
+        case .Squashed, .Flattened, .Pancaked:
+            let numDeathsByCrushed: Int = Int(getAchievementProgress(achievementType: .Pancaked))
+            let percentComplete: Double = Double(numDeathsByCrushed + 1)
+            if numDeathsByCrushed < 25 {
+                if numDeathsByCrushed == 24 {
+                    GameKitController.report(.Squashed, withPercentComplete: 100.0)
+                } else {
+                    GameKitController.report(.Squashed, withPercentComplete: percentComplete)
+                }
+                
+                GameKitController.report(.Flattened, withPercentComplete: percentComplete)
+                GameKitController.report(.Pancaked, withPercentComplete: percentComplete)
+            } else if numDeathsByCrushed < 50 {
+                if numDeathsByCrushed == 49 {
+                    GameKitController.report(.Flattened, withPercentComplete: 100.0)
+                } else {
+                    GameKitController.report(.Flattened, withPercentComplete: percentComplete)
+                }
+                
+                GameKitController.report(.Pancaked, withPercentComplete: percentComplete)
+            } else if numDeathsByCrushed < 100 {
+                GameKitController.report(.Pancaked, withPercentComplete: percentComplete)
+            }
+            
         default:
             return
         }
