@@ -37,7 +37,13 @@ class MellowNode: SKSpriteNode {
     let standingTexture: SKTexture = SKTexture(imageNamed: "standing")
     
     var direction: Orientation = .left
-    var bottomSideInContact: Int = 0
+    var bottomSideInContact: Int = 0 {
+        didSet {
+            if oldValue == 0 && bottomSideInContact > 0 {
+                consecutiveWallJumps = 0
+            }
+        }
+    }
     var leftSideInContact: Int = 0
     var rightSideInContact: Int = 0
     var physicsSize: CGSize {
@@ -60,6 +66,16 @@ class MellowNode: SKSpriteNode {
     var trailingNum: Int = 0
     
     var isMoving: Bool = false
+    var consecutiveWallJumps: Int = 0 {
+        didSet {
+            if consecutiveWallJumps == 5 {
+                GameKitController.report(Achievement.BlockHugger, withPercentComplete: 100.0)
+            }
+            if consecutiveWallJumps == 10 {
+                GameKitController.report(Achievement.Ninja, withPercentComplete: 100.0)
+            }
+        }
+    }
     
     //Mark: Creation Method
     func setup(_ position: CGPoint) {
@@ -138,6 +154,8 @@ class MellowNode: SKSpriteNode {
             self.run(actionSequence, withKey: "isJumping")
         }
         else if leftSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
+            consecutiveWallJumps += 1
+            
             //Wall jump right if the mellow is clinging on to a wall the left side
             leftSideInContact = 0
             bottomSideInContact = 0
@@ -148,6 +166,8 @@ class MellowNode: SKSpriteNode {
             self.run(actionSequence, withKey: "isJumping")
         }
         else if rightSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
+            consecutiveWallJumps += 1
+            
             //Wall jump left if the mellow is clining to a wall on the right side
             rightSideInContact = 0
             bottomSideInContact = 0

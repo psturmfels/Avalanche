@@ -24,6 +24,8 @@ enum Achievement: String {
     case Squashed = "Squashed"
     case Flattened = "Flattened"
     case Pancaked = "Pancaked"
+    case BlockHugger = "BlockHugger"
+    case Ninja = "Ninja"
 }
 
 enum LeaderboardTypes: String {
