@@ -679,6 +679,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.mellow.removeFromParent()
             })
         case .lava:
+            GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.Pyromaniac)
             mellow.run(crushedAction, completion: {
                 //Burned Sound Effects
                 if self.backgroundMusic != nil {
