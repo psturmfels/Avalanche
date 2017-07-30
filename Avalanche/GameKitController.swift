@@ -40,6 +40,19 @@ class GameKitController: NSObject {
         }
     }
     
+    static var lastPauseDate: Date?
+    
+    static var lastUnpauseDate: Date? {
+        didSet {
+            if let pauseDate = lastPauseDate, let unpauseDate = lastUnpauseDate {
+                let secondsSinceLastPause: Double = unpauseDate.timeIntervalSince(pauseDate)
+                if secondsSinceLastPause > 30.0 {
+                    GameKitController.report(Achievement.AFK, withPercentComplete: 100.0)
+                }
+            }
+        }
+    }
+    
     //MARK: Helper Properties
     static var achievements: [GKAchievement]?
     

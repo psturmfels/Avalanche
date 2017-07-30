@@ -53,12 +53,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         didSet {
             switch currentGameState {
             case .gameInProgress:
+                GameKitController.lastUnpauseDate = Date()
                 switchedToInProgress()
                 
             case .gameOver:
                 switchedToOver()
                 
             case .gamePaused:
+                GameKitController.lastPauseDate = Date()
                 switchedToPause()
                 
             case .tutorial:
