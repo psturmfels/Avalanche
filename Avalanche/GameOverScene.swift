@@ -56,6 +56,7 @@ class GameOverScene: SKScene {
         }
         
         reportScoreAchievements()
+        GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.Committed)
     }
     
     //MARK: Achievements

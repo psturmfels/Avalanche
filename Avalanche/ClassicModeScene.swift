@@ -14,6 +14,8 @@ class ClassicModeScene: GameScene {
     //MARK: Initializing Methods
     
     override func didMove(to view: SKView) {
+        super.didMove(to: view)
+        
         //Create stuff
         createWorld()
         let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)

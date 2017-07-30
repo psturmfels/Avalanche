@@ -10,7 +10,12 @@ import UIKit
 import GameKit
 
 class GameKitController: NSObject {
-    var localPlayerIsAuthenticated: Bool {
+    //MARK: AchievementTableViewHandler Properties
+    static var achievementDescriptions: [GKAchievementDescription] = [GKAchievementDescription]()
+    static var achievementProgress: [String:Double] = [String:Double]()
+    static var achievementImages: [String:UIImage] = [String:UIImage]()
+    
+    static var localPlayerIsAuthenticated: Bool {
         get {
             let localPlayer = GKLocalPlayer.localPlayer()
             return localPlayer.isAuthenticated
@@ -123,6 +128,42 @@ class GameKitController: NSObject {
     
     static func madeProgressTowardsAchievement(achievementType: Achievement) {
         switch achievementType {
+        case .TestRun, .Interested, .Dedicated, .Committed:
+            let pastProgress: Double = GameKitController.getAchievementProgress(achievementType: .Committed)
+            let numTimesPlayed: Int = Int(pastProgress * 5.0)
+            let percentComplete: Double = pastProgress + 0.2
+            
+            if numTimesPlayed < 10 {
+                if numTimesPlayed == 10 {
+                    GameKitController.report(.TestRun, withPercentComplete: 100.0)
+                } else {
+                    GameKitController.report(.TestRun, withPercentComplete: percentComplete)
+                }
+                
+                GameKitController.report(.Interested, withPercentComplete: percentComplete)
+                GameKitController.report(.Dedicated, withPercentComplete: percentComplete)
+                GameKitController.report(.Committed, withPercentComplete: percentComplete)
+            } else if numTimesPlayed < 100 {
+                if numTimesPlayed == 99 {
+                    GameKitController.report(.Interested, withPercentComplete: 100.0)
+                } else {
+                    GameKitController.report(.Interested, withPercentComplete: percentComplete)
+                }
+                
+                GameKitController.report(.Dedicated, withPercentComplete: percentComplete)
+                GameKitController.report(.Committed, withPercentComplete: percentComplete)
+            } else if numTimesPlayed < 250 {
+                if numTimesPlayed == 249 {
+                    GameKitController.report(.Dedicated, withPercentComplete: 100.0)
+                } else {
+                    GameKitController.report(.Dedicated, withPercentComplete: percentComplete)
+                }
+                
+                GameKitController.report(.Committed, withPercentComplete: percentComplete)
+            } else if numTimesPlayed < 500 {
+                GameKitController.report(.Committed, withPercentComplete: percentComplete)
+            }
+            
         case .Smores, .Singed, .Pyromaniac:
             let numDeathsByFire: Int = Int(getAchievementProgress(achievementType: .Pyromaniac))
             let percentComplete: Double = Double(numDeathsByFire + 1)
@@ -176,6 +217,10 @@ class GameKitController: NSObject {
     }
     
     static func loadAchievementArray() {
+        if let unwrappedAchievements = GameKitController.achievements, unwrappedAchievements.count > 0 {
+            return
+        }
+        
         GKAchievement.loadAchievements(completionHandler: { (fetchedAchievements, error) in
             if error != nil {
                 NSLog("There was an error while fetching completed achievements: \(error!)")

@@ -28,6 +28,10 @@ enum Achievement: String {
     case Ninja = "Ninja"
     case Jackpot = "Jackpot"
     case AFK = "AFK"
+    case TestRun = "TestRun"
+    case Interested = "Interested"
+    case Dedicated  = "Dedicated"
+    case Committed  = "Committed"
 }
 
 enum LeaderboardTypes: String {

@@ -40,6 +40,8 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     
     func loadGameCenterAchievements() {
+        
+        
         GKAchievement.loadAchievements { (achievements, error) in
             if error != nil {
                 NSLog("Failed to load achievement progress with error \(error!)")

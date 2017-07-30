@@ -302,6 +302,7 @@ class ArcadeModeScene: GameScene {
     
     override func didMove(to view: SKView) {
         //Create stuff
+        super.didMove(to: view)
         
         createWorld()
         let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
