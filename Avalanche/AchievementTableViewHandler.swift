@@ -11,10 +11,7 @@ import GameKit
 
 class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSource {
     var expandedPath: IndexPath?
-    var achievementDescriptions: [GKAchievementDescription]!
-    var achievementProgress: [String:Double] = [String:Double]()
-    var achievementImages: [String:UIImage] = [String:UIImage]()
-    
+
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
             if !oldValue && gameCenterIsAuthenticated {
@@ -22,7 +19,6 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             }
         }
     }
-    var achievementsAreLoaded: Bool = false
     
     override init() {
         super.init()
@@ -40,56 +36,13 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     
     func loadGameCenterAchievements() {
-        
-        
-        GKAchievement.loadAchievements { (achievements, error) in
-            if error != nil {
-                NSLog("Failed to load achievement progress with error \(error!)")
-            }
-            
-            guard let achievements = achievements else {
-                NSLog("Failed to unwrap achievements.")
-                return
-            }
-            
-            for achievementProgressObject in achievements {
-                if let identifier = achievementProgressObject.identifier {
-                    self.achievementProgress[identifier] = achievementProgressObject.percentComplete
-                }
-            }
-        }
-        
-        GKAchievementDescription.loadAchievementDescriptions { (descriptions, error) in
-            if let error = error {
-                NSLog("Failed to load achievement descriptions with error \(error).")
-            }
-            
-            guard let descriptions = descriptions else {
-                NSLog("Failed to unwrap achievements.")
-                return
-            }
-            
-            self.achievementDescriptions = descriptions
-            for achievement in self.achievementDescriptions {
-                if let identifier = achievement.identifier {
-                    achievement.loadImage(completionHandler: { (image, error) in
-                        if let _ = error  {
-                            NSLog("Failed to load image for achievement '\(achievement.title!)'")
-                        } else if let image = image {
-                            self.achievementImages[identifier] = image
-                        }
-                    })
-                    
-                }
-            }
-            self.achievementsAreLoaded = true
-        }
+        GameKitController.loadAchievementArray()
     }
     
     //MARK: UITableViewDataSource Methods
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if achievementsAreLoaded {
-            return achievementDescriptions.count
+        if GameKitController.achievementsAreLoaded {
+            return GameKitController.achievementDescriptions.count
         }
         else {
             return 0
@@ -97,22 +50,22 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard achievementsAreLoaded else {
+        guard GameKitController.achievementsAreLoaded else {
             return AchievementTableViewCell()
         }
         
         let cell: AchievementTableViewCell = tableView.dequeueReusableCell(withIdentifier: "AchievementTableViewCell", for: indexPath) as! AchievementTableViewCell
         let row: Int = indexPath.row
         
-        let achievementIdentifier: String = achievementDescriptions[row].identifier!
+        let achievementIdentifier: String = GameKitController.achievementDescriptions[row].identifier!
         
-        if let achievementProgress = self.achievementProgress[achievementIdentifier] {
+        if let achievementProgress = GameKitController.achievementProgress[achievementIdentifier] {
             cell.achievementProgress = achievementProgress
         } else {
             cell.achievementProgress = 0.0
         }
         
-        if let achievementImage = self.achievementImages[achievementIdentifier] {
+        if let achievementImage = GameKitController.achievementImages[achievementIdentifier] {
             cell.achievementImage = achievementImage
         } else {
             cell.achievementImage = AchievementTableViewCell.defaultAchievementImage
@@ -124,7 +77,7 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             cell.isExpanded = false
         }
         
-        cell.achievement = achievementDescriptions[row]
+        cell.achievement = GameKitController.achievementDescriptions[row]
         
         return cell
     }
@@ -164,15 +117,15 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         }
         
         if indexPath == expandedPath {
-            guard achievementsAreLoaded else {
+            guard GameKitController.achievementsAreLoaded else {
                 return AchievementTableViewCell.defaultHeight
             }
             
-            let achievementIdentifier: String = achievementDescriptions[indexPath.row].identifier!
-            let achievedDescription: String = achievementDescriptions[indexPath.row].achievedDescription!
-            let unachievedDescription: String = achievementDescriptions[indexPath.row].unachievedDescription!
+            let achievementIdentifier: String = GameKitController.achievementDescriptions[indexPath.row].identifier!
+            let achievedDescription: String = GameKitController.achievementDescriptions[indexPath.row].achievedDescription!
+            let unachievedDescription: String = GameKitController.achievementDescriptions[indexPath.row].unachievedDescription!
             
-            if let achievementProgress = self.achievementProgress[achievementIdentifier] {
+            if let achievementProgress = GameKitController.achievementProgress[achievementIdentifier] {
                 if achievementProgress == 100.0 {
                     return AchievementTableViewCell.expandedHeightNecessary(forDescription: achievedDescription)
                 } else {

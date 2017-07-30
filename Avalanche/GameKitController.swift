@@ -14,6 +14,7 @@ class GameKitController: NSObject {
     static var achievementDescriptions: [GKAchievementDescription] = [GKAchievementDescription]()
     static var achievementProgress: [String:Double] = [String:Double]()
     static var achievementImages: [String:UIImage] = [String:UIImage]()
+    static var achievementsAreLoaded: Bool = false
     
     static var localPlayerIsAuthenticated: Bool {
         get {
@@ -234,8 +235,39 @@ class GameKitController: NSObject {
                     }
                 }
                 GameKitController.mutableAchievementsDictionary.write(to: GameKitController.achievementDictionaryURL, atomically: true)
+                
+                for achievementProgressObject in unwrappedAchievements {
+                    if let identifier = achievementProgressObject.identifier {
+                        GameKitController.achievementProgress[identifier] = achievementProgressObject.percentComplete
+                    }
+                }
+                
+                GameKitController.achievementsAreLoaded = true
             }
         })
+        GKAchievementDescription.loadAchievementDescriptions { (descriptions, error) in
+            if let error = error {
+                NSLog("Failed to load achievement descriptions with error \(error).")
+            }
+            
+            guard let descriptions = descriptions else {
+                NSLog("Failed to unwrap achievements.")
+                return
+            }
+            
+            GameKitController.achievementDescriptions = descriptions
+            for achievement in GameKitController.achievementDescriptions {
+                if let identifier = achievement.identifier {
+                    achievement.loadImage(completionHandler: { (image, error) in
+                        if let _ = error  {
+                            NSLog("Failed to load image for achievement '\(achievement.title!)'")
+                        } else if let image = image {
+                            GameKitController.achievementImages[identifier] = image
+                        }
+                    })
+                }
+            }
+        }
     }
     
     func reportAchievement(notification: Notification) {
