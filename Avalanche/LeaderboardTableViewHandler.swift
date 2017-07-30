@@ -18,11 +18,6 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             }
         }
     }
-    var scoresAreLoaded: Bool = false
-    
-    var leaderboards: [GKLeaderboard]!
-    var scores: [String: [GKScore]] = [String: [GKScore]]()
-    var currentLeaderboard: String?
     
     override init() {
         super.init()
@@ -39,57 +34,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     
     func loadGameCenterLeaderboards() {
-        let localPlayer = GKLocalPlayer.localPlayer()
-        guard localPlayer.isAuthenticated else {
-            return
-        }
-        
-        localPlayer.loadDefaultLeaderboardIdentifier { (defaultIdentifier, error) in
-            if let error = error {
-                NSLog("Error loading default leaderboard identifier: \(error)")
-            }
-            
-            guard let defaultIdentifier = defaultIdentifier else {
-                NSLog("Failed to unwrap default leaderboard identifier")
-                return
-            }
-            
-            if self.currentLeaderboard == nil {
-                self.currentLeaderboard = defaultIdentifier
-            }
-        }
-        
-        GKLeaderboard.loadLeaderboards { (leaderboards, error) in
-            if let error = error {
-                NSLog("Failed to load leaderboards with error \(error)")
-            }
-            
-            guard let leaderboards = leaderboards else {
-                NSLog("Failed to unwrap leaderboards")
-                return
-            }
-            
-            self.leaderboards = leaderboards
-            
-            for leaderboard in self.leaderboards {
-                leaderboard.playerScope = GKLeaderboardPlayerScope.global
-                leaderboard.range = NSRange(location: 1, length: 25)
-                leaderboard.loadScores(completionHandler: { (scores, error) in
-                    if let error = error {
-                        NSLog("Failed to load scores for \(leaderboard.identifier!) with error \(error)")
-                    }
-                    
-                    if let scores = scores {
-                        self.scores[leaderboard.identifier!] = scores
-                    } else {
-                        NSLog("Failed to unwrap scores for leaderboard \(leaderboard.identifier!)")
-                        self.scores[leaderboard.identifier!] = []
-                    }
-                    
-                })
-            }
-            self.scoresAreLoaded = true
-        }
+        GameKitController.loadGameCenterLeaderboards()
     }
     
     //MARK: UITableViewDataSource Methods
@@ -98,13 +43,13 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard scoresAreLoaded else {
+        guard GameKitController.scoresAreLoaded else {
             return 0
         }
-        guard let currentLeaderboard = self.currentLeaderboard else {
+        guard let currentLeaderboard = GameKitController.currentLeaderboard else {
             return 0
         }
-        guard let scoreArray = self.scores[currentLeaderboard] else {
+        guard let scoreArray = GameKitController.scores[currentLeaderboard] else {
             return 0
         }
         
@@ -112,13 +57,13 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard scoresAreLoaded else {
+        guard GameKitController.scoresAreLoaded else {
             return LeaderboardTableViewCell()
         }
-        guard let currentLeaderboard = self.currentLeaderboard else {
+        guard let currentLeaderboard = GameKitController.currentLeaderboard else {
             return LeaderboardTableViewCell()
         }
-        guard let scoreArray = self.scores[currentLeaderboard] else {
+        guard let scoreArray = GameKitController.scores[currentLeaderboard] else {
             return LeaderboardTableViewCell()
         }
         
@@ -143,13 +88,13 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         }
         
         if indexPath == expandedPath {
-            guard scoresAreLoaded else {
+            guard GameKitController.scoresAreLoaded else {
                 return LeaderboardTableViewCell.defaultHeight
             }
-            guard let currentLeaderboard = self.currentLeaderboard else {
+            guard let currentLeaderboard = GameKitController.currentLeaderboard else {
                 return LeaderboardTableViewCell.defaultHeight
             }
-            guard let scoreArray = self.scores[currentLeaderboard] else {
+            guard let scoreArray = GameKitController.scores[currentLeaderboard] else {
                 return LeaderboardTableViewCell.defaultHeight
             }
             

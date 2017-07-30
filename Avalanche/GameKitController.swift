@@ -23,6 +23,13 @@ class GameKitController: NSObject {
         }
     }
     
+    //MARK: LeaderboardTableViewHandler Properties
+    static var scoresAreLoaded: Bool = false
+    
+    static var leaderboards: [GKLeaderboard]!
+    static var scores: [String: [GKScore]] = [String: [GKScore]]()
+    static var currentLeaderboard: String?
+    
     //MARK: Achievement-specific properties
     static var lastJumpDate: Date? {
         didSet {
@@ -299,6 +306,54 @@ class GameKitController: NSObject {
             if error != nil {
                 NSLog("Could not report achievement: \(error!)")
             }
+        }
+    }
+    
+    //MARK: Leaderboards
+    static func loadGameCenterLeaderboards() {
+        if GameKitController.scoresAreLoaded {
+            return
+        }
+        
+        if GameKitController.currentLeaderboard == nil {
+            GameKitController.currentLeaderboard = LeaderboardTypes.classic.rawValue
+        }
+        
+        let localPlayer = GKLocalPlayer.localPlayer()
+        guard localPlayer.isAuthenticated else {
+            return
+        }
+        
+        GKLeaderboard.loadLeaderboards { (leaderboards, error) in
+            if let error = error {
+                NSLog("Failed to load leaderboards with error \(error)")
+            }
+            
+            guard let leaderboards = leaderboards else {
+                NSLog("Failed to unwrap leaderboards")
+                return
+            }
+            
+            GameKitController.leaderboards = leaderboards
+            
+            for leaderboard in GameKitController.leaderboards {
+                leaderboard.playerScope = GKLeaderboardPlayerScope.global
+                leaderboard.range = NSRange(location: 1, length: 25)
+                leaderboard.loadScores(completionHandler: { (scores, error) in
+                    if let error = error {
+                        NSLog("Failed to load scores for \(leaderboard.identifier!) with error \(error)")
+                    }
+                    
+                    if let scores = scores {
+                        GameKitController.scores[leaderboard.identifier!] = scores
+                    } else {
+                        NSLog("Failed to unwrap scores for leaderboard \(leaderboard.identifier!)")
+                        GameKitController.scores[leaderboard.identifier!] = []
+                    }
+                    
+                })
+            }
+            GameKitController.scoresAreLoaded = true
         }
     }
     

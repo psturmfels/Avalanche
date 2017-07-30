@@ -375,7 +375,7 @@ class MenuScene: SKScene {
         leaderboardTable.delegate = leaderboardTableHandler
         leaderboardTable.register(LeaderboardTableViewCell.self, forCellReuseIdentifier: "LeaderboardTableViewCell")
         
-        leaderboardTableHandler.currentLeaderboard = "classicModeLeaderboard"
+        GameKitController.currentLeaderboard = LeaderboardTypes.classic.rawValue
         leaderboardTable.reloadData()
     }
     
@@ -619,7 +619,7 @@ class MenuScene: SKScene {
                     arcadeLeaderboardButton.didPress()
                     arcadeLeaderboardButton.alpha = 1.0
                     
-                    leaderboardTableHandler.currentLeaderboard = "arcadeModeLeaderboard"
+                    GameKitController.currentLeaderboard = LeaderboardTypes.arcade.rawValue
                     leaderboardTableHandler.expandedPath = nil
                     leaderboardTable.reloadData()
                 } else if object.name == "ClassicLeaderboard" {
@@ -629,7 +629,7 @@ class MenuScene: SKScene {
                     arcadeLeaderboardButton.didRelease()
                     arcadeLeaderboardButton.alpha = 0.5
                     
-                    leaderboardTableHandler.currentLeaderboard = "classicModeLeaderboard"
+                    GameKitController.currentLeaderboard = LeaderboardTypes.classic.rawValue
                     leaderboardTableHandler.expandedPath = nil
                     leaderboardTable.reloadData()
                 }
