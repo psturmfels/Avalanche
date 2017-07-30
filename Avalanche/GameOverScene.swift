@@ -60,6 +60,10 @@ class GameOverScene: SKScene {
     
     //MARK: Achievements
     func reportScoreAchievements() {
+        if highScore == 777 {
+            GameKitController.report(Achievement.Jackpot, withPercentComplete: 100.0)
+        }
+        
         guard gameType == .Classic else {
             return
         }
