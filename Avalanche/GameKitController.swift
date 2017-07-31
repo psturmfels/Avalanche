@@ -138,40 +138,29 @@ class GameKitController: NSObject {
         switch achievementType {
         case .TestRun, .Interested, .Dedicated, .Committed:
             let pastProgress: Double = GameKitController.getAchievementProgress(achievementType: .Committed)
-            let numTimesPlayed: Int = Int(pastProgress * 5.0)
+            let numTimesPlayed: Int = Int(pastProgress * 5.0) + 1
             let percentComplete: Double = pastProgress + 0.2
             
-            if numTimesPlayed < 10 {
-                if numTimesPlayed == 10 {
-                    GameKitController.report(.TestRun, withPercentComplete: 100.0)
-                } else {
-                    GameKitController.report(.TestRun, withPercentComplete: percentComplete)
-                }
-                
+            if numTimesPlayed >= 500 && numTimesPlayed <= 550 {
+                GameKitController.report(.Committed, withPercentComplete: 100.0)
+            } else if numTimesPlayed >= 250 {
+                GameKitController.report(.Committed, withPercentComplete: percentComplete)
+                GameKitController.report(.Dedicated, withPercentComplete: 100.0)
+            } else if numTimesPlayed >= 100 {
+                GameKitController.report(.Committed, withPercentComplete: percentComplete)
+                GameKitController.report(.Dedicated, withPercentComplete: percentComplete)
+                GameKitController.report(.Interested, withPercentComplete: 100.0)
+            } else if numTimesPlayed >= 10 {
+                GameKitController.report(.Committed, withPercentComplete: percentComplete)
+                GameKitController.report(.Dedicated, withPercentComplete: percentComplete)
                 GameKitController.report(.Interested, withPercentComplete: percentComplete)
+                GameKitController.report(.TestRun, withPercentComplete: 100.0)
+            } else {
+                GameKitController.report(.Committed, withPercentComplete: percentComplete)
                 GameKitController.report(.Dedicated, withPercentComplete: percentComplete)
-                GameKitController.report(.Committed, withPercentComplete: percentComplete)
-            } else if numTimesPlayed < 100 {
-                if numTimesPlayed == 99 {
-                    GameKitController.report(.Interested, withPercentComplete: 100.0)
-                } else {
-                    GameKitController.report(.Interested, withPercentComplete: percentComplete)
-                }
-                
-                GameKitController.report(.Dedicated, withPercentComplete: percentComplete)
-                GameKitController.report(.Committed, withPercentComplete: percentComplete)
-            } else if numTimesPlayed < 250 {
-                if numTimesPlayed == 249 {
-                    GameKitController.report(.Dedicated, withPercentComplete: 100.0)
-                } else {
-                    GameKitController.report(.Dedicated, withPercentComplete: percentComplete)
-                }
-                
-                GameKitController.report(.Committed, withPercentComplete: percentComplete)
-            } else if numTimesPlayed < 500 {
-                GameKitController.report(.Committed, withPercentComplete: percentComplete)
+                GameKitController.report(.Interested, withPercentComplete: percentComplete)
+                GameKitController.report(.TestRun, withPercentComplete: percentComplete)
             }
-            
         case .Smores, .Singed, .Pyromaniac:
             let numDeathsByFire: Int = Int(getAchievementProgress(achievementType: .Pyromaniac))
             let percentComplete: Double = Double(numDeathsByFire + 1)
