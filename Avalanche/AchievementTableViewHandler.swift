@@ -11,7 +11,9 @@ import GameKit
 
 class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSource {
     var expandedPath: IndexPath?
-
+    let refreshControl: UIRefreshControl = UIRefreshControl()
+    weak var tableView: UITableView?
+    
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
             if !oldValue && gameCenterIsAuthenticated {
@@ -25,6 +27,26 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         NotificationCenter.default.addObserver(self, selector: #selector(AchievementTableViewHandler.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
     }
     
+    func setDelegateAndSource(forTable table: UITableView) {
+        table.delegate = self
+        table.dataSource = self
+        table.refreshControl = self.refreshControl
+        self.tableView = table
+        self.refreshControl.tintColor = UIColor.white
+        self.refreshControl.addTarget(self, action: #selector(self.viewRefreshed), for: UIControlEvents.valueChanged)
+    }
+    
+    func viewRefreshed() {
+        let dateAhead: DispatchTime = DispatchTime.now() + .seconds(1)
+        
+        DispatchQueue.main.asyncAfter(deadline: dateAhead) {
+            GameKitController.refreshAchievementArray()
+            if let tableView = self.tableView {
+                tableView.reloadData()
+            }
+            self.refreshControl.endRefreshing()
+        }
+    }
     
     //MARK: GameCenter Methods
     func authenticationStatusDidChange(notification: Notification) {

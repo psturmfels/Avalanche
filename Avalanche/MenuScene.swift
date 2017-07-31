@@ -366,13 +366,11 @@ class MenuScene: SKScene {
         self.view!.addSubview(achievementTable)
         
         achievementTableHandler = GameKitController.achievementTableHandler
-        achievementTable.dataSource = achievementTableHandler
-        achievementTable.delegate = achievementTableHandler
+        achievementTableHandler.setDelegateAndSource(forTable: achievementTable)
         achievementTable.register(AchievementTableViewCell.self, forCellReuseIdentifier: "AchievementTableViewCell")
         
         leaderboardTableHandler = GameKitController.leaderboardTableHandler
-        leaderboardTable.dataSource = leaderboardTableHandler
-        leaderboardTable.delegate = leaderboardTableHandler
+        leaderboardTableHandler.setDelegateAndSource(forTable: leaderboardTable)
         leaderboardTable.register(LeaderboardTableViewCell.self, forCellReuseIdentifier: "LeaderboardTableViewCell")
         
         GameKitController.currentLeaderboard = LeaderboardTypes.classic.rawValue

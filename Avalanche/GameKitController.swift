@@ -218,6 +218,10 @@ class GameKitController: NSObject {
             return
         }
         
+        GameKitController.refreshAchievementArray()
+    }
+    
+    static func refreshAchievementArray() {
         GKAchievement.loadAchievements(completionHandler: { (fetchedAchievements, error) in
             if error != nil {
                 NSLog("There was an error while fetching completed achievements: \(error!)")
@@ -304,12 +308,17 @@ class GameKitController: NSObject {
             return
         }
         
+        GameKitController.refreshGameCenterLeaderboards()
+    }
+    
+    static func refreshGameCenterLeaderboards() {
         if GameKitController.currentLeaderboard == nil {
             GameKitController.currentLeaderboard = LeaderboardTypes.classic.rawValue
         }
         
         let localPlayer = GKLocalPlayer.localPlayer()
         guard localPlayer.isAuthenticated else {
+            GameKitController.authenticateLocalPlayer()
             return
         }
         
