@@ -476,6 +476,7 @@ class TutorialScene: GameScene {
     
     //MARK: Transition Methods
     func transitionToGameScene() {
+        GameKitController.report(Achievement.Student, withPercentComplete: 100.0)
         let gameScene: ClassicModeScene = ClassicModeScene(fileNamed: "GameScene")!
         gameScene.size = self.size
         let transition = SKTransition.crossFade(withDuration: 0.5)

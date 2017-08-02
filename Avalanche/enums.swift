@@ -32,6 +32,8 @@ enum Achievement: String {
     case Interested = "Interested"
     case Dedicated  = "Dedicated"
     case Committed  = "Committed"
+    case Student = "Student"
+    case 30Lives = "30Lives"
 }
 
 enum LeaderboardTypes: String {
