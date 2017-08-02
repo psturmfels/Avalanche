@@ -839,6 +839,8 @@ class ArcadeModeScene: GameScene {
     }
     
     func runPowerUp(type: PowerUpTypes) {
+        GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.Powered)
+        
         switch type {
         case .timeSlow:
             addTimeSlow()
@@ -880,6 +882,7 @@ class ArcadeModeScene: GameScene {
             }
             return
         case .heart:
+            GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.ThirtyLives)
             numHeartsOnScreen -= 1
             addLife()
             return

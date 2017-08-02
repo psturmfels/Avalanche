@@ -136,6 +136,35 @@ class GameKitController: NSObject {
     
     static func madeProgressTowardsAchievement(achievementType: Achievement) {
         switch achievementType {
+        case .Gifted, .Blessed, .Powered:
+            let pastProgress: Double = GameKitController.getAchievementProgress(achievementType: .Powered)
+            let numPowerUpsCollected: Int = Int(pastProgress * 5.0) + 1
+            let percentComplete: Double = pastProgress + 0.2
+            
+            if numPowerUpsCollected >= 500 && numPowerUpsCollected <= 550 {
+                GameKitController.report(.Powered, withPercentComplete: 100.0)
+            } else if numPowerUpsCollected >= 250 {
+                GameKitController.report(.Powered, withPercentComplete: percentComplete)
+                GameKitController.report(.Blessed, withPercentComplete: 100.0)
+            } else if numPowerUpsCollected >= 100 {
+                GameKitController.report(.Powered, withPercentComplete: percentComplete)
+                GameKitController.report(.Blessed, withPercentComplete: percentComplete)
+                GameKitController.report(.Gifted, withPercentComplete: 100.0)
+            } else {
+                GameKitController.report(.Powered, withPercentComplete: percentComplete)
+                GameKitController.report(.Blessed, withPercentComplete: percentComplete)
+                GameKitController.report(.Gifted, withPercentComplete: percentComplete)
+            }
+            
+        case .ThirtyLives:
+            let pastProgress: Int = Int(GameKitController.getAchievementProgress(achievementType: .ThirtyLives))
+            let percentComplete: Double = Double(pastProgress + 1)
+            
+            if pastProgress >= 30 && pastProgress < 100 {
+                GameKitController.report(.ThirtyLives, withPercentComplete: 100.0)
+            } else if pastProgress < 100 {
+                GameKitController.report(.ThirtyLives, withPercentComplete: percentComplete)
+            }
         case .TestRun, .Interested, .Dedicated, .Committed:
             let pastProgress: Double = GameKitController.getAchievementProgress(achievementType: .Committed)
             let numTimesPlayed: Int = Int(pastProgress * 5.0) + 1
