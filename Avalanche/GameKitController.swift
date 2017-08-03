@@ -90,6 +90,21 @@ class GameKitController: NSObject {
     }
     
     //MARK: Achievements
+    static func resetAllAchievements() {
+        let fileManager: FileManager = FileManager.default
+        do {
+            try fileManager.removeItem(at: achievementDictionaryURL)
+        } catch {
+            NSLog("Unable to remove file at \(achievementDictionaryURL.path) with thrown error \(error).")
+        }
+        
+        GKAchievement.resetAchievements { (error) in
+            if let error = error {
+                NSLog("Unable to reset achievement progress with error \(error)")
+            }
+        }
+    }
+    
     static func getAchievementProgress(achievementType: Achievement) -> Double {
         let achievementName: String = achievementType.rawValue
         if let achievementArray = GameKitController.achievements, achievementArray.count > 0 {
