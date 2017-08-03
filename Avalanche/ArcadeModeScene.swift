@@ -16,6 +16,7 @@ class ArcadeModeScene: GameScene {
     let nextPowerUpMin: Int = 5
     let nextPowerUpMax: Int = 20
     var nextPowerUp: Int = 30
+    var collectedPowerUps: [PowerUpTypes] = []
     var currentPowerUps: [PowerUp] = []
     var teleportTextures: [SKTexture] = []
     var numHeartsOnScreen: Int = 0
@@ -819,6 +820,10 @@ class ArcadeModeScene: GameScene {
             for indicator in currentPowerUps {
                 indicator.position.x += 60.0
             }
+            
+            if currentPowerUps.count == 5 {
+                GameKitController.report(Achievement.Eclectic, withPercentComplete: 100.0)
+            }
         }
     }
     
@@ -840,6 +845,12 @@ class ArcadeModeScene: GameScene {
     
     func runPowerUp(type: PowerUpTypes) {
         GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.Powered)
+        if !collectedPowerUps.contains(type) {
+            collectedPowerUps.append(type)
+            if collectedPowerUps.count == 14 {
+                GameKitController.report(Achievement.Collector, withPercentComplete: 100.0)
+            }
+        }
         
         switch type {
         case .timeSlow:
