@@ -713,10 +713,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             })
         }
         
-        setGameStateAfterDestroy()
+        setGameStateAfterDestroy(deathType: by)
     }
     
-    func setGameStateAfterDestroy() {
+    func setGameStateAfterDestroy(deathType: DeathTypes) {
         self.currentGameState = .gameOver
     }
     

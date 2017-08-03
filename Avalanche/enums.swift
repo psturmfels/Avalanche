@@ -39,6 +39,7 @@ enum Achievement: String {
     case Powered = "Powered"
     case Collector = "Collector"
     case Eclectic = "Eclectic"
+    case Izanagi = "Izanagi"
 }
 
 enum LeaderboardTypes: String {

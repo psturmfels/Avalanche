@@ -225,8 +225,12 @@ class ArcadeModeScene: GameScene {
         self.motionManager.startAccelerometerUpdates()
     }
     
-    override func setGameStateAfterDestroy() {
+    override func setGameStateAfterDestroy(deathType: DeathTypes) {
         if isDay && !isNight {
+            if deathType == .selfDestruct {
+                GameKitController.report(Achievement.Izanagi, withPercentComplete: 100.0)
+            }
+            
             let waitAction: SKAction = SKAction.wait(forDuration: 1.0)
             self.run(waitAction) {
                 self.removeAllPowerUps()
