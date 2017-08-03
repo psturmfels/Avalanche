@@ -136,6 +136,11 @@ class GameKitController: NSObject {
     
     static func madeProgressTowardsAchievement(achievementType: Achievement) {
         switch achievementType {
+        case .AntMan, .DayBreak, .Jumper, .Octane, .TimeWarp:
+            let pastProgress: Double = GameKitController.getAchievementProgress(achievementType: achievementType)
+            let percentComplete: Double = pastProgress + 1.0
+            GameKitController.report(achievementType, withPercentComplete: percentComplete)
+            
         case .Gifted, .Blessed, .Powered:
             let pastProgress: Double = GameKitController.getAchievementProgress(achievementType: .Powered)
             let numPowerUpsCollected: Int = Int(pastProgress * 5.0) + 1

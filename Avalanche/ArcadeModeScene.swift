@@ -858,14 +858,19 @@ class ArcadeModeScene: GameScene {
         
         switch type {
         case .timeSlow:
+            GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.TimeWarp)
             addTimeSlow()
         case .jetPack:
+            GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.Octane)
             addJetPack()
         case .shrink:
+            GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.AntMan)
             addShrink()
         case .teleport:
+            GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.Jumper)
             addTeleport()
         case .day:
+            GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.DayBreak)
             addDay()
         case .mellowSlow:
             addMellowSlow()

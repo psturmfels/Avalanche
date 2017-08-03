@@ -40,6 +40,11 @@ enum Achievement: String {
     case Collector = "Collector"
     case Eclectic = "Eclectic"
     case Izanagi = "Izanagi"
+    case AntMan = "AntMan"
+    case DayBreak = "DayBreak"
+    case Jumper = "Jumper"
+    case Octane = "Octane"
+    case TimeWarp = "TimeWarp"
 }
 
 enum LeaderboardTypes: String {
