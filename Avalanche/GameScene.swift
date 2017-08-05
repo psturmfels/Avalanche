@@ -269,7 +269,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard risingLava != nil else {
             return
         }
-        setLavaSpeed()
+        
+        if currentGameState != .tutorial {
+            setLavaSpeed()
+        }
     }
     
     

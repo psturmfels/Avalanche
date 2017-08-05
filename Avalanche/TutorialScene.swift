@@ -211,22 +211,12 @@ class TutorialScene: GameScene {
         case 6:
             createLava()
             risingLava.position.y = -risingLava.frame.height * 0.5
-            risingLava.physicsBody?.velocity.dy = 45.0
+            risingLava.physicsBody?.velocity.dy = 75.0
+            risingLava.physicsBody?.linearDamping = 0.4
             
-            let slowDown: SKAction = SKAction.run {
-                if self.risingLava.physicsBody!.velocity.dy > 0.0 {
-                    self.risingLava.physicsBody?.velocity.dy -= 1.0
-                }
-            }
-            let waitAction: SKAction = SKAction.wait(forDuration: 0.2)
-            var actions: [SKAction] = []
-            for _ in 0..<45 {
-                actions.append(slowDown)
-                actions.append(waitAction)
-            }
-            
-            let sequence: SKAction = SKAction.sequence(actions)
-            risingLava.run(sequence) {
+            let waitAction: SKAction = SKAction.wait(forDuration: 7.0)
+
+            risingLava.run(waitAction) {
                 if self.tutorialProgress == 1 {
                     self.didCompleteCurrentTask()
                 }
