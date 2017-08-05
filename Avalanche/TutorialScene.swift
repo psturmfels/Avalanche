@@ -218,7 +218,7 @@ class TutorialScene: GameScene {
                     self.risingLava.physicsBody?.velocity.dy -= 1.0
                 }
             }
-            let waitAction: SKAction = SKAction.wait(forDuration: 0.15)
+            let waitAction: SKAction = SKAction.wait(forDuration: 0.2)
             var actions: [SKAction] = []
             for _ in 0..<45 {
                 actions.append(slowDown)
