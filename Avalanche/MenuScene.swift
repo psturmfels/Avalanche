@@ -30,6 +30,11 @@ class MenuScene: SKScene {
     static let waitPointFour: SKAction = SKAction.wait(forDuration: 0.4)
     
     //MARK: Buttons and Labels
+    var settingsNode: SKNode!
+    var menuNode: SKNode!
+    var bottomMenuNode: SKNode!
+    var scoreNode: SKNode!
+    
     var playButton: ButtonLabelNode!
     var scoresButton: ButtonLabelNode!
     var arcadeButton: ButtonLabelNode!
@@ -86,10 +91,7 @@ class MenuScene: SKScene {
         arcadeButton.buttonNode.name = ""
         scoresButton.buttonNode.name = ""
         
-        playButton.run(moveUpSequence)
-        arcadeButton.run(moveUpSequence)
-        scoresButton.run(moveUpSequence)
-        titleLabel.run(moveUpSequence)
+        menuNode.run(moveUpSequence)
         
         let rightSweep: SKAction = SKAction.moveBy(x: self.frame.width, y: 0.0, duration: 0.2)
         let moveRightSequence: SKAction = SKAction.sequence([MenuScene.leftShudder1, MenuScene.leftShudder2, MenuScene.leftShudder3, rightSweep])
@@ -97,32 +99,24 @@ class MenuScene: SKScene {
         tutorialButton.name = ""
         settingsButton.name = ""
         
-        tutorialButton.run(moveRightSequence)
-        settingsButton.run(moveRightSequence)
+        bottomMenuNode.run(moveRightSequence)
     }
     
     func returnMenu() {
         let downSweep: SKAction = SKAction.moveBy(x: 0.0, y: -self.frame.height, duration: 0.2)
         
         let moveDownSequence: SKAction = SKAction.sequence([MenuScene.waitPointFour, downSweep, MenuScene.upShudder1, MenuScene.upShudder2, MenuScene.upShudder3])
-        playButton.run(moveDownSequence) { [unowned self] in
+        menuNode.run(moveDownSequence) { [unowned self] in
             self.playButton.buttonNode.name = "Play"
-        }
-        arcadeButton.run(moveDownSequence) { [unowned self] in
             self.arcadeButton.buttonNode.name = "Arcade"
-        }
-        scoresButton.run(moveDownSequence) { [unowned self] in
             self.scoresButton.buttonNode.name = "Scores"
         }
-        titleLabel.run(moveDownSequence)
         
         let leftSweep: SKAction = SKAction.moveBy(x: -self.frame.width, y: 0.0, duration: 0.2)
         let moveLeftSequence: SKAction = SKAction.sequence([MenuScene.waitPointFour, leftSweep, MenuScene.rightShudder1, MenuScene.rightShudder2, MenuScene.rightShudder3])
         
-        tutorialButton.run(moveLeftSequence) { [unowned self] in
+        bottomMenuNode.run(moveLeftSequence) { [unowned self] in
             self.tutorialButton.name = "Tutorial"
-        }
-        settingsButton.run(moveLeftSequence) { [unowned self] in
             self.settingsButton.name = "Settings"
         }
     }
@@ -149,16 +143,11 @@ class MenuScene: SKScene {
         
         let extraRightSweep: SKAction = SKAction.moveBy(x: self.frame.width + 35, y: 0.0, duration: 0.2)
         let reverseRightSequence: SKAction = SKAction.sequence([MenuScene.waitPointFour, extraRightSweep, MenuScene.leftShudder1, MenuScene.leftShudder2, MenuScene.leftShudder3])
-        achievementButton.run(reverseRightSequence) {
+        
+        scoreNode.run(reverseRightSequence) { [unowned self] in
             self.achievementButton.name = "Achievement"
-        }
-        leaderboardButton.run(reverseRightSequence) {
             self.leaderboardButton.name = "Leaderboard"
-        }
-        arcadeLeaderboardButton.run(reverseRightSequence) {
             self.arcadeLeaderboardButton.name = "ArcadeLeaderboard"
-        }
-        classicLeaderboardButton.run(reverseRightSequence) {
             self.classicLeaderboardButton.name = "ClassicLeaderboard"
         }
         
@@ -219,10 +208,7 @@ class MenuScene: SKScene {
         classicLeaderboardButton.name = ""
         let extraLeftSweep: SKAction = SKAction.moveBy(x: -self.frame.width - 35.0, y: 0.0, duration: 0.2)
         let reverseLeftSequence: SKAction = SKAction.sequence([MenuScene.rightShudder1, MenuScene.rightShudder2, MenuScene.rightShudder3, extraLeftSweep])
-        achievementButton.run(reverseLeftSequence)
-        leaderboardButton.run(reverseLeftSequence)
-        arcadeLeaderboardButton.run(reverseLeftSequence)
-        classicLeaderboardButton.run(reverseLeftSequence)
+        scoreNode.run(reverseLeftSequence)
         
         animateLeft(table: leaderboardTable)
         animateLeft(table: achievementTable)
@@ -239,13 +225,10 @@ class MenuScene: SKScene {
         let leftSweep: SKAction = SKAction.moveBy(x: -self.frame.width - 35.0, y: 0.0, duration: 0.2)
         let moveLeftSequence: SKAction = SKAction.sequence([MenuScene.waitPointFour, leftSweep, MenuScene.rightShudder1, MenuScene.rightShudder2, MenuScene.rightShudder3])
         
-        audioButtonLabel.run(moveLeftSequence) { [unowned self] in
+        settingsNode.run(moveLeftSequence) { [unowned self] in
             self.audioButtonLabel.buttonNode.name = "AudioButton"
-        }
-        soundEffectsButtonLabel.run(moveLeftSequence) { [unowned self] in
             self.soundEffectsButtonLabel.buttonNode.name = "SoundEffects"
         }
-        settingsLabel.run(moveLeftSequence)
     }
     
     func returnFromSettings() {
@@ -253,9 +236,8 @@ class MenuScene: SKScene {
         let moveRightSequence: SKAction = SKAction.sequence([MenuScene.leftShudder1, MenuScene.leftShudder2, MenuScene.leftShudder3, rightSweep])
         audioButtonLabel.buttonNode.name = ""
         soundEffectsButtonLabel.buttonNode.name = ""
-        audioButtonLabel.run(moveRightSequence)
-        soundEffectsButtonLabel.run(moveRightSequence)
-        settingsLabel.run(moveRightSequence)
+        
+        settingsNode.run(moveRightSequence)
         
         dismissBackToMenu()
         returnMenu()
@@ -308,6 +290,7 @@ class MenuScene: SKScene {
         NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
         GameKitController.authenticateLocalPlayer()
         
+        createContainerNodes()
         createScoreButtons()
         createScoreTables()
         createSettingsButtons()
@@ -328,18 +311,35 @@ class MenuScene: SKScene {
     }
     
     //MARK: Creation Methods
+    func createContainerNodes() {
+        settingsNode = SKNode()
+        menuNode = SKNode()
+        bottomMenuNode = SKNode()
+        scoreNode = SKNode()
+        
+        settingsNode.position = CGPoint.zero
+        menuNode.position = CGPoint.zero
+        bottomMenuNode.position = CGPoint.zero
+        scoreNode.position = CGPoint.zero
+        
+        self.addChild(settingsNode)
+        self.addChild(menuNode)
+        self.addChild(bottomMenuNode)
+        self.addChild(scoreNode)
+    }
+    
     func createSettingsLabel() {
         let settingsPoint: CGPoint = CGPoint(x: 3 * self.frame.midX, y: self.frame.height * 0.7)
         settingsLabel = LabelNode()
         settingsLabel.setup(withText: "Settings", withFontSize: 48.0, atPosition: settingsPoint)
-        self.addChild(settingsLabel)
+        self.settingsNode.addChild(settingsLabel)
     }
     
     func createTitleLabel() {
         let titlePoint: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.height * 0.7)
         titleLabel = LabelNode()
         titleLabel.setup(withText: "Avalanche", withFontSize: 48.0, atPosition: titlePoint)
-        self.addChild(titleLabel)
+        self.menuNode.addChild(titleLabel)
     }
     
     func createScoreTables() {
@@ -394,8 +394,8 @@ class MenuScene: SKScene {
         
         achievementButton.didPress()
         
-        self.addChild(leaderboardButton)
-        self.addChild(achievementButton)
+        self.scoreNode.addChild(leaderboardButton)
+        self.scoreNode.addChild(achievementButton)
         
         arcadeLeaderboardButton = ButtonNode(imageNamed: "arcadeLeaderboard")
         classicLeaderboardButton = ButtonNode(imageNamed: "classicLeaderboard")
@@ -419,8 +419,8 @@ class MenuScene: SKScene {
         arcadeLeaderboardButton.isHidden = true
         classicLeaderboardButton.isHidden = true
         
-        self.addChild(arcadeLeaderboardButton)
-        self.addChild(classicLeaderboardButton)
+        self.scoreNode.addChild(arcadeLeaderboardButton)
+        self.scoreNode.addChild(classicLeaderboardButton)
     }
     
     func createSettingsButtons() {
@@ -428,12 +428,12 @@ class MenuScene: SKScene {
         audioButtonLabel = ButtonLabelNode()
         audioButtonLabel.setup(withText: "Music: ", withFontSize: 48.0, withButtonName: "", normalTextureName: "audioNormal", highlightedTextureName: "audioOff", atPosition: center)
         audioButtonLabel.position.y += audioButtonLabel.height * 0.5 + 10
-        self.addChild(audioButtonLabel)
+        self.settingsNode.addChild(audioButtonLabel)
         
         soundEffectsButtonLabel = ButtonLabelNode()
         soundEffectsButtonLabel.setup(withText: "Sound: ", withFontSize: 48.0, withButtonName: "", normalTextureName: "audioNormal", highlightedTextureName: "audioOff", atPosition: center)
         soundEffectsButtonLabel.position.y -= soundEffectsButtonLabel.height * 0.5 + 10
-        self.addChild(soundEffectsButtonLabel)
+        self.settingsNode.addChild(soundEffectsButtonLabel)
         
         let audioIsOn: Bool = UserDefaults.standard.bool(forKey: "Audio")
         let soundEffectsAreOn: Bool = UserDefaults.standard.bool(forKey: "SoundEffects")
@@ -478,11 +478,11 @@ class MenuScene: SKScene {
         settingsButton.setup(atPosition: CGPoint(x: rightX, y: botY), withName: "Settings", normalTextureName: "settingsNormal", highlightedTextureName: "settingsHighlighted")
         settingsButton.position.x -= settingsButton.frame.width + 20
         
-        self.addChild(playButton)
-        self.addChild(arcadeButton)
-        self.addChild(scoresButton)
-        self.addChild(tutorialButton)
-        self.addChild(settingsButton)
+        self.menuNode.addChild(playButton)
+        self.menuNode.addChild(arcadeButton)
+        self.menuNode.addChild(scoresButton)
+        self.bottomMenuNode.addChild(tutorialButton)
+        self.bottomMenuNode.addChild(settingsButton)
     }
     
     func createBackground() {
