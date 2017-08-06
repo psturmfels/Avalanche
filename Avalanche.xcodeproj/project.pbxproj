@@ -22,6 +22,7 @@
 		027546541E7F26F000159F8F /* ArcadeModeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027546531E7F26F000159F8F /* ArcadeModeScene.swift */; };
 		02A2B52F1E50F10600E7D3B7 /* AchievementTableViewHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A2B52E1E50F10600E7D3B7 /* AchievementTableViewHandler.swift */; };
 		02A2B5341E50FF5100E7D3B7 /* AchievementTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A2B5331E50FF5100E7D3B7 /* AchievementTableViewCell.swift */; };
+		02AFC1971F37E1F20021765B /* StorePurchases.plist in Resources */ = {isa = PBXBuildFile; fileRef = 02AFC1961F37E1F20021765B /* StorePurchases.plist */; };
 		02B20CAF1E633DC900534BCC /* LeaderboardTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B20CAE1E633DC900534BCC /* LeaderboardTableViewCell.swift */; };
 		02C4F2A41E5A84F00036FB19 /* LeaderboardTableViewHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C4F2A31E5A84F00036FB19 /* LeaderboardTableViewHandler.swift */; };
 		02EAFA7A1ECBFDFD00687C99 /* teleport.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 02EAFA791ECBFDFD00687C99 /* teleport.atlas */; };
@@ -75,6 +76,7 @@
 		027546531E7F26F000159F8F /* ArcadeModeScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArcadeModeScene.swift; sourceTree = "<group>"; };
 		02A2B52E1E50F10600E7D3B7 /* AchievementTableViewHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchievementTableViewHandler.swift; sourceTree = "<group>"; };
 		02A2B5331E50FF5100E7D3B7 /* AchievementTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchievementTableViewCell.swift; sourceTree = "<group>"; };
+		02AFC1961F37E1F20021765B /* StorePurchases.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = StorePurchases.plist; sourceTree = "<group>"; };
 		02B20CAE1E633DC900534BCC /* LeaderboardTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeaderboardTableViewCell.swift; sourceTree = "<group>"; };
 		02C4F2A31E5A84F00036FB19 /* LeaderboardTableViewHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeaderboardTableViewHandler.swift; sourceTree = "<group>"; };
 		02EAFA791ECBFDFD00687C99 /* teleport.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = teleport.atlas; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 				1AAFB4D01CA07D6100E7472B /* Info.plist */,
 				1A84D9671DD2577A00E9273C /* DefaultPreferences.plist */,
 				0275464F1E7F13A100159F8F /* Achievements.plist */,
+				02AFC1961F37E1F20021765B /* StorePurchases.plist */,
 			);
 			path = Avalanche;
 			sourceTree = "<group>";
@@ -338,6 +341,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02AFC1971F37E1F20021765B /* StorePurchases.plist in Resources */,
 				1A0E90C81CE8E3BC00ED018E /* MellowBurned.sks in Resources */,
 				1AAFB4CF1CA07D6100E7472B /* LaunchScreen.storyboard in Resources */,
 				1A9017B31CD171EB00F31C1E /* GameScene.sks in Resources */,
