@@ -19,7 +19,6 @@
 		02645E861EF768CC00AC9FDC /* OneWayPlatformNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02645E851EF768CC00AC9FDC /* OneWayPlatformNode.swift */; };
 		0272A00E1E9DB24C00E17618 /* BallAndChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0272A00D1E9DB24C00E17618 /* BallAndChain.swift */; };
 		027546501E7F13A100159F8F /* Achievements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0275464F1E7F13A100159F8F /* Achievements.plist */; };
-		027546521E7F13BD00159F8F /* LocalScores.plist in Resources */ = {isa = PBXBuildFile; fileRef = 027546511E7F13BD00159F8F /* LocalScores.plist */; };
 		027546541E7F26F000159F8F /* ArcadeModeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027546531E7F26F000159F8F /* ArcadeModeScene.swift */; };
 		02A2B52F1E50F10600E7D3B7 /* AchievementTableViewHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A2B52E1E50F10600E7D3B7 /* AchievementTableViewHandler.swift */; };
 		02A2B5341E50FF5100E7D3B7 /* AchievementTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A2B5331E50FF5100E7D3B7 /* AchievementTableViewCell.swift */; };
@@ -73,7 +72,6 @@
 		02645E851EF768CC00AC9FDC /* OneWayPlatformNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneWayPlatformNode.swift; sourceTree = "<group>"; };
 		0272A00D1E9DB24C00E17618 /* BallAndChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BallAndChain.swift; sourceTree = "<group>"; };
 		0275464F1E7F13A100159F8F /* Achievements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Achievements.plist; sourceTree = "<group>"; };
-		027546511E7F13BD00159F8F /* LocalScores.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = LocalScores.plist; sourceTree = "<group>"; };
 		027546531E7F26F000159F8F /* ArcadeModeScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArcadeModeScene.swift; sourceTree = "<group>"; };
 		02A2B52E1E50F10600E7D3B7 /* AchievementTableViewHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchievementTableViewHandler.swift; sourceTree = "<group>"; };
 		02A2B5331E50FF5100E7D3B7 /* AchievementTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchievementTableViewCell.swift; sourceTree = "<group>"; };
@@ -186,7 +184,6 @@
 				1AAFB4D01CA07D6100E7472B /* Info.plist */,
 				1A84D9671DD2577A00E9273C /* DefaultPreferences.plist */,
 				0275464F1E7F13A100159F8F /* Achievements.plist */,
-				027546511E7F13BD00159F8F /* LocalScores.plist */,
 			);
 			path = Avalanche;
 			sourceTree = "<group>";
@@ -356,7 +353,6 @@
 				020A37231E91E5C200CBB595 /* JetpackTrail.sks in Resources */,
 				1A84D9681DD2577A00E9273C /* DefaultPreferences.plist in Resources */,
 				024985641E994F280014D3FD /* ButtonClick.wav in Resources */,
-				027546521E7F13BD00159F8F /* LocalScores.plist in Resources */,
 				1A0584E31CDD27C300B3DF8B /* RoundedBlock.atlas in Resources */,
 				024CBBAA1EBE2D33009D7EBF /* TeleportParticleUp.sks in Resources */,
 				1AFD037F1D63697F00A54640 /* DreamsOfAbove.mp3 in Resources */,
