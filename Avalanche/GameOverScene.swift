@@ -16,6 +16,9 @@ class GameOverScene: SKScene {
     var scoreLabel: SKLabelNode!
     var gameType: GameType = GameType.Classic
     
+    var coinLabel: LabelNode!
+    var coinImage: SKSpriteNode!
+    
     //MARK: Initializing Methods
     override func didMove(to view: SKView) {
         /* Setup your scene here */
@@ -23,18 +26,19 @@ class GameOverScene: SKScene {
         menuButton = ButtonLabelNode()
         
         let center: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        let centerButtons: CGPoint = CGPoint(x: center.x, y: center.y - 75.0)
         
-        replayButton.setup(withText: "Replay: ", withFontSize: 48.0, withButtonName: "Replay", normalTextureName: "replayNormal", highlightedTextureName: "replayHighlighted", atPosition: center)
+        replayButton.setup(withText: "Replay: ", withFontSize: 48.0, withButtonName: "Replay", normalTextureName: "replayNormal", highlightedTextureName: "replayHighlighted", atPosition: centerButtons)
         replayButton.position.y += replayButton.height * 0.5 + 10
         
-        menuButton.setup(withText: "Menu: ", withFontSize: 48.0, withButtonName: "Menu", normalTextureName: "menuNormal", highlightedTextureName: "menuHighlighted", atPosition: center)
+        menuButton.setup(withText: "Menu: ", withFontSize: 48.0, withButtonName: "Menu", normalTextureName: "menuNormal", highlightedTextureName: "menuHighlighted", atPosition: centerButtons)
         menuButton.position.y -= menuButton.height * 0.5 + 10
         
         highScoreLabel = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         highScoreLabel.fontSize = 64.0
         highScoreLabel.text = "\(highScore!) ft"
         highScoreLabel.position = center
-        highScoreLabel.position.y += replayButton.height + highScoreLabel.frame.height * 1.4
+        highScoreLabel.position.y += replayButton.height + highScoreLabel.frame.height
         
         scoreLabel = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         scoreLabel.fontSize = 64.0
@@ -42,7 +46,32 @@ class GameOverScene: SKScene {
         scoreLabel.position = highScoreLabel.position
         scoreLabel.position.y += scoreLabel.frame.height + highScoreLabel.frame.height * 0.5
         
+        let coinSize: CGFloat = 44.0
+        coinImage = SKSpriteNode(imageNamed: "coin")
+        coinImage.size.width = coinSize
+        coinImage.size.height = coinSize
+        let coinImageX: CGFloat = center.x + coinSize * 0.5 + 5.0
+        let coinY: CGFloat = highScoreLabel.position.y - highScoreLabel.frame.height * 0.5 - 20.0
+        coinImage.position = CGPoint(x: coinImageX, y: coinY)
         
+        coinLabel = LabelNode()
+        coinLabel.horizontalAlignmentMode = .right
+        let coinLabelX: CGFloat = center.x - 5.0
+        let numCoinsEarned: Int = 1 + highScore / 100
+        StoreKitController.addCoins(numCoinsEarned)
+        let coinLabelPos: CGPoint = CGPoint(x: coinLabelX, y: coinY)
+        coinLabel.setup(withText: "+\(numCoinsEarned)", withFontSize: 48.0, atPosition: coinLabelPos)
+        coinLabel.position.y -= coinLabel.frame.height * 0.5
+        
+        let leftCoinLabel: CGFloat = coinLabel.position.x - coinLabel.frame.width
+        let rightCoinImage: CGFloat = coinImage.position.x + coinImage.frame.width * 0.5
+        let centerCoin: CGFloat = 0.5 * leftCoinLabel + 0.5 * rightCoinImage
+        let offsetFromTrueCenter: CGFloat = center.x - centerCoin
+        coinLabel.position.x += offsetFromTrueCenter
+        coinImage.position.x += offsetFromTrueCenter
+        
+        self.addChild(coinImage)
+        self.addChild(coinLabel)
         self.addChild(replayButton)
         self.addChild(menuButton)
         self.addChild(highScoreLabel)

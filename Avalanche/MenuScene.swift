@@ -669,7 +669,9 @@ class MenuScene: SKScene {
                     leaderboardTableHandler.expandedPath = nil
                     leaderboardTable.reloadData()
                 } else if object.name == "coinImage" {
-                    StoreKitController.addCoins(100)
+                    //TODO: FIX ME
+                    let numCoins: Int = StoreKitController.getNumCoins()
+                    StoreKitController.subtractCoins(numCoins)
                 }
             }
         }
