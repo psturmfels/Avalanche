@@ -32,6 +32,8 @@ class StoreKitController: NSObject {
         let newNumCoins: Int = currentNumCoins + numCoins
         mutableStoreDictionary.setValue(newNumCoins, forKey: coinsName)
         mutableStoreDictionary.write(to: storeDictionaryURL, atomically: true)
+        
+        postNotification(withName: "numCoinsChanged", andUserInfo: ["numCoins": newNumCoins])
     }
     
     static func subtractCoins(_ numCoins: Int) {
@@ -43,6 +45,8 @@ class StoreKitController: NSObject {
         let newNumCoins: Int = currentNumCoins - numCoins
         mutableStoreDictionary.setValue(newNumCoins, forKey: coinsName)
         mutableStoreDictionary.write(to: storeDictionaryURL, atomically: true)
+        
+        postNotification(withName: "numCoinsChanged", andUserInfo: ["numCoins": newNumCoins])
     }
     
     static func setArcadeStatus(toStatus status: Bool) {

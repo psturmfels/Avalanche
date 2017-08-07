@@ -57,6 +57,9 @@ class MenuScene: SKScene {
     var titleLabel: LabelNode!
     var settingsLabel: LabelNode!
     
+    var coinImage: SKSpriteNode!
+    var coinLabel: LabelNode = LabelNode()
+    
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
             if gameCenterIsAuthenticated {
@@ -90,6 +93,7 @@ class MenuScene: SKScene {
         playButton.buttonNode.name = ""
         arcadeButton.buttonNode.name = ""
         scoresButton.buttonNode.name = ""
+        coinImage.name = ""
         
         menuNode.run(moveUpSequence)
         
@@ -110,6 +114,7 @@ class MenuScene: SKScene {
             self.playButton.buttonNode.name = "Play"
             self.arcadeButton.buttonNode.name = "Arcade"
             self.scoresButton.buttonNode.name = "Scores"
+            self.coinImage.name = "coinImage"
         }
         
         let leftSweep: SKAction = SKAction.moveBy(x: -self.frame.width, y: 0.0, duration: 0.2)
@@ -288,9 +293,11 @@ class MenuScene: SKScene {
     //MARK: View Methods
     override func didMove(to view: SKView) {
         NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.updateNumCoins(notification:)), name: NSNotification.Name("numCoinsChanged"), object: nil)
         GameKitController.authenticateLocalPlayer()
         
         createContainerNodes()
+        createCoinLabel()
         createScoreButtons()
         createScoreTables()
         createSettingsButtons()
@@ -306,6 +313,37 @@ class MenuScene: SKScene {
         if let dictionary = notification.userInfo as? [String: Bool] {
             if let newAuthenticationStatus = dictionary["isAuthenticated"] {
                 gameCenterIsAuthenticated = newAuthenticationStatus
+            }
+        }
+    }
+    
+    
+    //MARK: Coins Methods
+    func createCoinLabel() {
+        let coinSize: CGFloat = 40.0
+        let coinY: CGFloat = self.frame.height - 20.0 - coinSize * 0.5
+        let coinImagePoint: CGPoint = CGPoint(x: 20.0 + coinSize * 0.5, y: coinY)
+        coinImage = SKSpriteNode(imageNamed: "coin")
+        coinImage.size.width = coinSize
+        coinImage.size.height = coinSize
+        coinImage.position = coinImagePoint
+        coinImage.name = "coinImage"
+        
+        let coinLabelX: CGFloat = coinImage.position.x + coinSize * 0.5 + 10.0
+        let coinLabelPosition: CGPoint = CGPoint(x: coinLabelX, y: coinY)
+        let numCoins: Int = StoreKitController.getNumCoins()
+        coinLabel.setup(withText: "\(numCoins)", withFontSize: 40.0, atPosition: coinLabelPosition)
+        coinLabel.position.y -= coinLabel.frame.size.height * 0.5
+        coinLabel.horizontalAlignmentMode = .left
+        
+        self.menuNode.addChild(coinImage)
+        self.menuNode.addChild(coinLabel)
+    }
+    
+    func updateNumCoins(notification: Notification) {
+        if let dictionary = notification.userInfo as? [String: Int] {
+            if let numCoins = dictionary["numCoins"] {
+                coinLabel.text = "\(numCoins)"
             }
         }
     }
@@ -630,6 +668,8 @@ class MenuScene: SKScene {
                     GameKitController.currentLeaderboard = LeaderboardTypes.classic.rawValue
                     leaderboardTableHandler.expandedPath = nil
                     leaderboardTable.reloadData()
+                } else if object.name == "coinImage" {
+                    StoreKitController.addCoins(100)
                 }
             }
         }
