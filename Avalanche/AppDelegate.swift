@@ -17,12 +17,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var gameViewController: GameViewController!
     var gameKitController: GameKitController!
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        let achievementsDefaultsFile: URL = Bundle.main.url(forResource: "Achievements", withExtension: "plist")!
-        let achievementsDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: achievementsDefaultsFile)!
+    
+    func loadGameKitControllerClass() {
+        guard let achievementsDefaultsFile: URL = Bundle.main.url(forResource: "Achievements", withExtension: "plist") else {
+            NSLog("Unable to find default achievement file")
+            return
+        }
+        guard let achievementsDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: achievementsDefaultsFile) else {
+            NSLog("Unable to open default achievement dictionary")
+            return
+        }
         
-        let userDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        let userDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         if let achievementsDirectory = NSURL(fileURLWithPath: userDirectory).appendingPathComponent("Achievements.plist") {
             GameKitController.achievementDictionaryURL = achievementsDirectory
             
@@ -37,23 +43,65 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         gameKitController = GameKitController()
         //Initialize the GameCenter Player
         GameKitController.authenticateLocalPlayer()
+    }
+    
+    func loadStoreKitControllerClass() {
+        guard let storeDefaultsFile: URL = Bundle.main.url(forResource: "StorePurchases", withExtension: "plist") else {
+            NSLog("Unable to find default store file")
+            return
+        }
         
-        //Allow outside music
+        guard let storeDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: storeDefaultsFile) else {
+            NSLog("Unable to open default store dictionary")
+            return
+        }
+        
+        let userDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        if let storeDirectory = NSURL(fileURLWithPath: userDirectory).appendingPathComponent("StorePurchases.plist") {
+            StoreKitController.storeDictionaryURL = storeDirectory
+            
+            if let storeDictionary = NSDictionary(contentsOf: storeDirectory) {
+                StoreKitController.mutableStoreDictionary = storeDictionary.mutableCopy() as! NSMutableDictionary
+                StoreKitController.mutableStoreDictionary = storeDictionary as! NSMutableDictionary
+            } else {
+                storeDefaultsDictionary.write(to: storeDirectory, atomically: true)
+                StoreKitController.mutableStoreDictionary = storeDefaultsDictionary.mutableCopy() as! NSMutableDictionary
+            }
+        }
+    }
+    
+    func setMusicPreferences() {
         do {
             try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryAmbient)
             try AVAudioSession.sharedInstance().setActive(true)
         }
         catch let error as NSError {
-            print(error)
+            NSLog("Unable to share audio session with error \(error)")
         }
         
         let userPreferences: UserDefaults = UserDefaults.standard
-        let defaultPreferencesFile: URL = Bundle.main.url(forResource: "DefaultPreferences", withExtension: "plist")!
-        let defaultPreferencesDictionary: NSDictionary = NSDictionary(contentsOf: defaultPreferencesFile)!
+        
+        guard let defaultPreferencesFile: URL = Bundle.main.url(forResource: "DefaultPreferences", withExtension: "plist") else {
+            NSLog("Unable to find default preferences file")
+            return
+        }
+        guard let defaultPreferencesDictionary: NSDictionary = NSDictionary(contentsOf: defaultPreferencesFile) else {
+            NSLog("Unable to open default preferences dictionary")
+            return
+        }
+        
         userPreferences.register(defaults: defaultPreferencesDictionary as! [String : Any])
         
         userPreferences.set(!AVAudioSession.sharedInstance().isOtherAudioPlaying, forKey: "SoundEffects")
         userPreferences.set(!AVAudioSession.sharedInstance().isOtherAudioPlaying, forKey: "Audio")
+    }
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        
+        loadGameKitControllerClass()
+        loadStoreKitControllerClass()
+        setMusicPreferences()
         
         //Bring up the gameViewController
         gameViewController = GameViewController()
