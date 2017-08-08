@@ -334,6 +334,8 @@ class GameKitController: NSObject {
         
         if let achievementType = Achievement(rawValue: achievementName) {
             GameKitController.updateAchievementProgress(achievementType: achievementType, percentComplete: percentComplete)
+            let amountEarned: Int = Achievement.getAchievementReward(achievementType)
+            StoreKitController.addCoins(amountEarned)
         }
         
         let localPlayer = GKLocalPlayer.localPlayer()
@@ -342,6 +344,7 @@ class GameKitController: NSObject {
         }
 
         let achievement: GKAchievement = GKAchievement(identifier: achievementName, player: localPlayer)
+        
         achievement.percentComplete = percentComplete
         achievement.showsCompletionBanner = true
         GKAchievement.report([achievement]) { (error) in

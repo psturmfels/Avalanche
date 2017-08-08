@@ -45,6 +45,27 @@ enum Achievement: String {
     case Jumper = "Jumper"
     case Octane = "Octane"
     case TimeWarp = "TimeWarp"
+    
+    func getAchievementReward(type: Achievement) -> Int {
+        let tierOneReward: Int = 50
+        let tierTwoReward: Int = 75
+        let tierThreeReward: Int = 100
+        let tierFourReward: Int = 125
+        let tierFiveReward: Int = 150
+        switch type {
+        case .whatDoesThisDo, .Beginner, .Clueless, .EarthBound, .Smores, .Squashed, .AFK, .TestRun, .Student, .Gifted, .Izanagi:
+            return tierOneReward
+        case .Moderate, .Stoic, .Singed, .Flattened, .BlockHugger, .Interested, .ThirtyLives,
+             .Blessed, .Eclectic, .AntMan, .DayBreak, .Jumper, .Octane, .TimeWarp:
+            return tierTwoReward
+        case .Advanced, .Pyromaniac, .Pancaked, .Ninja, .Jackpot, .Dedicated, .Powered, .Collector:
+            return tierThreeReward
+        case .Pro, .Committed:
+            return tierFourReward
+        case .Legendary:
+            return tierFiveReward
+        }
+    }
 }
 
 enum LeaderboardTypes: String {

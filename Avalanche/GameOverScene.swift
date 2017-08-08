@@ -57,7 +57,7 @@ class GameOverScene: SKScene {
         coinLabel = LabelNode()
         coinLabel.horizontalAlignmentMode = .right
         let coinLabelX: CGFloat = center.x - 5.0
-        let numCoinsEarned: Int = 1 + highScore / 100
+        let numCoinsEarned: Int = 1 + highScore / 10
         StoreKitController.addCoins(numCoinsEarned)
         let coinLabelPos: CGPoint = CGPoint(x: coinLabelX, y: coinY)
         coinLabel.setup(withText: "+\(numCoinsEarned)", withFontSize: 48.0, atPosition: coinLabelPos)
