@@ -17,7 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var gameViewController: GameViewController!
     var gameKitController: GameKitController!
     
-    
     func loadGameKitControllerClass() {
         guard let achievementsDefaultsFile: URL = Bundle.main.url(forResource: "Achievements", withExtension: "plist") else {
             NSLog("Unable to find default achievement file")

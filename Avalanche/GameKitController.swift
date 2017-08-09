@@ -145,6 +145,7 @@ class GameKitController: NSObject {
             }
         }
         
+        GameKitController.achievementProgress[achievementType.rawValue] = percentComplete
         GameKitController.mutableAchievementsDictionary.setValue(percentComplete, forKey: achievementName)
         GameKitController.mutableAchievementsDictionary.write(to: GameKitController.achievementDictionaryURL, atomically: true)
     }
@@ -334,7 +335,7 @@ class GameKitController: NSObject {
         
         if let achievementType = Achievement(rawValue: achievementName) {
             GameKitController.updateAchievementProgress(achievementType: achievementType, percentComplete: percentComplete)
-            let amountEarned: Int = Achievement.getAchievementReward(achievementType)
+            let amountEarned: Int = Achievement.getAchievementReward(type: achievementType)
             StoreKitController.addCoins(amountEarned)
         }
         

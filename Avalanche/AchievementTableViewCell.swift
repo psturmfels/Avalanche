@@ -17,6 +17,7 @@ class AchievementTableViewCell: UITableViewCell {
     static let defaultHeight: CGFloat = 80.0
     static var defaultWidth: CGFloat = 240.0
     static let excessHeight: CGFloat = 40.0
+    static let coinSize: CGFloat = 15.0
     static let defaultAchievementImage: UIImage = UIImage(named: "placeholderAchievementImage")!
     
     class func expandedHeightNecessary(forDescription description: String) -> CGFloat {
@@ -37,6 +38,9 @@ class AchievementTableViewCell: UITableViewCell {
     var achievementTitleLabel: UILabel!
     var achievementDescriptionLabel: UILabel!
     var isExpanded: Bool = false
+    
+    var coinImage: UIImageView!
+    var coinLabel: UILabel!
     
     var achievementProgress: Double = 0.0
     
@@ -94,9 +98,28 @@ class AchievementTableViewCell: UITableViewCell {
         achievementDescriptionLabel.frame.origin = CGPoint.zero
         achievementDescriptionLabel.alpha = 0.0
         
+        coinLabel = UILabel()
+        coinLabel.font = AchievementTableViewCell.descriptionFont
+        coinLabel.textColor = UIColor.gray
+        coinLabel.numberOfLines = 1
+        coinLabel.lineBreakMode = NSLineBreakMode.byCharWrapping
+        coinLabel.frame.origin = CGPoint.zero
+        coinLabel.alpha = 0.0
+        coinLabel.textAlignment = NSTextAlignment.right
+        
+        coinImage = UIImageView()
+        coinImage.frame.origin = CGPoint.zero
+        coinImage.frame.size.width = AchievementTableViewCell.coinSize
+        coinImage.frame.size.height = AchievementTableViewCell.coinSize
+        coinImage.image = UIImage(named: "coin")
+        coinImage.clipsToBounds = true
+        coinImage.alpha = 0.0
+        
         self.contentView.addSubview(achievementImageView)
         self.contentView.addSubview(achievementTitleLabel)
         self.contentView.addSubview(achievementDescriptionLabel)
+        self.contentView.addSubview(coinLabel)
+        self.contentView.addSubview(coinImage)
     }
     
     func updateCellUI() {
@@ -153,6 +176,30 @@ class AchievementTableViewCell: UITableViewCell {
         achievementDescriptionLabel.sizeToFit()
         achievementDescriptionLabel.frame.origin.y = AchievementTableViewCell.defaultImageSize.height + 45.0
         achievementDescriptionLabel.frame.origin.x = 20.0
+        
+        
+        coinLabel.text = "+50"
+        if let identifier = achievement.identifier {
+            if let type = Achievement(rawValue: identifier) {
+                let coinsEarned: Int = Achievement.getAchievementReward(type: type)
+                coinLabel.text = "+\(coinsEarned)"
+            }
+        }
+        coinLabel.sizeToFit()
+        
+        coinImage.frame.origin.y = 18.0
+        coinImage.frame.origin.x = whiteBackdrop.frame.size.width - coinImage.frame.size.width
+        
+        coinLabel.frame.origin.y = 17.0
+        coinLabel.frame.origin.x = coinImage.frame.origin.x - coinLabel.frame.width - 3.0
+        
+        if achievementProgress == 100.0 {
+            coinLabel.alpha = 1.0
+            coinImage.alpha = 1.0
+        } else {
+            coinLabel.alpha = 0.0
+            coinImage.alpha = 0.0
+        }
         
         if isExpanded {
             self.wasSelected(animateWithDuration: 0.0)

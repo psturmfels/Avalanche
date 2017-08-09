@@ -46,7 +46,7 @@ enum Achievement: String {
     case Octane = "Octane"
     case TimeWarp = "TimeWarp"
     
-    func getAchievementReward(type: Achievement) -> Int {
+    static func getAchievementReward(type: Achievement) -> Int {
         let tierOneReward: Int = 50
         let tierTwoReward: Int = 75
         let tierThreeReward: Int = 100
