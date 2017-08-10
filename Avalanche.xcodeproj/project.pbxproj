@@ -20,6 +20,7 @@
 		0272A00E1E9DB24C00E17618 /* BallAndChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0272A00D1E9DB24C00E17618 /* BallAndChain.swift */; };
 		027546501E7F13A100159F8F /* Achievements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0275464F1E7F13A100159F8F /* Achievements.plist */; };
 		027546541E7F26F000159F8F /* ArcadeModeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027546531E7F26F000159F8F /* ArcadeModeScene.swift */; };
+		02934CBD1F3C9ED500BFD8CB /* AchievementStatus.plist in Resources */ = {isa = PBXBuildFile; fileRef = 02934CBC1F3C9ED500BFD8CB /* AchievementStatus.plist */; };
 		02A2B52F1E50F10600E7D3B7 /* AchievementTableViewHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A2B52E1E50F10600E7D3B7 /* AchievementTableViewHandler.swift */; };
 		02A2B5341E50FF5100E7D3B7 /* AchievementTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A2B5331E50FF5100E7D3B7 /* AchievementTableViewCell.swift */; };
 		02AFC1971F37E1F20021765B /* StorePurchases.plist in Resources */ = {isa = PBXBuildFile; fileRef = 02AFC1961F37E1F20021765B /* StorePurchases.plist */; };
@@ -75,6 +76,7 @@
 		0272A00D1E9DB24C00E17618 /* BallAndChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BallAndChain.swift; sourceTree = "<group>"; };
 		0275464F1E7F13A100159F8F /* Achievements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Achievements.plist; sourceTree = "<group>"; };
 		027546531E7F26F000159F8F /* ArcadeModeScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArcadeModeScene.swift; sourceTree = "<group>"; };
+		02934CBC1F3C9ED500BFD8CB /* AchievementStatus.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AchievementStatus.plist; sourceTree = "<group>"; };
 		02A2B52E1E50F10600E7D3B7 /* AchievementTableViewHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchievementTableViewHandler.swift; sourceTree = "<group>"; };
 		02A2B5331E50FF5100E7D3B7 /* AchievementTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchievementTableViewCell.swift; sourceTree = "<group>"; };
 		02AFC1961F37E1F20021765B /* StorePurchases.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = StorePurchases.plist; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 				1A84D9671DD2577A00E9273C /* DefaultPreferences.plist */,
 				0275464F1E7F13A100159F8F /* Achievements.plist */,
 				02AFC1961F37E1F20021765B /* StorePurchases.plist */,
+				02934CBC1F3C9ED500BFD8CB /* AchievementStatus.plist */,
 			);
 			path = Avalanche;
 			sourceTree = "<group>";
@@ -350,6 +353,7 @@
 				1A9017B31CD171EB00F31C1E /* GameScene.sks in Resources */,
 				1A51C6B61D722D8F005F6D1A /* spark.png in Resources */,
 				1A739F781CD3181D00655C1F /* mellow.atlas in Resources */,
+				02934CBD1F3C9ED500BFD8CB /* AchievementStatus.plist in Resources */,
 				1AFC6CE41CE29F98003F70DC /* wall.atlas in Resources */,
 				1AFD03841D636CA700A54640 /* MellowCrushed.wav in Resources */,
 				0208198D1E6A5BC70089C151 /* AchievementImages.xcassets in Resources */,

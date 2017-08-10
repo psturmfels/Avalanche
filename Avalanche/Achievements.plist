@@ -11,10 +11,68 @@
 	<key>Advanced</key>
 	<integer>0</integer>
 	<key>Pro</key>
-	<real>0</real>
+	<integer>0</integer>
 	<key>Legendary</key>
 	<integer>0</integer>
 	<key>Clueless</key>
+	<integer>0</integer>
+	<key>Stoic</key>
+	<integer>0</integer>
+	<key>EarthBound</key>
+	<integer>0</integer>
+	<key>Smores</key>
+	<integer>0</integer>
+	<key>Singed</key>
+	<integer>0</integer>
+	<key>Pyromaniac</key>
+	<integer>0</integer>
+	<key>Squashed</key>
+	<integer>0</integer>
+	<key>Flattened</key>
+	<integer>0</integer>
+	<key>Pancaked</key>
+	<integer>0</integer>
+	<key>BlockHugger</key>
+	<integer>0</integer>
+	<key>Ninja</key>
+	<integer>0</integer>
+	<key>Jackpot</key>
+	<integer>0</integer>
+	<key>AFK</key>
+	<integer>0</integer>
+	<key>TestRun</key>
+	<integer>0</integer>
+	<key>Interested</key>
+	<integer>0</integer>
+	<key>Dedicated</key>
+	<integer>0</integer>
+	<key>Committed</key>
+	<integer>0</integer>
+	<key>Student</key>
+	<integer>0</integer>
+	<key>ThirtyLives</key>
+	<integer>0</integer>
+	<key>Gifted</key>
+	<integer>0</integer>
+	<key>Blessed</key>
+	<integer>0</integer>
+	<key>Powered</key>
+	<integer>0</integer>
+	<key>Collector</key>
+	<integer>0</integer>
+	<key>Eclectic</key>
+	<integer>0</integer>
+	<key>Izanagi</key>
+	<integer>0</integer>
+	<key>AntMan</key>
+	<integer>0</integer>
+	<key>DayBreak</key>
+	<integer>0</integer>
+	<key>Jumper</key>
+	<integer>0</integer>
+	<key>Octane</key>
+	<integer>0</integer>
+	<key>TimeWarp</key>
 	<integer>0</integer>
 </dict>
 </plist>
