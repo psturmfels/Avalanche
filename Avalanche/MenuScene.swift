@@ -672,6 +672,7 @@ class MenuScene: SKScene {
                     //TODO: FIX ME
                     let numCoins: Int = StoreKitController.getNumCoins()
                     StoreKitController.subtractCoins(numCoins)
+                    GameKitController.resetAllAchievements()
                 }
             }
         }

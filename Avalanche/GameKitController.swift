@@ -53,11 +53,20 @@ class GameKitController: NSObject {
         }
     }
     
-    static var lastPauseDate: Date?
+    static var lastPauseDate: Date? {
+        didSet {
+            if let _ = lastPauseDate {
+                lastJumpDate = nil
+                lastMoveDate = nil
+            }
+        }
+    }
     
     static var lastUnpauseDate: Date? {
         didSet {
             if let pauseDate = lastPauseDate, let unpauseDate = lastUnpauseDate {
+                lastJumpDate = Date()
+                lastMoveDate = Date()
                 let secondsSinceLastPause: Double = unpauseDate.timeIntervalSince(pauseDate)
                 if secondsSinceLastPause > 30.0 {
                     GameKitController.report(Achievement.AFK, withPercentComplete: 100.0)
