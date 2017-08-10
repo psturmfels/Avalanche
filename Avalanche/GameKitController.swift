@@ -83,7 +83,7 @@ class GameKitController: NSObject {
     static var mutableAchievementsDictionary: NSMutableDictionary!
     static var achievementDictionaryURL: URL!
     
-    override init() {        
+    override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(GameKitController.reportScore), name: NSNotification.Name("reportScore"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameKitController.reportAchievement), name: NSNotification.Name("reportAchievement"), object: nil)
@@ -334,16 +334,18 @@ class GameKitController: NSObject {
         }
         
         if let achievementType = Achievement(rawValue: achievementName) {
-            GameKitController.updateAchievementProgress(achievementType: achievementType, percentComplete: percentComplete)
-            let amountEarned: Int = Achievement.getAchievementReward(type: achievementType)
-            StoreKitController.addCoins(amountEarned)
+            if percentComplete == 100.0 {
+                GameKitController.updateAchievementProgress(achievementType: achievementType, percentComplete: percentComplete)
+                let amountEarned: Int = Achievement.getAchievementReward(type: achievementType)
+                StoreKitController.addCoins(amountEarned)
+            }
         }
         
         let localPlayer = GKLocalPlayer.localPlayer()
         guard localPlayer.isAuthenticated else {
             return
         }
-
+        
         let achievement: GKAchievement = GKAchievement(identifier: achievementName, player: localPlayer)
         
         achievement.percentComplete = percentComplete
