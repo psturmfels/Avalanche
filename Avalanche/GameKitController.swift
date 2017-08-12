@@ -31,6 +31,13 @@ class GameKitController: NSObject {
     static var currentLeaderboard: String?
     
     //MARK: Achievement-specific properties
+    static func setPropertiesToNil() {
+        GameKitController.lastJumpDate = nil
+        GameKitController.lastMoveDate = nil
+        GameKitController.lastPauseDate = nil
+        GameKitController.lastUnpauseDate = nil
+    }
+    
     static var lastJumpDate: Date? {
         didSet {
             if let previousJumpDate = oldValue, let currentJumpDate = lastJumpDate {
@@ -360,9 +367,6 @@ class GameKitController: NSObject {
             return
         }
         
-        
-        
-        
         if let achievementType = Achievement(rawValue: achievementName) {
             let previousPercentComplete: Double = GameKitController.getAchievementProgress(achievementType: achievementType)
             if previousPercentComplete == 100.0 {
@@ -374,6 +378,8 @@ class GameKitController: NSObject {
                 GameKitController.updateAchievementProgress(achievementType: achievementType, percentComplete: percentComplete)
                 let amountEarned: Int = Achievement.getAchievementReward(type: achievementType)
                 StoreKitController.addCoins(amountEarned)
+            
+                GameKitController.setAchievementStatus(achievementType: achievementType, isNew: true)
             }
         }
         

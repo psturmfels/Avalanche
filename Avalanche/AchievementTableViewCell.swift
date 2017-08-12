@@ -39,6 +39,9 @@ class AchievementTableViewCell: UITableViewCell {
     var achievementDescriptionLabel: UILabel!
     var isExpanded: Bool = false
     
+    var isNew: Bool = false
+    var newLabel: UILabel!
+    
     var coinImage: UIImageView!
     var coinLabel: UILabel!
     
@@ -115,11 +118,23 @@ class AchievementTableViewCell: UITableViewCell {
         coinImage.clipsToBounds = true
         coinImage.alpha = 0.0
         
+        newLabel = UILabel()
+        newLabel.font = AchievementTableViewCell.descriptionFont
+        newLabel.textColor = UIColor.red
+        newLabel.numberOfLines = 1
+        newLabel.lineBreakMode = NSLineBreakMode.byCharWrapping
+        newLabel.alpha = 0.0
+        newLabel.textAlignment = NSTextAlignment.right
+        newLabel.text = "New!"
+        newLabel.sizeToFit()
+        newLabel.frame.origin = CGPoint.zero
+        
         self.contentView.addSubview(achievementImageView)
         self.contentView.addSubview(achievementTitleLabel)
         self.contentView.addSubview(achievementDescriptionLabel)
         self.contentView.addSubview(coinLabel)
         self.contentView.addSubview(coinImage)
+        self.contentView.addSubview(newLabel)
     }
     
     func updateCellUI() {
@@ -183,6 +198,8 @@ class AchievementTableViewCell: UITableViewCell {
             if let type = Achievement(rawValue: identifier) {
                 let coinsEarned: Int = Achievement.getAchievementReward(type: type)
                 coinLabel.text = "+\(coinsEarned)"
+                
+                isNew = GameKitController.achievementIsNew(achievementType: type)
             }
         }
         coinLabel.sizeToFit()
@@ -201,6 +218,12 @@ class AchievementTableViewCell: UITableViewCell {
             coinImage.alpha = 0.0
         }
         
+        if isNew {
+            applyNew()
+        } else {
+            removeNew(animateWithDuration: 0.0)
+        }
+        
         if isExpanded {
             self.wasSelected(animateWithDuration: 0.0)
         } else {
@@ -208,8 +231,25 @@ class AchievementTableViewCell: UITableViewCell {
         }
     }
     
-    func wasSelected(animateWithDuration duration: Float = 0.2) {
-        UIView.animate(withDuration: TimeInterval(duration)) {
+    func applyNew() {
+        self.whiteBackdrop.layer.shadowColor = UIColor.orange.cgColor
+        self.whiteBackdrop.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        self.whiteBackdrop.layer.shadowRadius = 5.0
+        self.whiteBackdrop.layer.shadowOpacity = 1.0
+        self.newLabel.alpha = 1.0
+        self.newLabel.frame.origin.x = whiteBackdrop.frame.size.width - newLabel.frame.size.width + 2.0
+        self.newLabel.frame.origin.y = 34.0
+    }
+    
+    func removeNew(animateWithDuration duration: TimeInterval = 0.2) {
+        UIView.animate(withDuration: duration) { 
+            self.whiteBackdrop.layer.shadowOpacity = 0.0
+            self.newLabel.alpha = 0.0
+        }
+    }
+    
+    func wasSelected(animateWithDuration duration: TimeInterval = 0.2) {
+        UIView.animate(withDuration: duration) {
             if let text = self.achievementTitleLabel.text, text.characters.count > 10 {
                 self.achievementTitleLabel.numberOfLines = 2
             } else {
@@ -228,8 +268,8 @@ class AchievementTableViewCell: UITableViewCell {
         }
     }
     
-    func wasDeselected(animateWithDuration duration: Float = 0.2) {
-        UIView.animate(withDuration: TimeInterval(duration)) {
+    func wasDeselected(animateWithDuration duration: TimeInterval = 0.2) {
+        UIView.animate(withDuration: duration) {
             self.achievementTitleLabel.numberOfLines = 1
             self.achievementTitleLabel.frame.size.width = self.whiteBackdrop.frame.width - AchievementTableViewCell.defaultImageSize.width
             self.achievementTitleLabel.sizeToFit()

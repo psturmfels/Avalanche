@@ -130,6 +130,15 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             
             let cell: AchievementTableViewCell = tableView.cellForRow(at: indexPath) as! AchievementTableViewCell
             cell.wasSelected()
+            if cell.isNew {
+                cell.removeNew()
+                cell.isNew = false
+                if let identifier = cell.achievement?.identifier {
+                    if let type = Achievement(rawValue: identifier) {
+                        GameKitController.setAchievementStatus(achievementType: type, isNew: false)
+                    }
+                }
+            }
         }
     }
     

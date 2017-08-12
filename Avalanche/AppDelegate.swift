@@ -39,6 +39,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
+        guard let statusDefaultsFile: URL = Bundle.main.url(forResource: "AchievementStatus", withExtension: "plist") else {
+            NSLog("Unable to find default status file")
+            return
+        }
+        guard let statusDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: statusDefaultsFile) else {
+            NSLog("Unable to open default status dictionary")
+            return
+        }
+        if let statusDirectory = NSURL(fileURLWithPath: userDirectory).appendingPathComponent("AchievementStatus.plist") {
+            GameKitController.statusDictionaryURL = statusDirectory
+            if let statusDictionary = NSDictionary(contentsOf: statusDirectory) {
+                GameKitController.mutableAchievementStatusDictionary = statusDictionary.mutableCopy() as! NSMutableDictionary
+            } else {
+                statusDefaultsDictionary.write(to: statusDirectory, atomically: true)
+                GameKitController.mutableAchievementStatusDictionary = statusDefaultsDictionary.mutableCopy() as! NSMutableDictionary
+            }
+        }        
+        
         gameKitController = GameKitController()
         //Initialize the GameCenter Player
         GameKitController.authenticateLocalPlayer()

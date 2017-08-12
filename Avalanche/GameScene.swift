@@ -358,6 +358,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //MARK: Initializing Methods
     override func didMove(to view: SKView) {
         /* Setup your scene here */
+        GameKitController.setPropertiesToNil()
     }
     
     func createWorld() {
