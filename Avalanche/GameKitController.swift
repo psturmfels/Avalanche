@@ -91,6 +91,8 @@ class GameKitController: NSObject {
     
     static var mutableAchievementsDictionary: NSMutableDictionary!
     static var achievementDictionaryURL: URL!
+    static var mutableAchievementStatusDictionary: NSMutableDictionary!
+    static var statusDictionaryURL: URL!
     
     override init() {
         super.init()
@@ -114,6 +116,19 @@ class GameKitController: NSObject {
         }
     }
     
+    static func achievementIsNew(achievementType: Achievement) -> Bool {
+        if let isNew = mutableAchievementStatusDictionary[achievementType.rawValue] as? Bool {
+            return isNew
+        } else {
+            return false
+        }
+    }
+    
+    static func setAchievementStatus(achievementType: Achievement, isNew: Bool) {
+        mutableAchievementStatusDictionary.setValue(isNew, forKey: achievementType.rawValue)
+        mutableAchievementStatusDictionary.write(to: statusDictionaryURL, atomically: true)
+    }
+    
     static func getAchievementProgress(achievementType: Achievement) -> Double {
         let achievementName: String = achievementType.rawValue
         if let achievementArray = GameKitController.achievements, achievementArray.count > 0 {
@@ -122,7 +137,10 @@ class GameKitController: NSObject {
                     return achievement.percentComplete
                 }
             }
-        } else  {
+        } else if let percentComplete = mutableAchievementsDictionary[achievementType.rawValue] as? Double {
+            return percentComplete
+        }
+        else {
             let achievementsDefaultsFile: URL = Bundle.main.url(forResource: "Achievements", withExtension: "plist")!
             let achievementsDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: achievementsDefaultsFile)!
             
@@ -342,7 +360,16 @@ class GameKitController: NSObject {
             return
         }
         
+        
+        
+        
         if let achievementType = Achievement(rawValue: achievementName) {
+            let previousPercentComplete: Double = GameKitController.getAchievementProgress(achievementType: achievementType)
+            if previousPercentComplete == 100.0 {
+                return
+            }
+            
+            
             if percentComplete == 100.0 {
                 GameKitController.updateAchievementProgress(achievementType: achievementType, percentComplete: percentComplete)
                 let amountEarned: Int = Achievement.getAchievementReward(type: achievementType)
