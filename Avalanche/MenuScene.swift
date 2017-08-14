@@ -40,6 +40,7 @@ class MenuScene: SKScene {
     var arcadeButton: ButtonLabelNode!
     var tutorialButton: ButtonNode!
     var settingsButton: ButtonNode!
+    var storeButton: ButtonNode!
     
     var audioButtonLabel: ButtonLabelNode!
     var soundEffectsButtonLabel: ButtonLabelNode!
@@ -102,6 +103,7 @@ class MenuScene: SKScene {
         
         tutorialButton.name = ""
         settingsButton.name = ""
+        storeButton.name = ""
         
         bottomMenuNode.run(moveRightSequence)
     }
@@ -123,6 +125,7 @@ class MenuScene: SKScene {
         bottomMenuNode.run(moveLeftSequence) { [unowned self] in
             self.tutorialButton.name = "Tutorial"
             self.settingsButton.name = "Settings"
+            self.storeButton.name = "Store"
         }
     }
     
@@ -510,17 +513,24 @@ class MenuScene: SKScene {
         tutorialButton = ButtonNode(imageNamed: "tutorialNormal")
         let rightX: CGFloat = self.frame.width - tutorialButton.frame.width * 0.5 - 20
         let botY: CGFloat = tutorialButton.frame.height * 0.5 + 20
-        tutorialButton.setup(atPosition: CGPoint(x: rightX, y: botY), withName: "Tutorial", normalTextureName: "tutorialNormal", highlightedTextureName: "tutorialHighlighted")
+        let botRightCorner: CGPoint = CGPoint(x: rightX, y: botY)
+        tutorialButton.setup(atPosition: botRightCorner, withName: "Tutorial", normalTextureName: "tutorialNormal", highlightedTextureName: "tutorialHighlighted")
         
         settingsButton = ButtonNode(imageNamed: "settingsNormal")
-        settingsButton.setup(atPosition: CGPoint(x: rightX, y: botY), withName: "Settings", normalTextureName: "settingsNormal", highlightedTextureName: "settingsHighlighted")
+        settingsButton.setup(atPosition: botRightCorner, withName: "Settings", normalTextureName: "settingsNormal", highlightedTextureName: "settingsHighlighted")
         settingsButton.position.x -= settingsButton.frame.width + 20
+        
+        storeButton = ButtonNode(imageNamed: "storeNormal")
+        storeButton.setup(atPosition: botRightCorner, withName: "Store", normalTextureName: "storeNormal", highlightedTextureName: "storeHighlighted")
+        storeButton.position.x -= settingsButton.frame.width + 20
+        storeButton.position.x -= storeButton.frame.width + 20
         
         self.menuNode.addChild(playButton)
         self.menuNode.addChild(arcadeButton)
         self.menuNode.addChild(scoresButton)
         self.bottomMenuNode.addChild(tutorialButton)
         self.bottomMenuNode.addChild(settingsButton)
+        self.bottomMenuNode.addChild(storeButton)
     }
     
     func createBackground() {
@@ -668,7 +678,10 @@ class MenuScene: SKScene {
                     GameKitController.currentLeaderboard = LeaderboardTypes.classic.rawValue
                     leaderboardTableHandler.expandedPath = nil
                     leaderboardTable.reloadData()
-                } else if object.name == "coinImage" {
+                } else if object.name == "Store" {
+                    storeButton.didPress()
+                }
+                else if object.name == "coinImage" {
                     //TODO: FIX ME
                     let numCoins: Int = StoreKitController.getNumCoins()
                     StoreKitController.subtractCoins(numCoins)
@@ -685,7 +698,7 @@ class MenuScene: SKScene {
             let location = touch.location(in: self)
             let objects = nodes(at: location) as [SKNode]
             for object in objects {
-                if object.name == "Play" || object.name == "Arcade" || object.name == "Scores" || object.name == "Tutorial" || object.name == "Settings" || object.name == "Menu" {
+                if object.name == "Play" || object.name == "Arcade" || object.name == "Scores" || object.name == "Tutorial" || object.name == "Settings" || object.name == "Menu" || object.name == "Store" {
                     movedOverButton = true
                     break
                 }
@@ -699,6 +712,7 @@ class MenuScene: SKScene {
             tutorialButton.didRelease()
             settingsButton.didRelease()
             menuButton.didRelease()
+            storeButton.didRelease()
         }
     }
     
@@ -724,6 +738,9 @@ class MenuScene: SKScene {
         } else if menuButton.isPressed {
             menuButton.didRelease(didActivate: true)
             menuButtonPressed()
+        } else if storeButton.isPressed {
+            storeButton.didRelease(didActivate: true)
+            print("pressed store")
         }
     }
     
@@ -734,5 +751,6 @@ class MenuScene: SKScene {
         tutorialButton.didRelease()
         settingsButton.didRelease()
         menuButton.didRelease()
+        storeButton.didRelease()
     }
 }
