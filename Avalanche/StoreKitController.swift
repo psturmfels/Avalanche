@@ -15,6 +15,8 @@ class StoreKitController: NSObject {
     static var arcadeName: String = "arcadeUnlocked"
     static var adsName: String = "adsRemoved"
     
+    static let storeTableHandler: StoreTableViewHandler = StoreTableViewHandler()
+    
     static func getNumCoins() -> Int {
         if let numCoins = mutableStoreDictionary[coinsName] as? Int {
             return numCoins

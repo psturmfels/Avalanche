@@ -82,6 +82,7 @@ enum MenuStates: Int {
     case menu = 1
     case settings = 2
     case scores = 3
+    case store = 4
 }
 
 enum GameStates: Int {

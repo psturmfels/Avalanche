@@ -138,7 +138,7 @@ class AchievementTableViewCell: UITableViewCell {
     }
     
     func updateCellUI() {
-        self.frame.size.height = LeaderboardTableViewCell.defaultHeight
+        self.frame.size.height = AchievementTableViewCell.defaultHeight
         
         guard let achievement = self.achievement else {
             return

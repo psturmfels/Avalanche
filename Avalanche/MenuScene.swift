@@ -40,8 +40,11 @@ class MenuScene: SKScene {
     var arcadeButton: ButtonLabelNode!
     var tutorialButton: ButtonNode!
     var settingsButton: ButtonNode!
-    var storeButton: ButtonNode!
     
+    var storeButton: ButtonNode!
+    var storeTable: UITableView!
+    weak var storeTableHandler: StoreTableViewHandler!
+
     var audioButtonLabel: ButtonLabelNode!
     var soundEffectsButtonLabel: ButtonLabelNode!
     var menuButton: ButtonNode!
@@ -80,6 +83,8 @@ class MenuScene: SKScene {
             returnFromSettings()
         case MenuStates.scores:
             returnFromScore()
+        case MenuStates.store:
+            returnFromStore()
         default:
             break
         }
@@ -164,6 +169,15 @@ class MenuScene: SKScene {
         leaderboardTable.reloadData()
         achievementTable.reloadData()
     }
+
+    func displayStore() {
+        currentState = MenuStates.store
+        dismissMenu()
+        displayBackToMenu()
+        
+        animateRight(table: storeTable)
+        storeTable.reloadData()
+    }
     
     func animateRight(table tableView: UITableView) {
         UITableView.animate(withDuration: 0.2, delay: 0.4, options: [], animations: {
@@ -207,6 +221,13 @@ class MenuScene: SKScene {
                 })
             })
         }
+    }
+    
+    func returnFromStore() {
+        animateLeft(table: storeTable)
+        
+        dismissBackToMenu()
+        returnMenu()
     }
     
     func returnFromScore() {
@@ -308,6 +329,7 @@ class MenuScene: SKScene {
         createBackground()
         createTitleLabel()
         createSettingsLabel()
+        createStoreTables()
         initBlocks()
     }
     
@@ -381,6 +403,24 @@ class MenuScene: SKScene {
         titleLabel = LabelNode()
         titleLabel.setup(withText: "Avalanche", withFontSize: 48.0, atPosition: titlePoint)
         self.menuNode.addChild(titleLabel)
+    }
+    
+    func createStoreTables() {
+        let storeTableHeight: CGFloat = self.frame.height - leaderboardButton.frame.height - 60
+        let rightPoint: CGFloat = 20.0 - self.frame.width
+        
+        storeTable = UITableView(frame: self.frame, style: UITableViewStyle.grouped)
+        storeTable.frame.size.width = self.frame.width - 40
+        storeTable.frame.size.height = storeTableHeight
+        storeTable.frame.origin = CGPoint(x: rightPoint, y: menuButton.frame.height + 40)
+        storeTable.separatorStyle = UITableViewCellSeparatorStyle.none
+        storeTable.backgroundColor = UIColor.clear
+        
+        self.view!.addSubview(storeTable)
+        
+        storeTableHandler = StoreKitController.storeTableHandler
+        storeTableHandler.setDelegateAndSource(forTable: storeTable)
+        storeTable.register(StoreTableViewCell.self, forCellReuseIdentifier: "StoreTableViewCell")
     }
     
     func createScoreTables() {
@@ -740,7 +780,7 @@ class MenuScene: SKScene {
             menuButtonPressed()
         } else if storeButton.isPressed {
             storeButton.didRelease(didActivate: true)
-            print("pressed store")
+            displayStore()
         }
     }
     

@@ -21,6 +21,8 @@
 		027546501E7F13A100159F8F /* Achievements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0275464F1E7F13A100159F8F /* Achievements.plist */; };
 		027546541E7F26F000159F8F /* ArcadeModeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027546531E7F26F000159F8F /* ArcadeModeScene.swift */; };
 		02934CBD1F3C9ED500BFD8CB /* AchievementStatus.plist in Resources */ = {isa = PBXBuildFile; fileRef = 02934CBC1F3C9ED500BFD8CB /* AchievementStatus.plist */; };
+		02A26E161F4236F600AD0385 /* StoreTableViewHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A26E151F4236F600AD0385 /* StoreTableViewHandler.swift */; };
+		02A26E181F42378E00AD0385 /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A26E171F42378E00AD0385 /* StoreTableViewCell.swift */; };
 		02A2B52F1E50F10600E7D3B7 /* AchievementTableViewHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A2B52E1E50F10600E7D3B7 /* AchievementTableViewHandler.swift */; };
 		02A2B5341E50FF5100E7D3B7 /* AchievementTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A2B5331E50FF5100E7D3B7 /* AchievementTableViewCell.swift */; };
 		02AFC1971F37E1F20021765B /* StorePurchases.plist in Resources */ = {isa = PBXBuildFile; fileRef = 02AFC1961F37E1F20021765B /* StorePurchases.plist */; };
@@ -77,6 +79,8 @@
 		0275464F1E7F13A100159F8F /* Achievements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Achievements.plist; sourceTree = "<group>"; };
 		027546531E7F26F000159F8F /* ArcadeModeScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArcadeModeScene.swift; sourceTree = "<group>"; };
 		02934CBC1F3C9ED500BFD8CB /* AchievementStatus.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AchievementStatus.plist; sourceTree = "<group>"; };
+		02A26E151F4236F600AD0385 /* StoreTableViewHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTableViewHandler.swift; sourceTree = "<group>"; };
+		02A26E171F42378E00AD0385 /* StoreTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTableViewCell.swift; sourceTree = "<group>"; };
 		02A2B52E1E50F10600E7D3B7 /* AchievementTableViewHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchievementTableViewHandler.swift; sourceTree = "<group>"; };
 		02A2B5331E50FF5100E7D3B7 /* AchievementTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchievementTableViewCell.swift; sourceTree = "<group>"; };
 		02AFC1961F37E1F20021765B /* StorePurchases.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = StorePurchases.plist; sourceTree = "<group>"; };
@@ -140,6 +144,7 @@
 				1AAFB4C61CA07D6100E7472B /* GameViewController.swift */,
 				02A2B52E1E50F10600E7D3B7 /* AchievementTableViewHandler.swift */,
 				02C4F2A31E5A84F00036FB19 /* LeaderboardTableViewHandler.swift */,
+				02A26E151F4236F600AD0385 /* StoreTableViewHandler.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -148,6 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				02A2B5331E50FF5100E7D3B7 /* AchievementTableViewCell.swift */,
+				02A26E171F42378E00AD0385 /* StoreTableViewCell.swift */,
 				02B20CAE1E633DC900534BCC /* LeaderboardTableViewCell.swift */,
 			);
 			name = Views;
@@ -390,6 +396,7 @@
 				1AAFB4C71CA07D6100E7472B /* GameViewController.swift in Sources */,
 				1A5387001CF38A4700226092 /* MenuScene.swift in Sources */,
 				0272A00E1E9DB24C00E17618 /* BallAndChain.swift in Sources */,
+				02A26E181F42378E00AD0385 /* StoreTableViewCell.swift in Sources */,
 				02B20CAF1E633DC900534BCC /* LeaderboardTableViewCell.swift in Sources */,
 				021832141EE3C24000914438 /* HeartNode.swift in Sources */,
 				1AFE715C1DB6835C00E217EC /* TutorialScene.swift in Sources */,
@@ -404,6 +411,7 @@
 				1AE976661D94A4F8002AEF97 /* PauseNode.swift in Sources */,
 				1AAFB4C11CA07D6100E7472B /* AppDelegate.swift in Sources */,
 				1A428CDF1DA4004D002DAA88 /* LabelNode.swift in Sources */,
+				02A26E161F4236F600AD0385 /* StoreTableViewHandler.swift in Sources */,
 				020C08471E7F5E4800561BA6 /* PowerUp.swift in Sources */,
 				1AD4131D1D6F4EFD0051E10F /* enums.swift in Sources */,
 				1A0584E71CDD288900B3DF8B /* Helper.swift in Sources */,
