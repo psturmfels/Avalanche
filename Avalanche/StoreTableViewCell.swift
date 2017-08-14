@@ -21,7 +21,19 @@ class StoreTableViewCell: UITableViewCell {
         return 100.0
     }
     
+    var isDollarCost: Bool = true
+    var coinsCost: Int = 3000
+    var dollarCost: Double = 0.99
+    var purchaseTitle: String = ""
+    var purchaseDescription: String = ""
+    
     var whiteBackdrop: UIView!
+    var titleLabel: UILabel!
+    var descriptionLabel: UILabel!
+    var coinImage: UIImageView!
+    var costLabel: UILabel!
+    var buyButton: UIButton!
+    
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
