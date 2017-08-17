@@ -378,7 +378,7 @@ class MenuScene: SKScene {
     //MARK: Coins Methods
     func coinImageTouched() {
         let title: String = "Coins"
-        let message: String = "Use coins to unlock arcade mode and power ups in arcade mode! You can get more coins by buying them in the shop, playing the game, and unlocking achievements."
+        let message: String = "Use coins to unlock arcade mode and power ups in arcade mode. You can get more coins by buying them in the shop, playing the game, and unlocking achievements."
         let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
         let dismissAction: UIAlertAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil)
         alertView.addAction(dismissAction)
