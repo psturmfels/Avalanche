@@ -11,7 +11,6 @@ import GameKit
 import StoreKit
 
 class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSource {
-    let refreshControl: UIRefreshControl = UIRefreshControl()
     weak var tableView: UITableView?
     
     var gameCenterIsAuthenticated: Bool = false {
@@ -30,21 +29,7 @@ class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSourc
     func setDelegateAndSource(forTable table: UITableView) {
         table.delegate = self
         table.dataSource = self
-        table.refreshControl = self.refreshControl
         self.tableView = table
-        self.refreshControl.tintColor = UIColor.white
-        self.refreshControl.addTarget(self, action: #selector(self.viewRefreshed), for: UIControlEvents.valueChanged)
-    }
-    
-    func viewRefreshed() {
-        let dateAhead: DispatchTime = DispatchTime.now() + .seconds(1)
-        DispatchQueue.main.asyncAfter(deadline: dateAhead) {
-            
-            if let tableView = self.tableView {
-                tableView.reloadData()
-            }
-            self.refreshControl.endRefreshing()
-        }
     }
     
     //MARK: GameCenter Methods
@@ -63,7 +48,8 @@ class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: StoreTableViewCell = tableView.dequeueReusableCell(withIdentifier: "StoreTableViewCell", for: indexPath) as! StoreTableViewCell
-        
+        cell.indexPath = indexPath //TODO: REMOVE THIS
+        cell.updateCellUI()
         return cell
     }
     
@@ -73,6 +59,6 @@ class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSourc
     
     //MARK: UITableViewDelegate Methods
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100.0
+        return StoreTableViewCell.expandedHeightNecessary(forDescription: "")
     }
 }

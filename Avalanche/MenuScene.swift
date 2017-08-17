@@ -406,15 +406,19 @@ class MenuScene: SKScene {
     }
     
     func createStoreTables() {
-        let storeTableHeight: CGFloat = self.frame.height - leaderboardButton.frame.height - 60
+        let storeTableHeight: CGFloat = 400.0
         let rightPoint: CGFloat = 20.0 - self.frame.width
         
         storeTable = UITableView(frame: self.frame, style: UITableViewStyle.grouped)
         storeTable.frame.size.width = self.frame.width - 40
         storeTable.frame.size.height = storeTableHeight
-        storeTable.frame.origin = CGPoint(x: rightPoint, y: menuButton.frame.height + 40)
+        storeTable.frame.origin = CGPoint(x: rightPoint, y: menuButton.frame.height + 100.0)
         storeTable.separatorStyle = UITableViewCellSeparatorStyle.none
         storeTable.backgroundColor = UIColor.clear
+        let oldFrame: CGRect = storeTable.frame
+        storeTable.transform = CGAffineTransform(rotationAngle: CGFloat.pi * 0.5)
+        storeTable.frame = oldFrame
+        
         
         self.view!.addSubview(storeTable)
         
