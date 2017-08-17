@@ -91,7 +91,7 @@ class MenuScene: SKScene {
         currentState = MenuStates.menu
     }
     
-    func dismissMenu() {
+    func dismissMenu(andCoin: Bool = true) {
         let upSweep: SKAction = SKAction.moveBy(x: 0.0, y: self.frame.height, duration: 0.2)
         
         let moveUpSequence: SKAction = SKAction.sequence([MenuScene.downShudder1, MenuScene.downShudder2, MenuScene.downShudder3, upSweep])
@@ -99,7 +99,11 @@ class MenuScene: SKScene {
         playButton.buttonNode.name = ""
         arcadeButton.buttonNode.name = ""
         scoresButton.buttonNode.name = ""
-        coinImage.name = ""
+        if andCoin {
+            coinImage.name = ""
+            coinImage.run(moveUpSequence)
+            coinLabel.run(moveUpSequence)
+        }
         
         menuNode.run(moveUpSequence)
         
@@ -113,7 +117,7 @@ class MenuScene: SKScene {
         bottomMenuNode.run(moveRightSequence)
     }
     
-    func returnMenu() {
+    func returnMenu(andCoin: Bool = true) {
         let downSweep: SKAction = SKAction.moveBy(x: 0.0, y: -self.frame.height, duration: 0.2)
         
         let moveDownSequence: SKAction = SKAction.sequence([MenuScene.waitPointFour, downSweep, MenuScene.upShudder1, MenuScene.upShudder2, MenuScene.upShudder3])
@@ -121,7 +125,13 @@ class MenuScene: SKScene {
             self.playButton.buttonNode.name = "Play"
             self.arcadeButton.buttonNode.name = "Arcade"
             self.scoresButton.buttonNode.name = "Scores"
-            self.coinImage.name = "coinImage"
+        }
+        
+        if andCoin {
+            coinImage.run(moveDownSequence) { [unowned self] in
+                self.coinImage.name = "coinImage"
+            }
+            coinLabel.run(moveDownSequence)
         }
         
         let leftSweep: SKAction = SKAction.moveBy(x: -self.frame.width, y: 0.0, duration: 0.2)
@@ -149,6 +159,26 @@ class MenuScene: SKScene {
         menuButton.run(reverseLeftSequence)
     }
     
+    func displayReverseBackToMenu() {
+        let rightX: CGFloat = 2.0 * self.frame.width - menuButton.frame.width * 0.5 - 20.0
+        menuButton.position.x = rightX
+        let extraLeftSweep: SKAction = SKAction.moveBy(x: -self.frame.width - 35.0, y: 0.0, duration: 0.2)
+        let reverseLeftSequence: SKAction = SKAction.sequence([MenuScene.waitPointFour, extraLeftSweep, MenuScene.rightShudder1, MenuScene.rightShudder2, MenuScene.rightShudder3, ])
+        menuButton.run(reverseLeftSequence) { [unowned self] in
+            self.menuButton.name = "Menu"
+        }
+    }
+    
+    func dismissReverseBackToMenu() {
+        menuButton.name = ""
+        let extraRightSweep: SKAction = SKAction.moveBy(x: self.frame.width + 35, y: 0.0, duration: 0.2)
+        let reverseRightSequence: SKAction = SKAction.sequence([MenuScene.leftShudder1, MenuScene.leftShudder2, MenuScene.leftShudder3, extraRightSweep])
+        let leftX: CGFloat = 20.0 + menuButton.frame.width * 0.5 - self.frame.width
+        menuButton.run(reverseRightSequence) { [unowned self] in
+            self.menuButton.position.x = leftX
+        }
+    }
+    
     func displayScores() {
         currentState = MenuStates.scores
         dismissMenu()
@@ -169,11 +199,13 @@ class MenuScene: SKScene {
         leaderboardTable.reloadData()
         achievementTable.reloadData()
     }
+    
+    
 
     func displayStore() {
         currentState = MenuStates.store
-        dismissMenu()
-        displayBackToMenu()
+        dismissMenu(andCoin: false)
+        displayReverseBackToMenu()
         
         animateRight(table: storeTable)
         storeTable.reloadData()
@@ -226,8 +258,8 @@ class MenuScene: SKScene {
     func returnFromStore() {
         animateLeft(table: storeTable)
         
-        dismissBackToMenu()
-        returnMenu()
+        dismissReverseBackToMenu()
+        returnMenu(andCoin: false)
     }
     
     func returnFromScore() {
@@ -344,6 +376,18 @@ class MenuScene: SKScene {
     
     
     //MARK: Coins Methods
+    func coinImageTouched() {
+        let title: String = "Coins"
+        let message: String = "Use coins to unlock arcade mode and power ups in arcade mode! You can get more coins by buying them in the shop, playing the game, and unlocking achievements."
+        let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        let dismissAction: UIAlertAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil)
+        alertView.addAction(dismissAction)
+        
+        if let viewController = self.view?.window?.rootViewController {
+            viewController.present(alertView, animated: true, completion: nil)
+        }
+    }
+    
     func createCoinLabel() {
         let coinSize: CGFloat = 40.0
         let coinY: CGFloat = self.frame.height - 20.0 - coinSize * 0.5
@@ -361,8 +405,8 @@ class MenuScene: SKScene {
         coinLabel.position.y -= coinLabel.frame.size.height * 0.5
         coinLabel.horizontalAlignmentMode = .left
         
-        self.menuNode.addChild(coinImage)
-        self.menuNode.addChild(coinLabel)
+        self.addChild(coinImage)
+        self.addChild(coinLabel)
     }
     
     func updateNumCoins(notification: Notification) {
@@ -726,10 +770,7 @@ class MenuScene: SKScene {
                     storeButton.didPress()
                 }
                 else if object.name == "coinImage" {
-                    //TODO: FIX ME
-                    let numCoins: Int = StoreKitController.getNumCoins()
-                    StoreKitController.subtractCoins(numCoins)
-                    GameKitController.resetAllAchievements()
+                    coinImageTouched()
                 }
             }
         }
