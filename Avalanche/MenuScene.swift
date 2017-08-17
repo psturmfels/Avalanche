@@ -450,7 +450,7 @@ class MenuScene: SKScene {
     }
     
     func createStoreTables() {
-        let storeTableHeight: CGFloat = 400.0
+        let storeTableHeight: CGFloat = 330.0
         let rightPoint: CGFloat = 20.0 - self.frame.width
         
         storeTable = UITableView(frame: self.frame, style: UITableViewStyle.grouped)

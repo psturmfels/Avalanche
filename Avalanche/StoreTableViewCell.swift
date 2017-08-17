@@ -13,6 +13,7 @@ class StoreTableViewCell: UITableViewCell {
     static let titleFont: UIFont = UIFont(name: "AmericanTypewriter-Bold", size: 30.0)!
     static let descriptionFont: UIFont = UIFont(name: "AmericanTypewriter", size: 16.0)!
     static let defaultPurchaseButtonSize: CGSize = CGSize(width: 64.0, height: 216.0)
+    static let defaultImageSize: CGSize = CGSize(width: 214.0, height: 221.0)
     static let defaultHeight: CGFloat = 260.0
     static var defaultWidth: CGFloat = 240.0
     static let excessHeight: CGFloat = 40.0
@@ -21,17 +22,8 @@ class StoreTableViewCell: UITableViewCell {
         return StoreTableViewCell.defaultHeight
     }
     
-    var isDollarCost: Bool = true
-    var coinsCost: Int = 3000
-    var dollarCost: Double = 0.99
-    var purchaseTitle: String = ""
-    var purchaseDescription: String = ""
-    
     var whiteBackdrop: UIView!
-    var titleLabel: UILabel!
-    var descriptionLabel: UILabel!
-    var coinImage: UIImageView!
-    var costLabel: UILabel!
+    var itemImage: UIImageView!
     var purchaseButton: UIButton!
     var indexPath: IndexPath? = nil
     
@@ -61,6 +53,7 @@ class StoreTableViewCell: UITableViewCell {
         self.contentView.addSubview(whiteBackdrop)
         
         createPurchaseButton()
+        createItemImage()
     }
     
     //MARK: Rotation Method
@@ -71,6 +64,20 @@ class StoreTableViewCell: UITableViewCell {
     }
     
     //MARK: Creation Methods
+    func createItemImage() {
+        itemImage = UIImageView()
+        guard let image: UIImage = UIImage(named: "StashOCoins") else {
+            return
+        }
+        itemImage.image = image
+        itemImage.clipsToBounds = true
+        itemImage.frame.size = StoreTableViewCell.defaultImageSize
+        itemImage.frame.origin = CGPoint(x: 20.0, y: 20.0)
+        rotate(itemImage)
+        
+        self.contentView.addSubview(itemImage)
+    }
+    
     func createPurchaseButton() {
         purchaseButton = UIButton()
         guard let purchaseNormalImage: UIImage = UIImage(named: "purchaseNormal") else {
@@ -83,7 +90,7 @@ class StoreTableViewCell: UITableViewCell {
         purchaseButton.setImage(purchaseNormalImage, for: UIControlState.normal)
         purchaseButton.setImage(purchaseHighlightedImage, for: UIControlState.highlighted)
         purchaseButton.setImage(purchaseHighlightedImage, for: UIControlState.focused)
-        purchaseButton.frame.origin = CGPoint(x: 315.0, y: 22.0)
+        purchaseButton.frame.origin = CGPoint(x: 245.0, y: 22.0)
         purchaseButton.frame.size = StoreTableViewCell.defaultPurchaseButtonSize
         purchaseButton.addTarget(self, action: #selector(StoreTableViewCell.purchaseButtonPressed), for: UIControlEvents.touchUpInside)
         rotate(purchaseButton)
