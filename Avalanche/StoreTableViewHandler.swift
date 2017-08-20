@@ -21,6 +21,8 @@ class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSourc
         }
     }
     
+    var purchaseList: [Purchase] = Purchase.allPurchases
+    
     override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(AchievementTableViewHandler.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
@@ -43,13 +45,13 @@ class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSourc
     
     //MARK: UITableViewDataSource Methods
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return purchaseList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: StoreTableViewCell = tableView.dequeueReusableCell(withIdentifier: "StoreTableViewCell", for: indexPath) as! StoreTableViewCell
-        cell.indexPath = indexPath //TODO: REMOVE THIS
-        cell.updateCellUI()
+        let row: Int = indexPath.row
+        cell.purchaseType = purchaseList[row]
         return cell
     }
     
@@ -60,5 +62,11 @@ class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSourc
     //MARK: UITableViewDelegate Methods
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return StoreTableViewCell.expandedHeightNecessary(forDescription: "")
+    }
+    
+    static func scrollToLast(_ tableView: UITableView, animated: Bool = true) {
+        let numberOfRows: Int = tableView.numberOfRows(inSection: 0)
+        let indexPath: IndexPath = IndexPath(row: numberOfRows - 1, section: 0)
+        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: animated)
     }
 }

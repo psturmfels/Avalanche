@@ -25,7 +25,13 @@ class StoreTableViewCell: UITableViewCell {
     var whiteBackdrop: UIView!
     var itemImage: UIImageView!
     var purchaseButton: UIButton!
-    var indexPath: IndexPath? = nil
+    var purchaseType: Purchase? {
+        didSet {
+            if let _ = purchaseType {
+                updateCellUI()
+            }
+        }
+    }
     
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -66,16 +72,20 @@ class StoreTableViewCell: UITableViewCell {
     //MARK: Creation Methods
     func createItemImage() {
         itemImage = UIImageView()
-        guard let image: UIImage = UIImage(named: "StashOCoins") else {
-            return
-        }
-        itemImage.image = image
         itemImage.clipsToBounds = true
         itemImage.frame.size = StoreTableViewCell.defaultImageSize
         itemImage.frame.origin = CGPoint(x: 20.0, y: 20.0)
         rotate(itemImage)
         
         self.contentView.addSubview(itemImage)
+    }
+    
+    func updateItemImage() {
+        guard let purchaseType = purchaseType else {
+            return
+        }
+        let image: UIImage = Purchase.getImage(ofPurchase: purchaseType)
+        itemImage.image = image
     }
     
     func createPurchaseButton() {
@@ -100,8 +110,8 @@ class StoreTableViewCell: UITableViewCell {
     
     //MARK: Button Methods
     func purchaseButtonPressed() {
-        if let indexPath = self.indexPath {
-            print("Button pressed at indexPath: \(indexPath)")
+        if let type = purchaseType {
+            print("Button pressed, type: \(type.rawValue)")
         }
     }
     
@@ -118,6 +128,7 @@ class StoreTableViewCell: UITableViewCell {
             StoreTableViewCell.defaultWidth = whiteBackdrop.frame.width - 40.0
         }
         
+        updateItemImage()
     }
 }
 

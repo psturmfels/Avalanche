@@ -171,7 +171,7 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     
     //MARK: Helper functions
-    class func deselectAllAchievements(_ tableView: UITableView, _ animated: Bool) {
+    static func deselectAllAchievements(_ tableView: UITableView, _ animated: Bool) {
         if let selectedIndices: [IndexPath] = tableView.indexPathsForSelectedRows {
             for selectedIndex in selectedIndices {
                 if let cell: AchievementTableViewCell = tableView.cellForRow(at: selectedIndex) as? AchievementTableViewCell {
@@ -185,7 +185,7 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         tableView.scrollToRow(at: zeroIndex, at: UITableViewScrollPosition.top, animated: animated)
     }
     
-    class func deselectRowIn(_ tableView: UITableView, atIndex index: IndexPath, _ animated: Bool) {
+    static func deselectRowIn(_ tableView: UITableView, atIndex index: IndexPath, _ animated: Bool) {
         if let cell: AchievementTableViewCell = tableView.cellForRow(at: index) as? AchievementTableViewCell {
             cell.wasDeselected()
         }

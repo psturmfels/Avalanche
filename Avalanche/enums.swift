@@ -68,6 +68,31 @@ enum Achievement: String {
     }
 }
 
+enum Purchase: String {
+    case ArcadeMode = "ArcadeModePurchase"
+    case DayTime = "DayTimePurchase"
+    case DoubleRandom = "DoubleRandomPurchase"
+    case JetPack = "JetPackPurchase"
+    case PileOCoins = "PileOCoins"
+    case PowerBeGone = "PowerBeGonePurchase"
+    case RemoveAds = "RemoveAds"
+    case Rewind = "RewindPurchase"
+    case Shrink = "ShrinkPurchase"
+    case StashOCoins = "StashOCoins"
+    case SupportTheDev = "SupportTheDev"
+    case Teleport = "TeleportPurchase"
+    case TreasureChest = "TreasureChest"
+    
+    static func getImage(ofPurchase type: Purchase) -> UIImage {
+        if let image = UIImage(named: type.rawValue) {
+            return image
+        } else {
+            return UIImage()
+        }
+    }
+    static let allPurchases: [Purchase] = [Purchase.SupportTheDev, Purchase.PowerBeGone, Purchase.Rewind, Purchase.DoubleRandom, Purchase.DayTime, Purchase.Shrink, Purchase.Teleport, Purchase.JetPack, Purchase.ArcadeMode, Purchase.RemoveAds, Purchase.TreasureChest, Purchase.PileOCoins, Purchase.StashOCoins]
+}
+
 enum LeaderboardTypes: String {
     case classic = "classicModeLeaderboard"
     case arcade  = "arcadeModeLeaderboard"

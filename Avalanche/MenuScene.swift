@@ -248,6 +248,8 @@ class MenuScene: SKScene {
                         } else if tableView == self.leaderboardTable {
                             GameKitController.leaderboardTableHandler.expandedPath = nil
                             LeaderboardTableViewHandler.deselectAllAScores(self.leaderboardTable, false)
+                        } else if tableView == self.storeTable {
+                            StoreTableViewHandler.scrollToLast(tableView)
                         }
                     })
                 })
@@ -469,6 +471,7 @@ class MenuScene: SKScene {
         storeTableHandler = StoreKitController.storeTableHandler
         storeTableHandler.setDelegateAndSource(forTable: storeTable)
         storeTable.register(StoreTableViewCell.self, forCellReuseIdentifier: "StoreTableViewCell")
+        StoreTableViewHandler.scrollToLast(storeTable)
     }
     
     func createScoreTables() {

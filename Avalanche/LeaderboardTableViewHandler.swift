@@ -162,7 +162,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     
     
     //MARK: Helper functions
-    class func deselectAllAScores(_ tableView: UITableView, _ animated: Bool) {
+    static func deselectAllAScores(_ tableView: UITableView, _ animated: Bool) {
         if let selectedIndices: [IndexPath] = tableView.indexPathsForSelectedRows {
             for selectedIndex in selectedIndices {
                 if let cell: LeaderboardTableViewCell = tableView.cellForRow(at: selectedIndex) as? LeaderboardTableViewCell {
@@ -176,7 +176,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         tableView.scrollToRow(at: zeroIndex, at: UITableViewScrollPosition.top, animated: animated)
     }
     
-    class func deselectRowIn(_ tableView: UITableView, atIndex index: IndexPath, _ animated: Bool) {
+    static func deselectRowIn(_ tableView: UITableView, atIndex index: IndexPath, _ animated: Bool) {
         if let cell: LeaderboardTableViewCell = tableView.cellForRow(at: index) as? LeaderboardTableViewCell {
             cell.wasDeselected()
         }
