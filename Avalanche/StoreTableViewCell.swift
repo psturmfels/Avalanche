@@ -18,10 +18,6 @@ class StoreTableViewCell: UITableViewCell {
     static var defaultWidth: CGFloat = 240.0
     static let excessHeight: CGFloat = 40.0
     
-    class func expandedHeightNecessary(forDescription description: String) -> CGFloat {
-        return StoreTableViewCell.defaultHeight
-    }
-    
     var whiteBackdrop: UIView!
     var itemImage: UIImageView!
     var purchaseButton: UIButton!
@@ -88,6 +84,32 @@ class StoreTableViewCell: UITableViewCell {
         itemImage.image = image
     }
     
+    func updatePurchaseImage() {
+        guard let purchaseType = purchaseType else {
+            return
+        }
+        let wasPurchased: Bool = StoreKitController.getPurchaseStatus(ofType: purchaseType)
+        if wasPurchased {
+            guard let purchasedNormalImage: UIImage = UIImage(named: "purchasedNormal") else {
+                return
+            }
+            purchaseButton.setImage(purchasedNormalImage, for: UIControlState.normal)
+            purchaseButton.setImage(purchasedNormalImage, for: UIControlState.highlighted)
+            purchaseButton.alpha = 0.5
+        } else {
+            guard let purchaseNormalImage: UIImage = UIImage(named: "purchaseNormal") else {
+                return
+            }
+            guard let purchaseHighlightedImage: UIImage = UIImage(named: "purchaseHighlighted") else {
+                return
+            }
+            
+            purchaseButton.setImage(purchaseNormalImage, for: UIControlState.normal)
+            purchaseButton.setImage(purchaseHighlightedImage, for: UIControlState.highlighted)
+            purchaseButton.alpha = 1.0
+        }
+    }
+    
     func createPurchaseButton() {
         purchaseButton = UIButton()
         guard let purchaseNormalImage: UIImage = UIImage(named: "purchaseNormal") else {
@@ -99,7 +121,6 @@ class StoreTableViewCell: UITableViewCell {
         
         purchaseButton.setImage(purchaseNormalImage, for: UIControlState.normal)
         purchaseButton.setImage(purchaseHighlightedImage, for: UIControlState.highlighted)
-        purchaseButton.setImage(purchaseHighlightedImage, for: UIControlState.focused)
         purchaseButton.frame.origin = CGPoint(x: 245.0, y: 22.0)
         purchaseButton.frame.size = StoreTableViewCell.defaultPurchaseButtonSize
         purchaseButton.addTarget(self, action: #selector(StoreTableViewCell.purchaseButtonPressed), for: UIControlEvents.touchUpInside)
@@ -112,6 +133,8 @@ class StoreTableViewCell: UITableViewCell {
     func purchaseButtonPressed() {
         if let type = purchaseType {
             print("Button pressed, type: \(type.rawValue)")
+            StoreKitController.setPurchaseStatus(ofType: type, newStatus: true)
+            updatePurchaseImage()
         }
     }
     
@@ -129,6 +152,7 @@ class StoreTableViewCell: UITableViewCell {
         }
         
         updateItemImage()
+        updatePurchaseImage()
     }
 }
 

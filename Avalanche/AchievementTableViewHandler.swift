@@ -182,6 +182,10 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             }
         }
         let zeroIndex: IndexPath = IndexPath(row: 0, section: 0)
+        let numRows: Int = tableView.numberOfRows(inSection: 0)
+        guard numRows > 0 else {
+            return
+        }
         tableView.scrollToRow(at: zeroIndex, at: UITableViewScrollPosition.top, animated: animated)
     }
     

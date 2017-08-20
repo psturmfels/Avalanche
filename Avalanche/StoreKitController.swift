@@ -12,8 +12,6 @@ class StoreKitController: NSObject {
     static var mutableStoreDictionary: NSMutableDictionary!
     static var storeDictionaryURL: URL!
     static var coinsName: String = "numCoins"
-    static var arcadeName: String = "arcadeUnlocked"
-    static var adsName: String = "adsRemoved"
     
     static let storeTableHandler: StoreTableViewHandler = StoreTableViewHandler()
     
@@ -51,13 +49,26 @@ class StoreKitController: NSObject {
         postNotification(withName: "numCoinsChanged", andUserInfo: ["numCoins": newNumCoins])
     }
     
-    static func setArcadeStatus(toStatus status: Bool) {
-        mutableStoreDictionary.setValue(status, forKey: arcadeName)
-        mutableStoreDictionary.write(to: storeDictionaryURL, atomically: true)
+    static func getPurchaseStatus(ofType purchaseType: Purchase) -> Bool {
+        switch purchaseType {
+        case .StashOCoins, .PileOCoins, .TreasureChest, .RemoveAds, .SupportTheDev:
+            return false
+        default:
+            if let status = mutableStoreDictionary.value(forKey: purchaseType.rawValue) as? Bool {
+                return status
+            } else {
+                return false
+            }
+        }
     }
     
-    static func setAdsStatus(toStatus status: Bool) {
-        mutableStoreDictionary.setValue(status, forKey: adsName)
-        mutableStoreDictionary.write(to: storeDictionaryURL, atomically: true)
+    static func setPurchaseStatus(ofType purchaseType: Purchase, newStatus status: Bool) {
+        switch purchaseType {
+        case .StashOCoins, .PileOCoins, .TreasureChest, .RemoveAds, .SupportTheDev:
+            return
+        default:
+            mutableStoreDictionary.setValue(status, forKey: purchaseType.rawValue)
+            mutableStoreDictionary.write(to: storeDictionaryURL, atomically: true)
+        }
     }
 }

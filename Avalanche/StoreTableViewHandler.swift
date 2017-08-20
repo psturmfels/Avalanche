@@ -61,11 +61,14 @@ class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSourc
     
     //MARK: UITableViewDelegate Methods
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return StoreTableViewCell.expandedHeightNecessary(forDescription: "")
+        return StoreTableViewCell.defaultHeight
     }
     
     static func scrollToLast(_ tableView: UITableView, animated: Bool = true) {
         let numberOfRows: Int = tableView.numberOfRows(inSection: 0)
+        guard numberOfRows > 0 else {
+            return
+        }
         let indexPath: IndexPath = IndexPath(row: numberOfRows - 1, section: 0)
         tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: animated)
     }
