@@ -379,7 +379,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startMusic() {
-        //Start the music!!!
+        //Start the music
         let waitAction: SKAction = SKAction.wait(forDuration: 0.5)
         let musicAction: SKAction = SKAction.run {
             let bgcopy = SKAudioNode(fileNamed: "DreamsOfAbove.mp3")

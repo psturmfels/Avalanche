@@ -47,3 +47,10 @@ func postNotification(withName name: String) {
 func postNotification(withName name: String, andUserInfo info: [AnyHashable: Any]? ) {
     NotificationCenter.default.post(name: NSNotification.Name(rawValue: name), object: nil, userInfo: info)
 }
+
+func displayDismissAlert(withTitle title: String, andMessage message: String) {
+    var userInfo: [String: String] = [:]
+    userInfo["title"] = title
+    userInfo["message"] = message
+    postNotification(withName: "alertRequested", andUserInfo: userInfo)
+}

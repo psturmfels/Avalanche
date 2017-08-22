@@ -26,6 +26,13 @@ class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSourc
     override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(AchievementTableViewHandler.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(StoreTableViewHandler.reloadTableView), name: NSNotification.Name("ReloadStoreTable"), object: nil)
+    }
+    
+    func reloadTableView() {
+        if let tableView = self.tableView {
+            tableView.reloadData()
+        }
     }
     
     func setDelegateAndSource(forTable table: UITableView) {

@@ -106,7 +106,18 @@ class StoreTableViewCell: UITableViewCell {
             
             purchaseButton.setImage(purchaseNormalImage, for: UIControlState.normal)
             purchaseButton.setImage(purchaseHighlightedImage, for: UIControlState.highlighted)
-            purchaseButton.alpha = 1.0
+            
+            switch purchaseType {
+            case .JetPack, .Teleport, .Shrink, .DayTime, .DoubleRandom, .Rewind, .PowerBeGone:
+                let arcadeWasPurchased: Bool = StoreKitController.getPurchaseStatus(ofType: Purchase.ArcadeMode)
+                if !arcadeWasPurchased {
+                    purchaseButton.alpha = 0.5
+                } else {
+                    purchaseButton.alpha = 1.0
+                }
+            default:
+                purchaseButton.alpha = 1.0
+            }
         }
     }
     
@@ -132,7 +143,25 @@ class StoreTableViewCell: UITableViewCell {
     //MARK: Button Methods
     func purchaseButtonPressed() {
         if let type = purchaseType {
-            print("Button pressed, type: \(type.rawValue)")
+            switch type {
+            case .JetPack, .Teleport, .Shrink, .DayTime, .DoubleRandom, .Rewind, .PowerBeGone:
+                let arcadeWasPurchased: Bool = StoreKitController.getPurchaseStatus(ofType: Purchase.ArcadeMode)
+                if !arcadeWasPurchased {
+                    let title: String = "Need Arcade Mode"
+                    let message: String = "You need to unlock Arcade Mode before buying any power-ups. Unlocked power-ups will appear in Arcade Mode!"
+                    displayDismissAlert(withTitle: title, andMessage: message)
+                    return
+                }
+            default:
+                break
+            }
+            
+            let hasBeenPurchased: Bool = StoreKitController.getPurchaseStatus(ofType: type)
+            guard !hasBeenPurchased else {
+                return
+            }
+            
+            postNotification(withName: "ReloadStoreTable")
             StoreKitController.setPurchaseStatus(ofType: type, newStatus: true)
             updatePurchaseImage()
         }

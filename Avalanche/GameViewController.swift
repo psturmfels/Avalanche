@@ -29,6 +29,7 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.displayDismissAlert(notification:)), name: NSNotification.Name(rawValue: "alertRequested"), object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.presentGameCenterViewController), name: NSNotification.Name(rawValue: "presentScores"), object: nil)
         
         self.view = SKView(frame: UIScreen.main.bounds)
@@ -70,6 +71,26 @@ class GameViewController: UIViewController {
     
     override var prefersStatusBarHidden : Bool {
         return true
+    }
+    
+    
+    //MARK: Alert Methods
+    func displayDismissAlert(notification: Notification) {
+        guard let dictionary = notification.userInfo as? [String: String] else {
+            return
+        }
+        guard let title = dictionary["title"] else {
+            return
+        }
+        guard let message = dictionary["message"] else {
+            return
+        }
+        
+        let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        let dismissAction: UIAlertAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil)
+        alertView.addAction(dismissAction)
+        
+        self.present(alertView, animated: true, completion: nil)
     }
     
     //MARK: GameKit Methods

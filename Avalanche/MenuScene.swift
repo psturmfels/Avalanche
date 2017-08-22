@@ -44,7 +44,7 @@ class MenuScene: SKScene {
     var storeButton: ButtonNode!
     var storeTable: UITableView!
     weak var storeTableHandler: StoreTableViewHandler!
-
+    
     var audioButtonLabel: ButtonLabelNode!
     var soundEffectsButtonLabel: ButtonLabelNode!
     var menuButton: ButtonNode!
@@ -201,7 +201,7 @@ class MenuScene: SKScene {
     }
     
     
-
+    
     func displayStore() {
         currentState = MenuStates.store
         dismissMenu(andCoin: false)
@@ -212,6 +212,9 @@ class MenuScene: SKScene {
     }
     
     func animateRight(table tableView: UITableView) {
+        if tableView == self.storeTable {
+            StoreTableViewHandler.scrollToLast(storeTable, animated: false)
+        }
         UITableView.animate(withDuration: 0.2, delay: 0.4, options: [], animations: {
             tableView.frame.origin.x += self.frame.width + 35
         }) { (_) in
@@ -248,8 +251,6 @@ class MenuScene: SKScene {
                         } else if tableView == self.leaderboardTable {
                             GameKitController.leaderboardTableHandler.expandedPath = nil
                             LeaderboardTableViewHandler.deselectAllAScores(self.leaderboardTable, false)
-                        } else if tableView == self.storeTable {
-                            StoreTableViewHandler.scrollToLast(tableView)
                         }
                     })
                 })
@@ -381,13 +382,9 @@ class MenuScene: SKScene {
     func coinImageTouched() {
         let title: String = "Coins"
         let message: String = "Use coins to unlock arcade mode and power ups in arcade mode. You can get more coins by buying them in the shop, playing the game, and unlocking achievements."
-        let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-        let dismissAction: UIAlertAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil)
-        alertView.addAction(dismissAction)
+        displayDismissAlert(withTitle: title, andMessage: message)
         
-        if let viewController = self.view?.window?.rootViewController {
-            viewController.present(alertView, animated: true, completion: nil)
-        }
+        StoreKitController.resetStoreFile()
     }
     
     func createCoinLabel() {
@@ -471,7 +468,6 @@ class MenuScene: SKScene {
         storeTableHandler = StoreKitController.storeTableHandler
         storeTableHandler.setDelegateAndSource(forTable: storeTable)
         storeTable.register(StoreTableViewCell.self, forCellReuseIdentifier: "StoreTableViewCell")
-        StoreTableViewHandler.scrollToLast(storeTable)
     }
     
     func createScoreTables() {

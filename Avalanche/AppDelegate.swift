@@ -63,28 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func loadStoreKitControllerClass() {
-        guard let storeDefaultsFile: URL = Bundle.main.url(forResource: "StorePurchases", withExtension: "plist") else {
-            NSLog("Unable to find default store file")
-            return
-        }
-        
-        guard let storeDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: storeDefaultsFile) else {
-            NSLog("Unable to open default store dictionary")
-            return
-        }
-        
-        let userDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-        if let storeDirectory = NSURL(fileURLWithPath: userDirectory).appendingPathComponent("StorePurchases.plist") {
-            StoreKitController.storeDictionaryURL = storeDirectory
-            
-            if let storeDictionary = NSDictionary(contentsOf: storeDirectory) {
-                StoreKitController.mutableStoreDictionary = storeDictionary.mutableCopy() as! NSMutableDictionary
-                StoreKitController.mutableStoreDictionary = storeDictionary as! NSMutableDictionary
-            } else {
-                storeDefaultsDictionary.write(to: storeDirectory, atomically: true)
-                StoreKitController.mutableStoreDictionary = storeDefaultsDictionary.mutableCopy() as! NSMutableDictionary
-            }
-        }
+        StoreKitController.readPurchasesFromStore()
     }
     
     func setMusicPreferences() {

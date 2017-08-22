@@ -319,8 +319,9 @@ class ArcadeModeScene: GameScene {
     override func didMove(to view: SKView) {
         //Create stuff
         super.didMove(to: view)
-        maxDifficulty = 15
         
+        setMaxDifficulty(toLevel: 15)
+        setActivePowerUps()
         createWorld()
         let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
         createMellow(atPoint: mellowPoint)
@@ -336,6 +337,16 @@ class ArcadeModeScene: GameScene {
         setupLivesArray()
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.6)
         generateRandomPowerUpEvent(atPoint: self.frame.size.height * 0.9)
+    }
+    
+    func setMaxDifficulty(toLevel level: Int) {
+        maxDifficulty = level
+    }
+    
+    func setActivePowerUps() {
+        PowerUpTypes.allTypes = StoreKitController.getAllActivePowerUps()
+        PowerUpTypes.positiveTypes = StoreKitController.getPositiveActivePowerUps()
+        PowerUpTypes.negativeTypes = StoreKitController.getNegativeActivePowerUps()
     }
     
     //MARK: Overriden Touch Methods
@@ -360,7 +371,10 @@ class ArcadeModeScene: GameScene {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
-        
+        if self.isJetPacking == true {
+            GameKitController.lastJumpDate = nil
+            GameKitController.lastJumpDate = Date()
+        }
         self.isJetPacking = false
     }
     
