@@ -52,16 +52,9 @@ class MellowNode: SKSpriteNode {
         }
     }
     
-    var upJumpForce: CGFloat  {
-        get {
-            return 70000.0
-        }
-    }
-    var sideJumpForce: CGFloat {
-        get {
-            return 60000.0
-        }
-    }
+    var upJumpForce: CGFloat = 70000.0
+    var sideJumpForce: CGFloat = 60000.0
+    var sideMoveModifier: CGFloat = 1000.0
     
     var trailingNum: Int = 0
     
@@ -208,13 +201,13 @@ class MellowNode: SKSpriteNode {
             
             //Set proper horizontal velocity depending on how tilted the screen is
             //by linear growth per frame tilted up to a cutoff
-            if self.physicsBody?.velocity.dx < CGFloat(accel) * 1000.0 {
+            if self.physicsBody?.velocity.dx < CGFloat(accel) * sideMoveModifier {
                 self.physicsBody!.velocity.dx += 80
                 if leftSideInContact > 0 {
                     leftSideInContact = 0
                 }
             }
-            else if self.physicsBody?.velocity.dx > CGFloat(accel) * 1000.0 {
+            else if self.physicsBody?.velocity.dx > CGFloat(accel) * sideMoveModifier {
                 self.physicsBody!.velocity.dx -= 80
                 if rightSideInContact > 0 {
                     rightSideInContact = 0

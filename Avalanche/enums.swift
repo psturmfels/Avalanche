@@ -156,13 +156,13 @@ enum PowerUpTypes: String {
         case .timeSlow:
             return 7.0
         case .jetPack:
-            return 5.0
+            return 10.0
         case .shrink:
-            return 7.0
+            return 10.0
         case .teleport:
-            return 7.0
+            return 10.0
         case .day:
-            return 6.0
+            return 10.0
         case .mellowSlow:
             return 5.0
         case .ballAndChain:

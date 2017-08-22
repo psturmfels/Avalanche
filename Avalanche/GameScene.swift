@@ -31,6 +31,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var bestLabel: SKLabelNode!
     var currentLabel: SKLabelNode!
     
+    var maxDifficulty: Int = 10
+    
     //MARK: Game Properties
     var bestSoFar: Int = 0 {
         didSet {
@@ -290,7 +292,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             backgroundGradient.colorBlendFactor = newBlendFactor
             
-            let nextDifficulty = min(bestSoFar / 100, 10)
+            let nextDifficulty = min(bestSoFar / 100, maxDifficulty)
             if nextDifficulty > currentDifficulty {
                 currentDifficulty = nextDifficulty
             }

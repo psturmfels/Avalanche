@@ -14,7 +14,7 @@ class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
     let platformProbability: CGFloat = 0.25
     let nextPowerUpMin: Int = 5
-    let nextPowerUpMax: Int = 20
+    let nextPowerUpMax: Int = 35
     var nextPowerUp: Int = 30
     var collectedPowerUps: [PowerUpTypes] = []
     var currentPowerUps: [PowerUp] = []
@@ -201,13 +201,24 @@ class ArcadeModeScene: GameScene {
         }
         
         self.physicsWorld.speed = 1.0
-        if self.action(forKey: PowerUpTypes.mellowSlow.rawValue) != nil {
-            self.physicsWorld.speed = 0.5
-        }
-        
         if let action = self.action(forKey: "genBlocks") {
             action.speed = 1.0
         }
+        
+        if self.action(forKey: PowerUpTypes.mellowSlow.rawValue) != nil {
+            self.physicsWorld.speed += 0.5
+            if let action = self.action(forKey: "genBlocks") {
+                action.speed += 0.5
+            }
+        }
+        
+        if self.action(forKey: PowerUpTypes.timeSlow.rawValue) != nil {
+            self.physicsWorld.speed -= 0.5
+            if let action = self.action(forKey: "genBlocks") {
+                action.speed -= 0.5
+            }
+        }
+        
         for powerUpType in PowerUpTypes.allTypes {
             if let action = self.action(forKey: powerUpType.rawValue) {
                 action.speed = 1.0
@@ -308,6 +319,7 @@ class ArcadeModeScene: GameScene {
     override func didMove(to view: SKView) {
         //Create stuff
         super.didMove(to: view)
+        maxDifficulty = 15
         
         createWorld()
         let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
@@ -424,7 +436,7 @@ class ArcadeModeScene: GameScene {
             guard mellow.physicsBody != nil else {
                 return
             }
-
+            
             guard let oneWayBody = secondBody.node?.parent as? OneWayBridgeNode else {
                 return
             }
@@ -1211,52 +1223,12 @@ class ArcadeModeScene: GameScene {
         mellow.addChild(lightNode)
     }
     
-    func addMellowSlow() {
-        if self.action(forKey: PowerUpTypes.mellowSlow.rawValue) != nil {
-            self.removeAction(forKey: PowerUpTypes.mellowSlow.rawValue)
-        } else {
-            self.removeAction(forKey: "genBlocks")
-            self.physicsWorld.speed = 0.5
-            self.lavaMaxSpeed = self.lavaMaxSpeed * 2.0
-            self.minFallSpeed = self.minFallSpeed * 2.0
-            self.maxFallSpeed = self.maxFallSpeed * 2.0
-            
-            let timeDuration: TimeInterval = 0.75 - 0.04 * Double(self.currentDifficulty)
-            let timeRange: TimeInterval = 0.4 - 0.02 * Double(self.currentDifficulty)
-            self.initBlocks(timeDuration, withRange: timeRange)
-            
-            for node in self.worldNode.children {
-                if node.name == "fallingBlock" {
-                    if let fallingBlock = node as? RoundedBlockNode {
-                        fallingBlock.fallSpeed = fallingBlock.fallSpeed * 2.0
-                    }
-                }
-            }
-        }
-        self.run(waitSequence(withType: .mellowSlow), withKey: PowerUpTypes.mellowSlow.rawValue)
-    }
-    
-    func removeMellowSlow() {
-        self.run(SKAction.run { [unowned self] in
-            self.physicsWorld.speed = 1.0
-            for node in self.worldNode.children {
-                if node.name == "fallingBlock" {
-                    if let fallingBlock = node as? RoundedBlockNode {
-                        fallingBlock.fallSpeed = fallingBlock.fallSpeed * 0.5
-                    }
-                }
-            }
-        }) { [unowned self] in
-            self.superUpdateCurrentDifficulty()
-        }
-    }
-    
     func superUpdateCurrentDifficulty() {
         self.removeAction(forKey: "genBlocks")
         self.minFallSpeed = -130.0  - 15.0 * Float(self.currentDifficulty)
         self.maxFallSpeed = self.minFallSpeed + 60.0
         let timeDuration: TimeInterval = 1.1 - 0.035 * Double(self.currentDifficulty)
-        let timeRange: TimeInterval = 0.3 - 0.02 * Double(self.currentDifficulty)
+        let timeRange: TimeInterval = 0.3 - 0.01 * Double(self.currentDifficulty)
         self.initBlocks(timeDuration, withRange: timeRange)
         self.lavaMaxSpeed = 48.0 + 3.0 * CGFloat(self.currentDifficulty)
     }
@@ -1294,39 +1266,62 @@ class ArcadeModeScene: GameScene {
         self.isJetPacking = false
     }
     
+    func addMellowSlow() {
+        if self.action(forKey: PowerUpTypes.mellowSlow.rawValue) != nil {
+            self.removeAction(forKey: PowerUpTypes.mellowSlow.rawValue)
+        } else {
+            var newSpeed: CGFloat = 1.5
+            if self.action(forKey: PowerUpTypes.timeSlow.rawValue) != nil {
+                newSpeed = 1.0
+            }
+            
+            self.physicsWorld.speed = newSpeed
+            if let action = self.action(forKey: "genBlocks") {
+                action.speed = newSpeed
+            }
+        }
+        self.run(waitSequence(withType: .mellowSlow), withKey: PowerUpTypes.mellowSlow.rawValue)
+    }
+    
+    func removeMellowSlow() {
+        var newSpeed: CGFloat = 1.0
+        if self.action(forKey: PowerUpTypes.timeSlow.rawValue) != nil {
+            newSpeed = 0.5
+        }
+        
+        self.physicsWorld.speed = newSpeed
+        if let action = self.action(forKey: "genBlocks") {
+            action.speed = newSpeed
+        }
+    }
+    
     func addTimeSlow() {
         if self.action(forKey: PowerUpTypes.timeSlow.rawValue) != nil {
             self.removeAction(forKey: PowerUpTypes.timeSlow.rawValue)
         } else {
-            self.removeAction(forKey: "genBlocks")
-            self.lavaMaxSpeed = self.lavaMaxSpeed * 0.5
-            self.minFallSpeed = self.minFallSpeed * 0.5
-            self.maxFallSpeed = self.maxFallSpeed * 0.5
-            self.initBlocks(1.5 * (0.9 - Double(self.currentDifficulty) * 0.05), withRange: 0.5)
+            var newSpeed: CGFloat = 0.5
+            if self.action(forKey: PowerUpTypes.mellowSlow.rawValue) != nil {
+                newSpeed = 1.0
+            }
             
-            for node in self.worldNode.children {
-                if node.name == "fallingBlock" {
-                    if let fallingBlock = node as? RoundedBlockNode {
-                        fallingBlock.fallSpeed = fallingBlock.fallSpeed * 0.5
-                    }
-                }
+            self.physicsWorld.speed = newSpeed
+            if let action = self.action(forKey: "genBlocks") {
+                action.speed = newSpeed
             }
         }
         self.run(waitSequence(withType: .timeSlow), withKey: PowerUpTypes.timeSlow.rawValue)
     }
     
     func removeTimeSlow() {
-        self.run(SKAction.run { [unowned self] in
-            for node in self.worldNode.children {
-                if node.name == "fallingBlock" {
-                    if let fallingBlock = node as? RoundedBlockNode {
-                        fallingBlock.fallSpeed = fallingBlock.fallSpeed * 2.0
-                    }
-                }
-            }
-        }) {
-            [unowned self] in
-            self.superUpdateCurrentDifficulty()
+        var newSpeed: CGFloat = 1.0
+        
+        if self.action(forKey: PowerUpTypes.mellowSlow.rawValue) != nil {
+            newSpeed = 1.5
+        }
+        
+        self.physicsWorld.speed = newSpeed
+        if let action = self.action(forKey: "genBlocks") {
+            action.speed = newSpeed
         }
     }
     
