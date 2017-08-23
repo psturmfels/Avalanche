@@ -382,9 +382,26 @@ class MenuScene: SKScene {
     func coinImageTouched() {
         let title: String = "Coins"
         let message: String = "Use coins to unlock arcade mode and power ups in arcade mode. You can get more coins by buying them in the shop, playing the game, and unlocking achievements."
-        displayDismissAlert(withTitle: title, andMessage: message)
+//        displayDismissAlert(withTitle: title, andMessage: message) TODO: FIX ME
         
-        StoreKitController.resetStoreFile()
+        if let vc = self.view?.window?.rootViewController {
+            let moreCoins: UIAlertAction = UIAlertAction(title: "+coins", style: UIAlertActionStyle.default, handler: { (action) in
+                StoreKitController.addCoins(2500)
+            })
+            let resStore: UIAlertAction = UIAlertAction(title: "res-Store", style: UIAlertActionStyle.destructive, handler: { (action) in
+                StoreKitController.resetStoreFile()
+            })
+            let resAch: UIAlertAction = UIAlertAction(title: "res-Ach", style: UIAlertActionStyle.destructive, handler: { (action) in
+                GameKitController.resetAllAchievements()
+            })
+            let cancel: UIAlertAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+            let alert: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(moreCoins)
+            alert.addAction(resStore)
+            alert.addAction(resAch)
+            alert.addAction(cancel)
+            vc.present(alert, animated: true, completion: nil)
+        }
     }
     
     func createCoinLabel() {

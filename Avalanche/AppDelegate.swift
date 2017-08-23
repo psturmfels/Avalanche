@@ -18,44 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var gameKitController: GameKitController!
     
     func loadGameKitControllerClass() {
-        guard let achievementsDefaultsFile: URL = Bundle.main.url(forResource: "Achievements", withExtension: "plist") else {
-            NSLog("Unable to find default achievement file")
-            return
-        }
-        guard let achievementsDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: achievementsDefaultsFile) else {
-            NSLog("Unable to open default achievement dictionary")
-            return
-        }
+        GameKitController.readAchievementsDictionary()
         
-        let userDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-        if let achievementsDirectory = NSURL(fileURLWithPath: userDirectory).appendingPathComponent("Achievements.plist") {
-            GameKitController.achievementDictionaryURL = achievementsDirectory
-            
-            if let achievementsDictionary = NSDictionary(contentsOf: achievementsDirectory) {
-                GameKitController.mutableAchievementsDictionary = achievementsDictionary.mutableCopy() as! NSMutableDictionary
-            } else {
-                achievementsDefaultsDictionary.write(to: achievementsDirectory, atomically: true)
-                GameKitController.mutableAchievementsDictionary = achievementsDefaultsDictionary.mutableCopy() as! NSMutableDictionary
-            }
-        }
-        
-        guard let statusDefaultsFile: URL = Bundle.main.url(forResource: "AchievementStatus", withExtension: "plist") else {
-            NSLog("Unable to find default status file")
-            return
-        }
-        guard let statusDefaultsDictionary: NSDictionary = NSDictionary(contentsOf: statusDefaultsFile) else {
-            NSLog("Unable to open default status dictionary")
-            return
-        }
-        if let statusDirectory = NSURL(fileURLWithPath: userDirectory).appendingPathComponent("AchievementStatus.plist") {
-            GameKitController.statusDictionaryURL = statusDirectory
-            if let statusDictionary = NSDictionary(contentsOf: statusDirectory) {
-                GameKitController.mutableAchievementStatusDictionary = statusDictionary.mutableCopy() as! NSMutableDictionary
-            } else {
-                statusDefaultsDictionary.write(to: statusDirectory, atomically: true)
-                GameKitController.mutableAchievementStatusDictionary = statusDefaultsDictionary.mutableCopy() as! NSMutableDictionary
-            }
-        }        
+        GameKitController.readStatusDictionary()
         
         gameKitController = GameKitController()
         //Initialize the GameCenter Player
