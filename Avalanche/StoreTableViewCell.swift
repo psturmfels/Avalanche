@@ -143,6 +143,11 @@ class StoreTableViewCell: UITableViewCell {
     //MARK: Button Methods
     func purchaseButtonPressed() {
         if let type = purchaseType {
+            let hasBeenPurchased: Bool = StoreKitController.getPurchaseStatus(ofType: type)
+            guard !hasBeenPurchased else {
+                return
+            }
+            
             switch type {
             case .JetPack, .Teleport, .Shrink, .DayTime, .DoubleRandom, .Rewind, .PowerBeGone:
                 let arcadeWasPurchased: Bool = StoreKitController.getPurchaseStatus(ofType: Purchase.ArcadeMode)
@@ -156,9 +161,17 @@ class StoreTableViewCell: UITableViewCell {
                 break
             }
             
-            let hasBeenPurchased: Bool = StoreKitController.getPurchaseStatus(ofType: type)
-            guard !hasBeenPurchased else {
-                return
+            switch type {
+            case .JetPack, .Teleport, .Shrink, .DayTime, .DoubleRandom, .Rewind, .PowerBeGone, .ArcadeMode:
+                let numCoins: Int = StoreKitController.getNumCoins()
+                if numCoins < StoreKitController.defaultCoinCost {
+                    let title: String = "Insufficient Funds"
+                    let message: String = "You need at least 2500 coins to unlock this option. Get more coins by playing the game, unlocking achievements, or buying some here in the store."
+                    displayDismissAlert(withTitle: title, andMessage: message)
+                    return
+                }
+            default:
+                break
             }
             
             postNotification(withName: "ReloadStoreTable")

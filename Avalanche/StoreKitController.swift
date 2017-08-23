@@ -12,6 +12,7 @@ class StoreKitController: NSObject {
     static var mutableStoreDictionary: NSMutableDictionary!
     static var storeDictionaryURL: URL!
     static var coinsName: String = "numCoins"
+    static let defaultCoinCost: Int = 2500
     
     static let storeTableHandler: StoreTableViewHandler = StoreTableViewHandler()
     

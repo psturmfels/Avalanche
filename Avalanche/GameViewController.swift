@@ -93,6 +93,32 @@ class GameViewController: UIViewController {
         self.present(alertView, animated: true, completion: nil)
     }
     
+    func displayBuyCancelAlert(notification: Notification) {
+        guard let dictionary = notification.userInfo as? [String: String] else {
+            return
+        }
+        guard let title = dictionary["title"] else {
+            return
+        }
+        guard let message = dictionary["message"] else {
+            return
+        }
+        guard let purchaseName = dictionary["purchaseName"] else {
+            return
+        }
+        guard let purchaseType = Purchase(rawValue: purchaseName) else {
+            return
+        }
+        
+        let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        let buyAction: UIAlertAction = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: nil)
+        let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+        alertView.addAction(buyAction)
+        alertView.addAction(cancelAction)
+        
+        self.present(alertView, animated: true, completion: nil)
+    }
+    
     //MARK: GameKit Methods
     func authenticationStatusDidChange(notification: Notification) {
         if let dictionary = notification.userInfo as? [String: Bool] {
