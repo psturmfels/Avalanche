@@ -95,7 +95,6 @@ class GameViewController: UIViewController {
     }
     
     func displayBuyCancelAlert(notification: Notification) {
-        print("Displaying buy cancel alert")
         guard let dictionary = notification.userInfo as? [String: String] else {
             return
         }
