@@ -362,6 +362,7 @@ class ArcadeModeScene: GameScene {
                 mellowTeleport()
             }
             self.isJetPacking = true
+            GameKitController.lastJumpDate = nil
         } else if canTeleport {
             mellowTeleport()
         } else {
