@@ -170,12 +170,13 @@ class StoreTableViewCell: UITableViewCell {
                     displayDismissAlert(withTitle: title, andMessage: message)
                     return
                 }
-            default:
+                
+                displayBuyCancelAlert(withtitle: "Confirm Purchase", andMessage: "Do you want to purchase '\(Purchase.readableName(ofPurchase: type))' for 2500 coins?", andType: type)
+                updatePurchaseImage()
+                
+            case .StashOCoins, .PileOCoins, .TreasureChest, .RemoveAds, .SupportTheDev:
                 break
             }
-            
-            displayBuyCancelAlert(withtitle: "Confirm Purchase", andMessage: "Do you want to purchase '\(Purchase.readableName(ofPurchase: type))' for 2500 coins?", andType: type)
-            updatePurchaseImage()
         }
     }
     
