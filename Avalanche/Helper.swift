@@ -54,3 +54,11 @@ func displayDismissAlert(withTitle title: String, andMessage message: String) {
     userInfo["message"] = message
     postNotification(withName: "alertRequested", andUserInfo: userInfo)
 }
+
+func displayBuyCancelAlert(withtitle title: String, andMessage message: String, andType type: Purchase) {
+    var userInfo: [String: String] = [:]
+    userInfo["title"] = title
+    userInfo["message"] = message
+    userInfo["purchaseName"] = type.rawValue
+    postNotification(withName: "buyRequested", andUserInfo: userInfo)
+}

@@ -30,6 +30,7 @@ class GameViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.displayDismissAlert(notification:)), name: NSNotification.Name(rawValue: "alertRequested"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.displayBuyCancelAlert(notification:)), name: NSNotification.Name(rawValue: "buyRequested"), object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.presentGameCenterViewController), name: NSNotification.Name(rawValue: "presentScores"), object: nil)
         
         self.view = SKView(frame: UIScreen.main.bounds)
@@ -94,6 +95,7 @@ class GameViewController: UIViewController {
     }
     
     func displayBuyCancelAlert(notification: Notification) {
+        print("Displaying buy cancel alert")
         guard let dictionary = notification.userInfo as? [String: String] else {
             return
         }
@@ -110,8 +112,12 @@ class GameViewController: UIViewController {
             return
         }
         
+        
         let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-        let buyAction: UIAlertAction = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: nil)
+        let buyAction: UIAlertAction = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default) { (action) in
+            StoreKitController.buy(purchaseType: purchaseType)
+            postNotification(withName: "ReloadStoreTable")
+        }
         let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
         alertView.addAction(buyAction)
         alertView.addAction(cancelAction)

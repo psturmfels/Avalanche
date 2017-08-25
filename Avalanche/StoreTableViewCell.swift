@@ -174,8 +174,7 @@ class StoreTableViewCell: UITableViewCell {
                 break
             }
             
-            postNotification(withName: "ReloadStoreTable")
-            StoreKitController.setPurchaseStatus(ofType: type, newStatus: true)
+            displayBuyCancelAlert(withtitle: "Confirm Purchase", andMessage: "Do you want to purchase '\(Purchase.readableName(ofPurchase: type))' for 2500 coins?", andType: type)
             updatePurchaseImage()
         }
     }

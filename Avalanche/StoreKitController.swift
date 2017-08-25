@@ -24,6 +24,31 @@ class StoreKitController: NSObject {
         }
     }
     
+    static func buy(purchaseType type: Purchase) {
+        switch type {
+        case .StashOCoins, .PileOCoins, .TreasureChest, .RemoveAds, .SupportTheDev:
+            return
+        default:
+            break
+        }
+        let numCoins: Int = getNumCoins()
+        let isPurchased: Bool = getPurchaseStatus(ofType: type)
+        
+        guard numCoins >= defaultCoinCost else {
+            return
+        }
+        guard !isPurchased else {
+            return
+        }
+        
+        let newNumCoins: Int = numCoins - defaultCoinCost
+        let userInfo: [String: Int] = ["numCoins": newNumCoins]
+        
+        subtractCoins(defaultCoinCost)
+        postNotification(withName: "numCoinsChanged", andUserInfo: userInfo)
+        setPurchaseStatus(ofType: type, newStatus: true)
+    }
+    
     static func addCoins(_ numCoins: Int) {
         guard numCoins > 0 else {
             return

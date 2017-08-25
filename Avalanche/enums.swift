@@ -90,6 +90,37 @@ enum Purchase: String {
             return UIImage()
         }
     }
+    static func readableName(ofPurchase type: Purchase) -> String {
+        switch type {
+        case .ArcadeMode:
+            return "Arcade Mode"
+        case .DayTime:
+            return "Day Time"
+        case .DoubleRandom:
+            return "Double Random"
+        case .JetPack:
+            return "Jet Pack"
+        case .PileOCoins:
+            return "Pile O' Coins"
+        case .PowerBeGone:
+            return "Power-be-gone"
+        case .RemoveAds:
+            return "Remove Ads"
+        case .Rewind:
+            return "Rewind"
+        case .Shrink:
+            return "Shrink"
+        case .StashOCoins:
+            return "Stash O' Coins"
+        case .SupportTheDev:
+            return "Support thed dev"
+        case .Teleport:
+            return "Teleport"
+        case .TreasureChest:
+            return "Treasure Chest"
+        }
+    }
+    
     static let allPurchases: [Purchase] = [Purchase.SupportTheDev, Purchase.PowerBeGone, Purchase.Rewind, Purchase.DoubleRandom, Purchase.DayTime, Purchase.Shrink, Purchase.Teleport, Purchase.JetPack, Purchase.ArcadeMode, Purchase.RemoveAds, Purchase.TreasureChest, Purchase.PileOCoins, Purchase.StashOCoins]
 }
 
