@@ -74,6 +74,8 @@ class MenuScene: SKScene {
         }
     }
     
+    var arcadeModeIsPurchased: Bool = false
+    
     var currentState: MenuStates = MenuStates.menu
     
     //MARK: Button Methods
@@ -353,6 +355,8 @@ class MenuScene: SKScene {
     override func didMove(to view: SKView) {
         NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.updateNumCoins(notification:)), name: NSNotification.Name("numCoinsChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.arcadeModeStatusDidChange), name: NSNotification.Name("arcadeModeStatusDidChange"), object: nil)
+        
         GameKitController.authenticateLocalPlayer()
         
         createContainerNodes()
@@ -377,6 +381,16 @@ class MenuScene: SKScene {
         }
     }
     
+    //MARK: StoreKit Methods
+    func arcadeModeStatusDidChange() {
+        let arcadeModeStatus: Bool = StoreKitController.getPurchaseStatus(ofType: Purchase.ArcadeMode)
+        arcadeModeIsPurchased = arcadeModeStatus
+        if arcadeModeStatus {
+            arcadeButton.alpha = 1.0
+        } else {
+            arcadeButton.alpha = 0.5
+        }
+    }
     
     //MARK: Coins Methods
     func coinImageTouched() {
@@ -608,6 +622,7 @@ class MenuScene: SKScene {
         arcadeButton = ButtonLabelNode()
         arcadeButton.setup(withText: "Arcade: ", withFontSize: 48.0, withButtonName: "Arcade", normalTextureName: "playMenuNormal", highlightedTextureName: "playMenuHighlighted", atPosition: center)
         arcadeButton.position.y -= arcadeButton.height * 0.5 + 10
+        arcadeModeStatusDidChange()
         
         scoresButton = ButtonLabelNode()
         scoresButton.setup(withText: "Scores: ", withFontSize: 48.0, withButtonName: "Scores", normalTextureName: "scoresNormal", highlightedTextureName: "scoresHighlighted", atPosition: center)
@@ -708,7 +723,13 @@ class MenuScene: SKScene {
                     playButton.didPress()
                     break
                 } else if object.name == "Arcade" {
-                    arcadeButton.didPress()
+                    if arcadeModeIsPurchased {
+                        arcadeButton.didPress()
+                    } else {
+                        let title: String = "Unlock Arcade Mode"
+                        let message: String = "You need to unlock arcade mode for 2500 coins before playing it. Unlock it in the store."
+                        displayDismissAlert(withTitle: title, andMessage: message)
+                    }
                 } else if object.name == "Tutorial" {
                     tutorialButton.didPress()
                 } else if object.name == "Settings" {
@@ -823,6 +844,12 @@ class MenuScene: SKScene {
             transitionToGame()
         } else if arcadeButton.isPressed {
             arcadeButton.didRelease(didActivate: true)
+            
+            let arcadeIsActive: Bool = StoreKitController.getPurchaseStatus(ofType: Purchase.ArcadeMode)
+            guard arcadeIsActive else {
+                return
+            }
+            
             transitionToArcade()
         } else if scoresButton.isPressed {
             scoresButton.didRelease(didActivate: true)

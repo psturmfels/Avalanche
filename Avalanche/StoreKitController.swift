@@ -47,6 +47,10 @@ class StoreKitController: NSObject {
         subtractCoins(defaultCoinCost)
         postNotification(withName: "numCoinsChanged", andUserInfo: userInfo)
         setPurchaseStatus(ofType: type, newStatus: true)
+        
+        if type == .ArcadeMode {
+            postNotification(withName: "arcadeModeStatusDidChange")
+        }
     }
     
     static func addCoins(_ numCoins: Int) {
@@ -205,5 +209,6 @@ class StoreKitController: NSObject {
         readPurchasesFromStore()
         postNotification(withName: "ReloadStoreTable")
         postNotification(withName: "numCoinsChanged", andUserInfo: ["numCoins": 0])
+        postNotification(withName: "arcadeModeStatusDidChange")
     }
 }

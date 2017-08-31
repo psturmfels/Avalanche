@@ -12,6 +12,7 @@ import AVFoundation
 
 class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
+    var eventIsOccuring: Bool = false
     let platformProbability: CGFloat = 0.25
     let nextPowerUpMin: Int = 5
     let nextPowerUpMax: Int = 35
@@ -174,13 +175,13 @@ class ArcadeModeScene: GameScene {
         }
     }
     
-    func createRespawnPlatform(atPoint point: CGPoint, fadeInDuration: CGFloat = 0.0) {
+    func createRespawnPlatform(atPoint point: CGPoint, fadeInDuration: TimeInterval = 0.0) {
         let respawnPlatform: OneWayBridgeNode = OneWayBridgeNode(imageNamed: "oneWayBridge")
         respawnPlatform.setup(atPoint: point)
         respawnPlatform.name = "respawnPlatform"
         
         respawnPlatform.alpha = 0.0
-        let fadeInAction: SKAction = SKAction.fadeIn(withDuration: 0.5)
+        let fadeInAction: SKAction = SKAction.fadeIn(withDuration: fadeInDuration)
         respawnPlatform.run(fadeInAction)
         
         self.worldNode.addChild(respawnPlatform)
@@ -620,7 +621,10 @@ class ArcadeModeScene: GameScene {
         super.update(currentTime)
         
         if current > nextPowerUp {
-            self.generateRandomPowerUpEvent(atPoint: 100.0 + self.size.height)
+            if !eventIsOccuring {
+                self.generateRandomPowerUpEvent(atPoint: 100.0 + self.size.height)
+            }
+            
             nextPowerUp = current + RandomInt(min: nextPowerUpMin, max: nextPowerUpMax)
         }
         
@@ -778,6 +782,41 @@ class ArcadeModeScene: GameScene {
             self.run(respawnAction, withKey: "mellowRespawn")
         }
     }
+    //MARK: Event Methods
+    func generateEventPlatform(atPoint point: CGPoint, fadeInDuration: TimeInterval = 0.5) {
+        createRespawnPlatform(atPoint: point, fadeInDuration: fadeInDuration)
+        let detectorY: CGFloat = point.y + 15.0 + EventNotifierNode.defaultHeight
+        let detectorPoint: CGPoint = CGPoint(x: point.x, y: detectorY)
+        
+        let detectorSize: CGSize = CGSize(width: self.frame.width, height: EventNotifierNode.defaultHeight)
+        let detectorNode: EventNotifierNode = EventNotifierNode(rectOf: detectorSize)
+        detectorNode.setup(atPoint: detectorPoint)
+        self.worldNode.addChild(detectorNode)
+    }
+    
+    func generatePowerUpWall(atPoint generatePointY: CGFloat, ofType type: PowerUpTypes, fadeInDuration: TimeInterval = 0.0) {
+        let yVal: CGFloat = generatePointY - worldNode.position.y
+        let firstXVal: CGFloat = 40.0
+        let finalXVal: CGFloat = self.size.width - 40.0
+        let numberPowerUps: CGFloat = 7.0
+        let numberOfDivisions: CGFloat = numberPowerUps - 1.0
+        
+        let distance: CGFloat = finalXVal - firstXVal
+        let incrementSize: CGFloat = distance / numberOfDivisions
+        var currentX: CGFloat = firstXVal
+        while currentX <= finalXVal {
+            let setupPoint: CGPoint = CGPoint(x: currentX, y: yVal)
+            let powerUp: PowerUp = PowerUp(imageNamed: "")
+            powerUp.setup(atPoint: setupPoint, withType: type)
+            powerUp.alpha = 0.0
+            let fadeInAction: SKAction = SKAction.fadeIn(withDuration: fadeInDuration)
+            powerUp.run(fadeInAction)
+            
+            worldNode.addChild(powerUp)
+            currentX += incrementSize
+        }
+    }
+    
     
     //MARK: PowerUp Methods
     func generateRandomPowerUpEvent(atPoint generatePointY: CGFloat) {
@@ -1239,6 +1278,10 @@ class ArcadeModeScene: GameScene {
     }
     
     func superUpdateCurrentDifficulty() {
+        guard !eventIsOccuring else {
+            return
+        }
+        
         self.removeAction(forKey: "genBlocks")
         self.minFallSpeed = -130.0  - 15.0 * Float(self.currentDifficulty)
         self.maxFallSpeed = self.minFallSpeed + 60.0

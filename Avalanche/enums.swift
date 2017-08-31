@@ -253,6 +253,7 @@ enum CollisionTypes: UInt32 {
     case oneWayEnabled  = 256
     case oneWayDisabled = 512
     case oneWayPlatformBottom = 1024
+    case eventNotifier = 2048
 }
 
 enum Orientation {

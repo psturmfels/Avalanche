@@ -18,7 +18,7 @@ class OneWayPlatformNode: RoundedBlockNode {
     }
     
     //MARK: Creation Method
-    override func setup(_ minFallSpeed: Float, maxFallSpeed: Float) {
+    override func setup(_ minFallSpeed: Float, maxFallSpeed: Float, andScale targetScale: CGFloat = -1.0) {
         physicsSize = CGSize(width: self.size.width * 0.98, height: self.size.height * fractionPhyiscs)
         
         let physicsY: CGFloat = -0.5 * (self.size.height - self.physicsSize.height)
@@ -60,8 +60,12 @@ class OneWayPlatformNode: RoundedBlockNode {
         self.fallSpeed = RandomCGFloat(min: minFallSpeed, max: maxFallSpeed)
         self.originalFallSpeed = fallSpeed
         
-        let scale: CGFloat = CGFloat(RandomFloat(min: 1.2, max: 1.6))
-        self.setScale(scale)
+        if targetScale < 0.0 {
+            let scale: CGFloat = CGFloat(RandomFloat(min: 1.2, max: 1.6))
+            self.setScale(scale)
+        } else {
+            self.setScale(targetScale)
+        }
     }
 
     
