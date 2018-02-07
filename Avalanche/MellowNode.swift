@@ -80,21 +80,21 @@ class MellowNode: SKSpriteNode {
     var shouldJumpFromBuffer: Bool = false
     var canJump: Bool = false {
         didSet {
-            if shouldJumpFromBuffer {
+            if shouldJumpFromBuffer && canJump {
                 jump()
             }
         }
     }
     var canWallJumpRight: Bool = false {
         didSet {
-            if shouldJumpFromBuffer {
+            if shouldJumpFromBuffer && canWallJumpRight {
                 jump()
             }
         }
     }
     var canWallJumpLeft: Bool = false {
         didSet {
-            if shouldJumpFromBuffer {
+            if shouldJumpFromBuffer && canWallJumpLeft {
                 jump()
             }
         }
@@ -187,6 +187,8 @@ class MellowNode: SKSpriteNode {
         guard self.physicsBody != nil else {
             return
         }
+        self.removeAction(forKey: "jumpBuffer")
+        shouldJumpFromBuffer = false
         
         if canJump && self.physicsBody!.velocity.dy < 10 {
             //Jump upwards, using the correct animations depending on
@@ -201,7 +203,7 @@ class MellowNode: SKSpriteNode {
                 jumpAction = SKAction.animate(with: leftJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
             }
             
-            let actionSequence = SKAction.sequence([forceAction, jumpAction])
+            let actionSequence: SKAction = SKAction.sequence([forceAction, jumpAction])
             self.run(actionSequence, withKey: "isJumping")
             canJump = false
             canWallJumpRight = false
@@ -214,9 +216,9 @@ class MellowNode: SKSpriteNode {
             leftSideInContact = 0
             bottomSideInContact = 0
             self.physicsBody!.velocity.dy = 0
-            let jumpAction = SKAction.animate(with: leftWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
-            let forceAction = SKAction.applyForce(CGVector(dx: sideJumpForce, dy: upJumpForce), duration: 0.01)
-            let actionSequence = SKAction.sequence([forceAction, jumpAction])
+            let jumpAction: SKAction = SKAction.animate(with: leftWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
+            let forceAction: SKAction = SKAction.applyForce(CGVector(dx: sideJumpForce, dy: upJumpForce), duration: 0.01)
+            let actionSequence: SKAction = SKAction.sequence([forceAction, jumpAction])
             self.run(actionSequence, withKey: "isJumping")
             canJump = false
             canWallJumpRight = false
@@ -229,13 +231,21 @@ class MellowNode: SKSpriteNode {
             rightSideInContact = 0
             bottomSideInContact = 0
             self.physicsBody!.velocity.dy = 0
-            let jumpAction = SKAction.animate(with: rightWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
-            let forceAction = SKAction.applyForce(CGVector(dx: -sideJumpForce, dy: upJumpForce), duration: 0.01)
-            let actionSequence = SKAction.sequence([forceAction, jumpAction])
+            let jumpAction: SKAction = SKAction.animate(with: rightWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
+            let forceAction: SKAction = SKAction.applyForce(CGVector(dx: -sideJumpForce, dy: upJumpForce), duration: 0.01)
+            let actionSequence: SKAction = SKAction.sequence([forceAction, jumpAction])
             self.run(actionSequence, withKey: "isJumping")
             canJump = false
             canWallJumpRight = false
             canWallJumpLeft = false
+        } else {
+            shouldJumpFromBuffer = true
+            let waitAction: SKAction = SKAction.wait(forDuration: 0.08)
+            let disableBuffer: SKAction = SKAction.run({ [unowned self] in
+                self.shouldJumpFromBuffer = false
+            })
+            let actionSequence: SKAction = SKAction.sequence([waitAction, disableBuffer])
+            self.run(actionSequence, withKey: "jumpBuffer")
         }
     }
     
