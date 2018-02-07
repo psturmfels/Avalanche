@@ -373,7 +373,7 @@ class MenuScene: SKScene {
     }
     
     //MARK: GameKit Methods
-    func authenticationStatusDidChange(notification: Notification) {
+    @objc func authenticationStatusDidChange(notification: Notification) {
         if let dictionary = notification.userInfo as? [String: Bool] {
             if let newAuthenticationStatus = dictionary["isAuthenticated"] {
                 gameCenterIsAuthenticated = newAuthenticationStatus
@@ -382,7 +382,7 @@ class MenuScene: SKScene {
     }
     
     //MARK: StoreKit Methods
-    func arcadeModeStatusDidChange() {
+    @objc func arcadeModeStatusDidChange() {
         let arcadeModeStatus: Bool = StoreKitController.getPurchaseStatus(ofType: Purchase.ArcadeMode)
         arcadeModeIsPurchased = arcadeModeStatus
         if arcadeModeStatus {
@@ -439,7 +439,7 @@ class MenuScene: SKScene {
         self.addChild(coinLabel)
     }
     
-    func updateNumCoins(notification: Notification) {
+    @objc func updateNumCoins(notification: Notification) {
         if let dictionary = notification.userInfo as? [String: Int] {
             if let numCoins = dictionary["numCoins"] {
                 coinLabel.text = "\(numCoins)"

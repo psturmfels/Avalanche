@@ -250,7 +250,7 @@ class AchievementTableViewCell: UITableViewCell {
     
     func wasSelected(animateWithDuration duration: TimeInterval = 0.2) {
         UIView.animate(withDuration: duration) {
-            if let text = self.achievementTitleLabel.text, text.characters.count > 10 {
+            if let text = self.achievementTitleLabel.text, text.count > 10 {
                 self.achievementTitleLabel.numberOfLines = 2
             } else {
                 self.achievementTitleLabel.numberOfLines = 1

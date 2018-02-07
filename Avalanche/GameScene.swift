@@ -164,7 +164,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.scene!.view!.presentScene(gameOverScene, transition: transition)
     }
     
-    func gameWillEnterBackground() {
+    @objc func gameWillEnterBackground() {
         if let musicStart = self.action(forKey: "musicStart") {
             musicStart.speed = 0.0
         } else {
@@ -175,7 +175,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func gameDidEnterForeground() {
+    @objc func gameDidEnterForeground() {
         //self.currentGameState = .gameInProgress
     }
     
@@ -777,14 +777,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //If the mellow and the ground lost a point of contact
             if  mellow.bottomSideInContact > 0 && blockTopLessMellowBot && xPosDiff < combinedWidths  {
                 mellow.bottomSideInContact -= 1
+                if mellow.bottomSideInContact <= 0 {
+                    mellow.disableJumpAfterTime(jumpType: 0)
+                }
             }
             else if mellow.leftSideInContact > 0 && blockRightEdge < mellowLeftEdge && yPosDiff < combinedHeights {
                 //If the mellow and the left wall lost a point of contact
                 mellow.leftSideInContact -= 1
+                if mellow.leftSideInContact <= 0 {
+                    mellow.disableJumpAfterTime(jumpType: 1)
+                }
             }
             else if mellow.rightSideInContact > 0 && mellowRightEdge < blockLeftEdge && yPosDiff < combinedHeights {
                 //If the mellow and the right wall lost a point of contact
                 mellow.rightSideInContact -= 1
+                if mellow.leftSideInContact <= 0 {
+                    mellow.disableJumpAfterTime(jumpType: 2)
+                }
             }
         }
             //If the rising lava and an object in the background lost contact, it means that that piece

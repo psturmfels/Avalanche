@@ -70,7 +70,7 @@ class PowerUp: SKSpriteNode {
     
     fileprivate func createCountdown(withDuration duration: TimeInterval, andActionKey key: String) {
         let circle: SKShapeNode = SKShapeNode(circleOfRadius: 26.0)
-        circle.fillColor = SKColor(colorLiteralRed: 0.5, green: 1.0, blue: 0.5, alpha: 1.0)
+        circle.fillColor = SKColor(red: 0.5, green: 1.0, blue: 0.5, alpha: 1.0)
         circle.strokeColor = SKColor.clear
         circle.zRotation = CGFloat.pi / 2
         circle.position = CGPoint.zero

@@ -39,13 +39,31 @@ class MellowNode: SKSpriteNode {
     var direction: Orientation = .left
     var bottomSideInContact: Int = 0 {
         didSet {
+            self.removeAction(forKey: "DisableJump0")
+            if bottomSideInContact > 0 {
+                canJump = true
+            }
             if oldValue == 0 && bottomSideInContact > 0 {
                 consecutiveWallJumps = 0
             }
         }
     }
-    var leftSideInContact: Int = 0
-    var rightSideInContact: Int = 0
+    var leftSideInContact: Int = 0 {
+        didSet {
+            self.removeAction(forKey: "DisableJump1")
+            if leftSideInContact > 0 {
+                canWallJumpRight = true
+            }
+        }
+    }
+    var rightSideInContact: Int = 0 {
+        didSet {
+            self.removeAction(forKey: "DisableJump2")
+            if rightSideInContact > 0 {
+                canWallJumpLeft = true
+            }
+        }
+    }
     var physicsSize: CGSize {
         get {
             return CGSize(width: self.size.width * 0.93, height: self.size.height * 0.93)
@@ -59,6 +77,28 @@ class MellowNode: SKSpriteNode {
     var trailingNum: Int = 0
     
     var isMoving: Bool = false
+    var shouldJumpFromBuffer: Bool = false
+    var canJump: Bool = false {
+        didSet {
+            if shouldJumpFromBuffer {
+                jump()
+            }
+        }
+    }
+    var canWallJumpRight: Bool = false {
+        didSet {
+            if shouldJumpFromBuffer {
+                jump()
+            }
+        }
+    }
+    var canWallJumpLeft: Bool = false {
+        didSet {
+            if shouldJumpFromBuffer {
+                jump()
+            }
+        }
+    }
     var consecutiveWallJumps: Int = 0 {
         didSet {
             if consecutiveWallJumps == 5 {
@@ -68,6 +108,24 @@ class MellowNode: SKSpriteNode {
                 GameKitController.report(Achievement.Ninja, withPercentComplete: 100.0)
             }
         }
+    }
+    
+    func disableJumpAfterTime(jumpType: Int) {
+        self.removeAction(forKey: "DisableJump\(jumpType)")
+        let waitAction: SKAction = SKAction.wait(forDuration: 0.1)
+        let disableAction: SKAction = SKAction.run { [unowned self] in
+            if jumpType == 0 {
+                self.canJump = false
+            }
+            else if jumpType == 1 {
+                self.canWallJumpRight = false
+            }
+            else if jumpType == 2 {
+                self.canWallJumpLeft = false
+            }
+        }
+        let actionSequence: SKAction = SKAction.sequence([waitAction, disableAction])
+        self.run(actionSequence, withKey: "DisableJump\(jumpType)")
     }
     
     //Mark: Creation Method
@@ -130,7 +188,7 @@ class MellowNode: SKSpriteNode {
             return
         }
         
-        if bottomSideInContact > 0 && self.physicsBody!.velocity.dy < 10 {
+        if canJump && self.physicsBody!.velocity.dy < 10 {
             //Jump upwards, using the correct animations depending on
             //which direction the mellow is facing
             bottomSideInContact = 0
@@ -143,10 +201,13 @@ class MellowNode: SKSpriteNode {
                 jumpAction = SKAction.animate(with: leftJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
             }
             
-            let actionSequence = SKAction.sequence([jumpAction, forceAction])
+            let actionSequence = SKAction.sequence([forceAction, jumpAction])
             self.run(actionSequence, withKey: "isJumping")
+            canJump = false
+            canWallJumpRight = false
+            canWallJumpLeft = false
         }
-        else if leftSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
+        else if canWallJumpRight {
             consecutiveWallJumps += 1
             
             //Wall jump right if the mellow is clinging on to a wall the left side
@@ -155,10 +216,13 @@ class MellowNode: SKSpriteNode {
             self.physicsBody!.velocity.dy = 0
             let jumpAction = SKAction.animate(with: leftWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
             let forceAction = SKAction.applyForce(CGVector(dx: sideJumpForce, dy: upJumpForce), duration: 0.01)
-            let actionSequence = SKAction.sequence([jumpAction, forceAction])
+            let actionSequence = SKAction.sequence([forceAction, jumpAction])
             self.run(actionSequence, withKey: "isJumping")
+            canJump = false
+            canWallJumpRight = false
+            canWallJumpLeft = false
         }
-        else if rightSideInContact > 0 && abs(self.physicsBody!.velocity.dx) < 10 {
+        else if canWallJumpLeft {
             consecutiveWallJumps += 1
             
             //Wall jump left if the mellow is clining to a wall on the right side
@@ -167,11 +231,15 @@ class MellowNode: SKSpriteNode {
             self.physicsBody!.velocity.dy = 0
             let jumpAction = SKAction.animate(with: rightWallJumpTextures, timePerFrame: 0.01, resize: true, restore: true)
             let forceAction = SKAction.applyForce(CGVector(dx: -sideJumpForce, dy: upJumpForce), duration: 0.01)
-            let actionSequence = SKAction.sequence([jumpAction, forceAction])
+            let actionSequence = SKAction.sequence([forceAction, jumpAction])
             self.run(actionSequence, withKey: "isJumping")
+            canJump = false
+            canWallJumpRight = false
+            canWallJumpLeft = false
         }
     }
     
+
     func setdx(withAcceleration accel: Double) {
         if fabs(accel) > 0.1 {
             if !isMoving {

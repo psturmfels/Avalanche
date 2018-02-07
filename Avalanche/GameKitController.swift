@@ -402,7 +402,7 @@ class GameKitController: NSObject {
         }
     }
     
-    func reportAchievement(notification: Notification) {
+    @objc func reportAchievement(notification: Notification) {
         guard let dictionary = notification.userInfo as? [String: Any] else {
             return
         }
@@ -501,7 +501,7 @@ class GameKitController: NSObject {
     }
     
     //MARK: Scores
-    func reportScore(notification: Notification) {
+    @objc func reportScore(notification: Notification) {
         guard let dictionary = notification.userInfo as? [String: Any] else {
             return
         }

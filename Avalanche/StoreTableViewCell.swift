@@ -141,7 +141,7 @@ class StoreTableViewCell: UITableViewCell {
     }
     
     //MARK: Button Methods
-    func purchaseButtonPressed() {
+    @objc func purchaseButtonPressed() {
         if let type = purchaseType {
             let hasBeenPurchased: Bool = StoreKitController.getPurchaseStatus(ofType: type)
             guard !hasBeenPurchased else {

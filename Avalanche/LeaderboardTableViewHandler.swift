@@ -35,7 +35,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         self.refreshControl.addTarget(self, action: #selector(self.viewRefreshed), for: UIControlEvents.valueChanged)
     }
     
-    func viewRefreshed() {
+    @objc func viewRefreshed() {
         let dateAhead: DispatchTime = DispatchTime.now() + .seconds(1)
         
         DispatchQueue.main.asyncAfter(deadline: dateAhead) {
@@ -48,7 +48,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     
     //MARK: GameCenter Methods
-    func authenticationStatusDidChange(notification: Notification) {
+    @objc func authenticationStatusDidChange(notification: Notification) {
         if let dictionary = notification.userInfo as? [String: Bool] {
             if let newAuthenticationStatus = dictionary["isAuthenticated"] {
                 self.gameCenterIsAuthenticated = newAuthenticationStatus

@@ -986,7 +986,7 @@ class ArcadeModeScene: GameScene {
             removeJetPack()
         case .shrink:
             removeShrink()
-        case .teleport():
+        case .teleport:
             removeTeleport()
         case .mellowSlow:
             removeMellowSlow()

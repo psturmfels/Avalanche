@@ -29,7 +29,7 @@ class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSourc
         NotificationCenter.default.addObserver(self, selector: #selector(StoreTableViewHandler.reloadTableView), name: NSNotification.Name("ReloadStoreTable"), object: nil)
     }
     
-    func reloadTableView() {
+    @objc func reloadTableView() {
         if let tableView = self.tableView {
             tableView.reloadData()
         }
@@ -42,7 +42,7 @@ class StoreTableViewHandler: NSObject, UITableViewDelegate, UITableViewDataSourc
     }
     
     //MARK: GameCenter Methods
-    func authenticationStatusDidChange(notification: Notification) {
+    @objc func authenticationStatusDidChange(notification: Notification) {
         if let dictionary = notification.userInfo as? [String: Bool] {
             if let newAuthenticationStatus = dictionary["isAuthenticated"] {
                 self.gameCenterIsAuthenticated = newAuthenticationStatus

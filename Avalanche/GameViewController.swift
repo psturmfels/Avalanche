@@ -76,7 +76,7 @@ class GameViewController: UIViewController {
     
     
     //MARK: Alert Methods
-    func displayDismissAlert(notification: Notification) {
+    @objc func displayDismissAlert(notification: Notification) {
         guard let dictionary = notification.userInfo as? [String: String] else {
             return
         }
@@ -94,7 +94,7 @@ class GameViewController: UIViewController {
         self.present(alertView, animated: true, completion: nil)
     }
     
-    func displayBuyCancelAlert(notification: Notification) {
+    @objc func displayBuyCancelAlert(notification: Notification) {
         guard let dictionary = notification.userInfo as? [String: String] else {
             return
         }
@@ -125,7 +125,7 @@ class GameViewController: UIViewController {
     }
     
     //MARK: GameKit Methods
-    func authenticationStatusDidChange(notification: Notification) {
+    @objc func authenticationStatusDidChange(notification: Notification) {
         if let dictionary = notification.userInfo as? [String: Bool] {
             if let newAuthenticationStatus = dictionary["isAuthenticated"] {
                 gameCenterIsAuthenticated = newAuthenticationStatus
