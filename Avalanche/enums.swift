@@ -47,11 +47,11 @@ enum Achievement: String {
     case TimeWarp = "TimeWarp"
     
     static func getAchievementReward(type: Achievement) -> Int {
-        let tierOneReward: Int = 50
-        let tierTwoReward: Int = 75
-        let tierThreeReward: Int = 100
-        let tierFourReward: Int = 125
-        let tierFiveReward: Int = 150
+        let tierOneReward: Int = 100
+        let tierTwoReward: Int = 200
+        let tierThreeReward: Int = 300
+        let tierFourReward: Int = 400
+        let tierFiveReward: Int = 500
         switch type {
         case .whatDoesThisDo, .Beginner, .Clueless, .EarthBound, .Smores, .Squashed, .AFK, .TestRun, .Student, .Gifted, .Izanagi:
             return tierOneReward
@@ -121,7 +121,7 @@ enum Purchase: String {
         }
     }
     
-    static let allPurchases: [Purchase] = [Purchase.SupportTheDev, Purchase.PowerBeGone, Purchase.Rewind, Purchase.DoubleRandom, Purchase.DayTime, Purchase.Shrink, Purchase.Teleport, Purchase.JetPack, Purchase.ArcadeMode, Purchase.RemoveAds, Purchase.TreasureChest, Purchase.PileOCoins, Purchase.StashOCoins]
+    static let allPurchases: [Purchase] = [Purchase.PowerBeGone, Purchase.Rewind, Purchase.DoubleRandom, Purchase.DayTime, Purchase.Shrink, Purchase.Teleport, Purchase.JetPack, Purchase.ArcadeMode, Purchase.RemoveAds, Purchase.TreasureChest, Purchase.PileOCoins, Purchase.StashOCoins]
 }
 
 enum LeaderboardTypes: String {

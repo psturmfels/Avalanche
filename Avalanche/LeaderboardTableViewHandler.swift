@@ -153,7 +153,7 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             self.expandedPath = indexPath
             tableView.beginUpdates()
             tableView.endUpdates()
-            tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.middle, animated: true)
+            tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.none, animated: true)
             
             let cell: LeaderboardTableViewCell = tableView.cellForRow(at: indexPath) as! LeaderboardTableViewCell
             cell.wasSelected()

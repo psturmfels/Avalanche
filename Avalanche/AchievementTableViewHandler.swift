@@ -126,7 +126,7 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
             self.expandedPath = indexPath
             tableView.beginUpdates()
             tableView.endUpdates()
-            tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.middle, animated: true)
+            tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.none, animated: true)
             
             let cell: AchievementTableViewCell = tableView.cellForRow(at: indexPath) as! AchievementTableViewCell
             cell.wasSelected()
@@ -168,6 +168,10 @@ class AchievementTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         } else {
             return AchievementTableViewCell.defaultHeight
         }
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80.0
     }
     
     //MARK: Helper functions
