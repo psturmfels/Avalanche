@@ -210,7 +210,6 @@ class MenuScene: SKScene {
         displayReverseBackToMenu()
         
         animateRight(table: storeTable)
-        storeTable.reloadData()
     }
     
     func animateRight(table tableView: UITableView) {
@@ -481,10 +480,10 @@ class MenuScene: SKScene {
     
     func createStoreTables() {
         let storeTableHeight: CGFloat = 330.0
-        let rightPoint: CGFloat = 20.0 - self.frame.width
+        let rightPoint: CGFloat = -self.frame.width
         
         storeTable = UITableView(frame: self.frame, style: UITableViewStyle.grouped)
-        storeTable.frame.size.width = self.frame.width - 40
+        storeTable.frame.size.width = self.frame.width
         storeTable.frame.size.height = storeTableHeight
         storeTable.frame.origin = CGPoint(x: rightPoint, y: menuButton.frame.height + 100.0)
         storeTable.separatorStyle = UITableViewCellSeparatorStyle.none

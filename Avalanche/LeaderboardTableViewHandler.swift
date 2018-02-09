@@ -89,10 +89,15 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
         guard let scoreArray = GameKitController.scores[currentLeaderboard] else {
             return LeaderboardTableViewCell()
         }
+        let row: Int = indexPath.row
+        guard row < scoreArray.count else {
+            return LeaderboardTableViewCell()
+        }
         
         let cell: LeaderboardTableViewCell = tableView.dequeueReusableCell(withIdentifier: "LeaderboardTableViewCell") as! LeaderboardTableViewCell
         
-        let row: Int = indexPath.row
+        
+        
         if let expandedPath = self.expandedPath, expandedPath == indexPath {
             cell.isExpanded = true
         } else {
