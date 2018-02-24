@@ -9,6 +9,7 @@
 import UIKit
 import GameKit
 import AVFoundation
+import GoogleMobileAds
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -63,6 +64,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         loadGameKitControllerClass()
         loadStoreKitControllerClass()
         setMusicPreferences()
+        
+        GADMobileAds.configure(withApplicationID: "ca-app-pub-4710510679535431~9029335450")
         
         //Bring up the gameViewController
         gameViewController = GameViewController()

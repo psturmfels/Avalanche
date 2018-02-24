@@ -9,8 +9,9 @@
 import UIKit
 import SpriteKit
 import GameKit
+import GoogleMobileAds
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, GADInterstitialDelegate {
 //    var gameCenterVC: GKGameCenterViewController!
     
     var gameCenterIsAuthenticated: Bool = false {
@@ -24,13 +25,15 @@ class GameViewController: UIViewController {
     var currentGameCenterViewControllerState: GKGameCenterViewControllerState = GKGameCenterViewControllerState.default
     var localPlayer: GKLocalPlayer!
     var menuScene: MenuScene!
+    var interstitial: GADInterstitial!
     
     //MARK: View Methods
     override func viewDidLoad() {
-        
+        interstitial = createAndLoadInterstitial()
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.displayDismissAlert(notification:)), name: NSNotification.Name(rawValue: "alertRequested"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.displayBuyCancelAlert(notification:)), name: NSNotification.Name(rawValue: "buyRequested"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.showInterstitialAd), name: NSNotification.Name(rawValue: "showInterstitialAd"), object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.presentGameCenterViewController), name: NSNotification.Name(rawValue: "presentScores"), object: nil)
         
         self.view = SKView(frame: UIScreen.main.bounds)
@@ -74,6 +77,31 @@ class GameViewController: UIViewController {
         return true
     }
     
+    //MARK: GAD Methods
+    @objc func showInterstitialAd() {
+        if interstitial.isReady {
+            interstitial.present(fromRootViewController: self)
+        } else {
+            postNotification(withName: "InterstitialAdFinished")
+        }
+    }
+    
+    func createAndLoadInterstitial() -> GADInterstitial {
+        let interstitial: GADInterstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/4411468910")
+        interstitial.delegate = self
+        let request: GADRequest = GADRequest()
+        interstitial.load(request)
+        return interstitial
+    }
+    
+    func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        postNotification(withName: "InterstitialAdFinished")
+        interstitial = createAndLoadInterstitial()
+    }
+    
+    func interstitialDidFail(toPresentScreen ad: GADInterstitial) {
+        postNotification(withName: "InterstitialAdFinished")
+    }
     
     //MARK: Alert Methods
     @objc func displayDismissAlert(notification: Notification) {

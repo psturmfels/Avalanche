@@ -18,12 +18,21 @@ class GameOverScene: SKScene {
     
     var coinLabel: LabelNode!
     var coinImage: SKSpriteNode!
+    var buttonsEnabled: Bool = false
     
     //MARK: Initializing Methods
     override func didMove(to view: SKView) {
+        
         /* Setup your scene here */
         replayButton = ButtonLabelNode()
         menuButton = ButtonLabelNode()
+        if StoreKitController.shouldShowAd() {
+            disableButtons()
+            postNotification(withName: "showInterstitialAd")
+            NotificationCenter.default.addObserver(self, selector: #selector(GameOverScene.enableButtons), name: NSNotification.Name(rawValue: "InterstitialAdFinished"), object: nil)
+        } else {
+            enableButtons()
+        }
         
         let center: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.midY)
         let centerButtons: CGPoint = CGPoint(x: center.x, y: center.y - 75.0)
@@ -137,6 +146,16 @@ class GameOverScene: SKScene {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard buttonsEnabled else {
+            if replayButton.isPressed {
+                replayButton.didRelease(didActivate: false)
+            }
+            if menuButton.isPressed {
+                menuButton.didRelease(didActivate: false)
+            }
+            return
+        }
+        
         if replayButton.isPressed {
             replayButton.didRelease(didActivate: true)
             transitionToReplay()
@@ -170,6 +189,19 @@ class GameOverScene: SKScene {
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         replayButton.didRelease()
         menuButton.didRelease()
+    }
+    
+    //MARK: Button Methods
+    func disableButtons() {
+        buttonsEnabled = false
+        menuButton.alpha = 0.5
+        replayButton.alpha = 0.5
+    }
+    
+    @objc func enableButtons() {
+        buttonsEnabled = true
+        menuButton.alpha = 1.0
+        replayButton.alpha = 1.0
     }
     
     //MARK: Transition Methods

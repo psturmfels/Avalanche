@@ -126,6 +126,9 @@
 		1AFE71591DB67C2800E217EC /* ClassicModeScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassicModeScene.swift; sourceTree = "<group>"; };
 		1AFE715B1DB6835C00E217EC /* TutorialScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialScene.swift; sourceTree = "<group>"; };
 		1AFE715D1DB684D900E217EC /* SKLabelNodeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKLabelNodeExtension.swift; sourceTree = "<group>"; };
+		582D5E7751B639D5D53DEA06 /* libPods-Avalanche.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Avalanche.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F71FC08EF2E511B1AC52F8C /* Pods-Avalanche.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Avalanche.release.xcconfig"; path = "Pods/Target Support Files/Pods-Avalanche/Pods-Avalanche.release.xcconfig"; sourceTree = "<group>"; };
+		DA71F90E34C540BCB752CEDC /* Pods-Avalanche.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Avalanche.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Avalanche/Pods-Avalanche.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +172,8 @@
 				1AF408BB1D6A4B8100539A7D /* GameKit.framework */,
 				1AAFB4BF1CA07D6100E7472B /* Avalanche */,
 				1AAFB4BE1CA07D6100E7472B /* Products */,
+				F544E4F8D471A67B938C0EBA /* Pods */,
+				C4A615E9615C003CE742C5CB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -293,6 +298,23 @@
 			name = Emitters;
 			sourceTree = "<group>";
 		};
+		C4A615E9615C003CE742C5CB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				582D5E7751B639D5D53DEA06 /* libPods-Avalanche.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F544E4F8D471A67B938C0EBA /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				DA71F90E34C540BCB752CEDC /* Pods-Avalanche.debug.xcconfig */,
+				5F71FC08EF2E511B1AC52F8C /* Pods-Avalanche.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -300,9 +322,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1AAFB4D31CA07D6100E7472B /* Build configuration list for PBXNativeTarget "Avalanche" */;
 			buildPhases = (
+				D7FEA7394A54258AF91D7659 /* [CP] Check Pods Manifest.lock */,
 				1AAFB4B91CA07D6100E7472B /* Sources */,
 				1AAFB4BA1CA07D6100E7472B /* Frameworks */,
 				1AAFB4BB1CA07D6100E7472B /* Resources */,
+				EC41E8D5543628F22270F169 /* [CP] Embed Pods Frameworks */,
+				596EF3FA16263E0F70905F3F /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -388,6 +413,57 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		596EF3FA16263E0F70905F3F /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Avalanche/Pods-Avalanche-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D7FEA7394A54258AF91D7659 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Avalanche-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EC41E8D5543628F22270F169 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Avalanche/Pods-Avalanche-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1AAFB4B91CA07D6100E7472B /* Sources */ = {
@@ -542,6 +618,7 @@
 		};
 		1AAFB4D41CA07D6100E7472B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA71F90E34C540BCB752CEDC /* Pods-Avalanche.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -559,6 +636,7 @@
 		};
 		1AAFB4D51CA07D6100E7472B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5F71FC08EF2E511B1AC52F8C /* Pods-Avalanche.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";

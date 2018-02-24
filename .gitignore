@@ -1,4 +1,6 @@
 .DS_Store
+*.xcworkspace/
+Pods/
 ## Build generated
 build/
 DerivedData/

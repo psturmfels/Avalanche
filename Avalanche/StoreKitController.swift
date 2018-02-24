@@ -24,6 +24,21 @@ class StoreKitController: NSObject {
         }
     }
     
+    static func shouldShowAd() -> Bool {
+        if StoreKitController.getPurchaseStatus(ofType: Purchase.RemoveAds) {
+            return false
+        } else {
+            if let parity = mutableStoreDictionary["AdParity"] as? Int {
+                let newParity: Int = (parity + 1) % 3
+                mutableStoreDictionary.setValue(newParity, forKey: "AdParity")
+                mutableStoreDictionary.write(to: storeDictionaryURL, atomically: true)
+                return parity == 2
+            } else {
+                return false
+            }
+        }
+    }
+    
     static func buy(purchaseType type: Purchase) {
         switch type {
         case .StashOCoins, .PileOCoins, .TreasureChest, .RemoveAds, .SupportTheDev:
