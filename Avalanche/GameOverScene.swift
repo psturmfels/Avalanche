@@ -19,6 +19,7 @@ class GameOverScene: SKScene {
     var coinLabel: LabelNode!
     var coinImage: SKSpriteNode!
     var buttonsEnabled: Bool = false
+    var coinsAdded: Bool = false
     
     //MARK: Initializing Methods
     override func didMove(to view: SKView) {
@@ -67,7 +68,6 @@ class GameOverScene: SKScene {
         coinLabel.horizontalAlignmentMode = .right
         let coinLabelX: CGFloat = center.x - 5.0
         let numCoinsEarned: Int = 1 + highScore / 10
-        StoreKitController.addCoins(numCoinsEarned)
         let coinLabelPos: CGPoint = CGPoint(x: coinLabelX, y: coinY)
         coinLabel.setup(withText: "+\(numCoinsEarned)", withFontSize: 48.0, atPosition: coinLabelPos)
         coinLabel.position.y -= coinLabel.frame.height * 0.5
@@ -202,6 +202,11 @@ class GameOverScene: SKScene {
         buttonsEnabled = true
         menuButton.alpha = 1.0
         replayButton.alpha = 1.0
+        if !coinsAdded {
+            let numCoinsEarned: Int = 1 + highScore / 10
+            StoreKitController.addCoins(numCoinsEarned)
+            coinsAdded = true
+        }
     }
     
     //MARK: Transition Methods

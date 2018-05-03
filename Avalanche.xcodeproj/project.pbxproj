@@ -29,9 +29,11 @@
 		02AFC1971F37E1F20021765B /* StorePurchases.plist in Resources */ = {isa = PBXBuildFile; fileRef = 02AFC1961F37E1F20021765B /* StorePurchases.plist */; };
 		02AFC1991F37E3CE0021765B /* StoreKitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02AFC1981F37E3CE0021765B /* StoreKitController.swift */; };
 		02B20CAF1E633DC900534BCC /* LeaderboardTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B20CAE1E633DC900534BCC /* LeaderboardTableViewCell.swift */; };
+		02BF7F8F2042FAFA003F9886 /* IAPHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02BF7F8E2042FAFA003F9886 /* IAPHandler.swift */; };
 		02C4F2A41E5A84F00036FB19 /* LeaderboardTableViewHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C4F2A31E5A84F00036FB19 /* LeaderboardTableViewHandler.swift */; };
 		02E85D0F1F531F020023D176 /* EventNotifierNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E85D0E1F531F020023D176 /* EventNotifierNode.swift */; };
 		02EAFA7A1ECBFDFD00687C99 /* teleport.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 02EAFA791ECBFDFD00687C99 /* teleport.atlas */; };
+		02ED4E762041F09C00A4698D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02ED4E752041F09C00A4698D /* StoreKit.framework */; };
 		1A0584E31CDD27C300B3DF8B /* RoundedBlock.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 1A0584E21CDD27C300B3DF8B /* RoundedBlock.atlas */; };
 		1A0584E51CDD281E00B3DF8B /* RoundedBlockNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0584E41CDD281E00B3DF8B /* RoundedBlockNode.swift */; };
 		1A0584E71CDD288900B3DF8B /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0584E61CDD288900B3DF8B /* Helper.swift */; };
@@ -89,9 +91,11 @@
 		02AFC1961F37E1F20021765B /* StorePurchases.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = StorePurchases.plist; sourceTree = "<group>"; };
 		02AFC1981F37E3CE0021765B /* StoreKitController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreKitController.swift; sourceTree = "<group>"; };
 		02B20CAE1E633DC900534BCC /* LeaderboardTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeaderboardTableViewCell.swift; sourceTree = "<group>"; };
+		02BF7F8E2042FAFA003F9886 /* IAPHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPHandler.swift; sourceTree = "<group>"; };
 		02C4F2A31E5A84F00036FB19 /* LeaderboardTableViewHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeaderboardTableViewHandler.swift; sourceTree = "<group>"; };
 		02E85D0E1F531F020023D176 /* EventNotifierNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventNotifierNode.swift; sourceTree = "<group>"; };
 		02EAFA791ECBFDFD00687C99 /* teleport.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = teleport.atlas; sourceTree = "<group>"; };
+		02ED4E752041F09C00A4698D /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		1A0584E21CDD27C300B3DF8B /* RoundedBlock.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = RoundedBlock.atlas; sourceTree = "<group>"; };
 		1A0584E41CDD281E00B3DF8B /* RoundedBlockNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedBlockNode.swift; sourceTree = "<group>"; };
 		1A0584E61CDD288900B3DF8B /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
@@ -137,6 +141,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AF408BC1D6A4B8100539A7D /* GameKit.framework in Frameworks */,
+				02ED4E762041F09C00A4698D /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,6 +153,7 @@
 			children = (
 				1AB685D21DBA6D4900F81A72 /* GameKitController.swift */,
 				02AFC1981F37E3CE0021765B /* StoreKitController.swift */,
+				02BF7F8E2042FAFA003F9886 /* IAPHandler.swift */,
 				1AAFB4C61CA07D6100E7472B /* GameViewController.swift */,
 				02A2B52E1E50F10600E7D3B7 /* AchievementTableViewHandler.swift */,
 				02C4F2A31E5A84F00036FB19 /* LeaderboardTableViewHandler.swift */,
@@ -301,6 +307,7 @@
 		C4A615E9615C003CE742C5CB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				02ED4E752041F09C00A4698D /* StoreKit.framework */,
 				582D5E7751B639D5D53DEA06 /* libPods-Avalanche.a */,
 			);
 			name = Frameworks;
@@ -345,7 +352,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = LooseFuzz;
 				TargetAttributes = {
 					1AAFB4BC1CA07D6100E7472B = {
@@ -355,6 +362,9 @@
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.GameCenter = {
+								enabled = 1;
+							};
+							com.apple.InAppPurchase = {
 								enabled = 1;
 							};
 						};
@@ -473,6 +483,7 @@
 				02AFC1991F37E3CE0021765B /* StoreKitController.swift in Sources */,
 				1AAFB4C51CA07D6100E7472B /* GameScene.swift in Sources */,
 				02645E861EF768CC00AC9FDC /* OneWayPlatformNode.swift in Sources */,
+				02BF7F8F2042FAFA003F9886 /* IAPHandler.swift in Sources */,
 				1AB685D31DBA6D4900F81A72 /* GameKitController.swift in Sources */,
 				02A2B52F1E50F10600E7D3B7 /* AchievementTableViewHandler.swift in Sources */,
 				1AF88CD41CD6B2EF00028E3D /* MellowNode.swift in Sources */,
@@ -530,12 +541,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -562,7 +575,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -582,12 +595,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -608,7 +623,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
