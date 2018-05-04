@@ -42,8 +42,6 @@ class MenuScene: SKScene {
     var settingsButton: ButtonNode!
     
     var storeButton: ButtonNode!
-    var storeTable: UITableView!
-    weak var storeTableHandler: StoreTableViewHandler!
     
     var audioButtonLabel: ButtonLabelNode!
     var soundEffectsButtonLabel: ButtonLabelNode!
@@ -55,14 +53,14 @@ class MenuScene: SKScene {
     var achievementButton: ButtonNode!
     var leaderboardTable: UITableView!
     var achievementTable: UITableView!
+    var bestDisplayNode: SKShapeNode!
+    var bestLabelNode: LabelNode!
+    var bestDateNode: LabelNode!
     weak var achievementTableHandler: AchievementTableViewHandler!
     weak var leaderboardTableHandler: LeaderboardTableViewHandler!
     
     var titleLabel: LabelNode!
     var settingsLabel: LabelNode!
-    
-    var coinImage: SKSpriteNode!
-    var coinLabel: LabelNode = LabelNode()
     
     var gameCenterIsAuthenticated: Bool = false {
         didSet {
@@ -74,8 +72,6 @@ class MenuScene: SKScene {
         }
     }
     
-    var arcadeModeIsPurchased: Bool = false
-    
     var currentState: MenuStates = MenuStates.menu
     
     //MARK: Button Methods
@@ -85,15 +81,13 @@ class MenuScene: SKScene {
             returnFromSettings()
         case MenuStates.scores:
             returnFromScore()
-        case MenuStates.store:
-            returnFromStore()
         default:
             break
         }
         currentState = MenuStates.menu
     }
     
-    func dismissMenu(andCoin: Bool = true) {
+    func dismissMenu() {
         let upSweep: SKAction = SKAction.moveBy(x: 0.0, y: self.frame.height, duration: 0.2)
         
         let moveUpSequence: SKAction = SKAction.sequence([MenuScene.downShudder1, MenuScene.downShudder2, MenuScene.downShudder3, upSweep])
@@ -101,11 +95,6 @@ class MenuScene: SKScene {
         playButton.buttonNode.name = ""
         arcadeButton.buttonNode.name = ""
         scoresButton.buttonNode.name = ""
-        if andCoin {
-            coinImage.name = ""
-            coinImage.run(moveUpSequence)
-            coinLabel.run(moveUpSequence)
-        }
         
         menuNode.run(moveUpSequence)
         
@@ -119,7 +108,7 @@ class MenuScene: SKScene {
         bottomMenuNode.run(moveRightSequence)
     }
     
-    func returnMenu(andCoin: Bool = true) {
+    func returnMenu() {
         let downSweep: SKAction = SKAction.moveBy(x: 0.0, y: -self.frame.height, duration: 0.2)
         
         let moveDownSequence: SKAction = SKAction.sequence([MenuScene.waitPointFour, downSweep, MenuScene.upShudder1, MenuScene.upShudder2, MenuScene.upShudder3])
@@ -127,13 +116,6 @@ class MenuScene: SKScene {
             self.playButton.buttonNode.name = "Play"
             self.arcadeButton.buttonNode.name = "Arcade"
             self.scoresButton.buttonNode.name = "Scores"
-        }
-        
-        if andCoin {
-            coinImage.run(moveDownSequence) { [unowned self] in
-                self.coinImage.name = "coinImage"
-            }
-            coinLabel.run(moveDownSequence)
         }
         
         let leftSweep: SKAction = SKAction.moveBy(x: -self.frame.width, y: 0.0, duration: 0.2)
@@ -202,20 +184,8 @@ class MenuScene: SKScene {
         achievementTable.reloadData()
     }
     
-    
-    
-    func displayStore() {
-        currentState = MenuStates.store
-        dismissMenu(andCoin: false)
-        displayReverseBackToMenu()
-        
-        animateRight(table: storeTable)
-    }
-    
     func animateRight(table tableView: UITableView) {
-        if tableView == self.storeTable {
-            StoreTableViewHandler.scrollToLast(storeTable, animated: false)
-        }
+
         UITableView.animate(withDuration: 0.2, delay: 0.4, options: [], animations: {
             tableView.frame.origin.x += self.frame.width + 35
         }) { (_) in
@@ -258,13 +228,7 @@ class MenuScene: SKScene {
             })
         }
     }
-    
-    func returnFromStore() {
-        animateLeft(table: storeTable)
-        
-        dismissReverseBackToMenu()
-        returnMenu(andCoin: false)
-    }
+
     
     func returnFromScore() {
         achievementButton.name = ""
@@ -353,13 +317,10 @@ class MenuScene: SKScene {
     //MARK: View Methods
     override func didMove(to view: SKView) {
         NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.updateNumCoins(notification:)), name: NSNotification.Name("numCoinsChanged"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.arcadeModeStatusDidChange), name: NSNotification.Name("arcadeModeStatusDidChange"), object: nil)
         
         GameKitController.authenticateLocalPlayer()
         
         createContainerNodes()
-        createCoinLabel()
         createScoreButtons()
         createScoreTables()
         createSettingsButtons()
@@ -367,7 +328,6 @@ class MenuScene: SKScene {
         createBackground()
         createTitleLabel()
         createSettingsLabel()
-        createStoreTables()
         initBlocks()
     }
     
@@ -376,72 +336,6 @@ class MenuScene: SKScene {
         if let dictionary = notification.userInfo as? [String: Bool] {
             if let newAuthenticationStatus = dictionary["isAuthenticated"] {
                 gameCenterIsAuthenticated = newAuthenticationStatus
-            }
-        }
-    }
-    
-    //MARK: StoreKit Methods
-    @objc func arcadeModeStatusDidChange() {
-        let arcadeModeStatus: Bool = StoreKitController.getPurchaseStatus(ofType: Purchase.ArcadeMode)
-        arcadeModeIsPurchased = arcadeModeStatus
-        if arcadeModeStatus {
-            arcadeButton.alpha = 1.0
-        } else {
-            arcadeButton.alpha = 0.5
-        }
-    }
-    
-    //MARK: Coins Methods
-    func coinImageTouched() {
-        let title: String = "Coins"
-        let message: String = "Use coins to unlock arcade mode and power ups in arcade mode. You can get more coins by buying them in the shop, playing the game, and unlocking achievements."
-//        displayDismissAlert(withTitle: title, andMessage: message) TODO: FIX ME
-        
-        if let vc = self.view?.window?.rootViewController {
-            let moreCoins: UIAlertAction = UIAlertAction(title: "+coins", style: UIAlertActionStyle.default, handler: { (action) in
-                StoreKitController.addCoins(2500)
-            })
-            let resStore: UIAlertAction = UIAlertAction(title: "res-Store", style: UIAlertActionStyle.destructive, handler: { (action) in
-                StoreKitController.resetStoreFile()
-            })
-            let resAch: UIAlertAction = UIAlertAction(title: "res-Ach", style: UIAlertActionStyle.destructive, handler: { (action) in
-                GameKitController.resetAllAchievements()
-            })
-            let cancel: UIAlertAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-            let alert: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(moreCoins)
-            alert.addAction(resStore)
-            alert.addAction(resAch)
-            alert.addAction(cancel)
-            vc.present(alert, animated: true, completion: nil)
-        }
-    }
-    
-    func createCoinLabel() {
-        let coinSize: CGFloat = 40.0
-        let coinY: CGFloat = self.frame.height - 20.0 - coinSize * 0.5
-        let coinImagePoint: CGPoint = CGPoint(x: 20.0 + coinSize * 0.5, y: coinY)
-        coinImage = SKSpriteNode(imageNamed: "coin")
-        coinImage.size.width = coinSize
-        coinImage.size.height = coinSize
-        coinImage.position = coinImagePoint
-        coinImage.name = "coinImage"
-        
-        let coinLabelX: CGFloat = coinImage.position.x + coinSize * 0.5 + 10.0
-        let coinLabelPosition: CGPoint = CGPoint(x: coinLabelX, y: coinY)
-        let numCoins: Int = StoreKitController.getNumCoins()
-        coinLabel.setup(withText: "\(numCoins)", withFontSize: 40.0, atPosition: coinLabelPosition)
-        coinLabel.position.y -= coinLabel.frame.size.height * 0.5
-        coinLabel.horizontalAlignmentMode = .left
-        
-        self.addChild(coinImage)
-        self.addChild(coinLabel)
-    }
-    
-    @objc func updateNumCoins(notification: Notification) {
-        if let dictionary = notification.userInfo as? [String: Int] {
-            if let numCoins = dictionary["numCoins"] {
-                coinLabel.text = "\(numCoins)"
             }
         }
     }
@@ -478,37 +372,15 @@ class MenuScene: SKScene {
         self.menuNode.addChild(titleLabel)
     }
     
-    func createStoreTables() {
-        let storeTableHeight: CGFloat = 330.0
-        let rightPoint: CGFloat = -self.frame.width
-        
-        storeTable = UITableView(frame: self.frame, style: UITableViewStyle.grouped)
-        storeTable.frame.size.width = self.frame.width
-        storeTable.frame.size.height = storeTableHeight
-        storeTable.frame.origin = CGPoint(x: rightPoint, y: menuButton.frame.height + 100.0)
-        storeTable.separatorStyle = UITableViewCellSeparatorStyle.none
-        storeTable.backgroundColor = UIColor.clear
-        let oldFrame: CGRect = storeTable.frame
-        storeTable.transform = CGAffineTransform(rotationAngle: CGFloat.pi * 0.5)
-        storeTable.frame = oldFrame
-        
-        
-        self.view!.addSubview(storeTable)
-        
-        storeTableHandler = StoreKitController.storeTableHandler
-        storeTableHandler.setDelegateAndSource(forTable: storeTable)
-        storeTable.register(StoreTableViewCell.self, forCellReuseIdentifier: "StoreTableViewCell")
-    }
-    
     func createScoreTables() {
         let achievementHeight: CGFloat = self.frame.height - leaderboardButton.frame.height - 60
         let leaderboardHeight: CGFloat = self.frame.height - leaderboardButton.frame.height - arcadeLeaderboardButton.frame.height - 80
         let rightPoint: CGFloat = 20.0 - self.frame.width
-        
+            
         leaderboardTable = UITableView(frame: self.frame, style: UITableViewStyle.plain)
         leaderboardTable.frame.size.width = self.frame.width - 40
-        leaderboardTable.frame.size.height = leaderboardHeight
-        leaderboardTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + arcadeLeaderboardButton.frame.height + 60)
+        leaderboardTable.frame.size.height = leaderboardHeight - 60
+        leaderboardTable.frame.origin = CGPoint(x: rightPoint, y: leaderboardButton.frame.height + arcadeLeaderboardButton.frame.height + 120)
         leaderboardTable.isHidden = true
         leaderboardTable.separatorStyle = UITableViewCellSeparatorStyle.none
         leaderboardTable.backgroundColor = UIColor.clear
@@ -579,6 +451,36 @@ class MenuScene: SKScene {
         
         self.scoreNode.addChild(arcadeLeaderboardButton)
         self.scoreNode.addChild(classicLeaderboardButton)
+        
+        
+        bestDisplayNode = SKShapeNode(rectOf: CGSize(width: self.frame.width - 40, height: 60), cornerRadius: 8.0)
+        bestDisplayNode.fillColor = UIColor.white
+        bestDisplayNode.strokeColor = UIColor.black
+        bestDisplayNode.lineWidth = 1.75
+        bestDisplayNode.isHidden = true
+        bestDisplayNode.position = CGPoint(x: midX, y: newTopY - 72)
+        
+        bestLabelNode = LabelNode()
+        let (bestScore, bestDate): (Int, Date) = GameKitController.getBestScoreAndDate(arcade: false)
+        let labelText: String = "Your Best: \(bestScore) ft"
+        let labelPoint: CGPoint = CGPoint(x: 0.0, y: -5.0)
+        bestLabelNode.setup(withText: labelText, withFontSize: 24.0, atPosition: labelPoint)
+        bestLabelNode.fontColor = UIColor.black
+        bestLabelNode.verticalAlignmentMode = SKLabelVerticalAlignmentMode.bottom
+        bestLabelNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        
+        bestDateNode = LabelNode()
+        let datePoint: CGPoint = CGPoint(x: 0.0, y: -10.0)
+        let dateText: String = DateFormatter.localizedString(from: bestDate, dateStyle: DateFormatter.Style.short, timeStyle: DateFormatter.Style.short)
+        bestDateNode.setup(withText: dateText, withFontSize: 14.0, atPosition: datePoint)
+        bestDateNode.fontColor = UIColor.lightGray
+        bestDateNode.fontName = "AmericanTypewriter"
+        bestDateNode.verticalAlignmentMode = SKLabelVerticalAlignmentMode.top
+        bestDateNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        
+        self.bestDisplayNode.addChild(bestLabelNode)
+        self.bestDisplayNode.addChild(bestDateNode)
+        self.scoreNode.addChild(bestDisplayNode)
     }
     
     func createSettingsButtons() {
@@ -621,7 +523,6 @@ class MenuScene: SKScene {
         arcadeButton = ButtonLabelNode()
         arcadeButton.setup(withText: "Arcade: ", withFontSize: 48.0, withButtonName: "Arcade", normalTextureName: "playMenuNormal", highlightedTextureName: "playMenuHighlighted", atPosition: center)
         arcadeButton.position.y -= arcadeButton.height * 0.5 + 10
-        arcadeModeStatusDidChange()
         
         scoresButton = ButtonLabelNode()
         scoresButton.setup(withText: "Scores: ", withFontSize: 48.0, withButtonName: "Scores", normalTextureName: "scoresNormal", highlightedTextureName: "scoresHighlighted", atPosition: center)
@@ -722,13 +623,7 @@ class MenuScene: SKScene {
                     playButton.didPress()
                     break
                 } else if object.name == "Arcade" {
-                    if arcadeModeIsPurchased {
-                        arcadeButton.didPress()
-                    } else {
-                        let title: String = "Unlock Arcade Mode"
-                        let message: String = "You need to unlock arcade mode for 2500 coins before playing it. Unlock it in the store."
-                        displayDismissAlert(withTitle: title, andMessage: message)
-                    }
+                    arcadeButton.didPress()
                 } else if object.name == "Tutorial" {
                     tutorialButton.didPress()
                 } else if object.name == "Settings" {
@@ -769,6 +664,7 @@ class MenuScene: SKScene {
                     
                     arcadeLeaderboardButton.isHidden = true
                     classicLeaderboardButton.isHidden = true
+                    bestDisplayNode.isHidden = true
                 } else if object.name == "Leaderboard" {
                     achievementButton.didRelease()
                     achievementButton.alpha = 0.5
@@ -782,6 +678,7 @@ class MenuScene: SKScene {
                     
                     arcadeLeaderboardButton.isHidden = false
                     classicLeaderboardButton.isHidden = false
+                    bestDisplayNode.isHidden = false
                 } else if object.name == "ArcadeLeaderboard" {
                     classicLeaderboardButton.didRelease()
                     classicLeaderboardButton.alpha = 0.5
@@ -792,6 +689,12 @@ class MenuScene: SKScene {
                     GameKitController.currentLeaderboard = LeaderboardTypes.arcade.rawValue
                     leaderboardTableHandler.expandedPath = nil
                     leaderboardTable.reloadData()
+                    
+                    let (bestScore, bestDate): (Int, Date) = GameKitController.getBestScoreAndDate(arcade: true)
+                    let labelText: String = "Your Best: \(bestScore) ft"
+                    bestLabelNode.text = labelText
+                    let dateText: String = DateFormatter.localizedString(from: bestDate, dateStyle: DateFormatter.Style.short, timeStyle: DateFormatter.Style.short)
+                    bestDateNode.text = dateText
                 } else if object.name == "ClassicLeaderboard" {
                     classicLeaderboardButton.didPress()
                     classicLeaderboardButton.alpha = 1.0
@@ -802,11 +705,14 @@ class MenuScene: SKScene {
                     GameKitController.currentLeaderboard = LeaderboardTypes.classic.rawValue
                     leaderboardTableHandler.expandedPath = nil
                     leaderboardTable.reloadData()
+                    
+                    let (bestScore, bestDate): (Int, Date) = GameKitController.getBestScoreAndDate(arcade: false)
+                    let labelText: String = "Your Best: \(bestScore) ft"
+                    bestLabelNode.text = labelText
+                    let dateText: String = DateFormatter.localizedString(from: bestDate, dateStyle: DateFormatter.Style.short, timeStyle: DateFormatter.Style.short)
+                    bestDateNode.text = dateText
                 } else if object.name == "Store" {
                     storeButton.didPress()
-                }
-                else if object.name == "coinImage" {
-                    coinImageTouched()
                 }
             }
         }
@@ -843,12 +749,6 @@ class MenuScene: SKScene {
             transitionToGame()
         } else if arcadeButton.isPressed {
             arcadeButton.didRelease(didActivate: true)
-            
-            let arcadeIsActive: Bool = StoreKitController.getPurchaseStatus(ofType: Purchase.ArcadeMode)
-            guard arcadeIsActive else {
-                return
-            }
-            
             transitionToArcade()
         } else if scoresButton.isPressed {
             scoresButton.didRelease(didActivate: true)
@@ -867,7 +767,6 @@ class MenuScene: SKScene {
             menuButtonPressed()
         } else if storeButton.isPressed {
             storeButton.didRelease(didActivate: true)
-            displayStore()
         }
     }
     

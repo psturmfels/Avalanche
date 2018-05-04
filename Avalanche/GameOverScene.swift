@@ -16,10 +16,7 @@ class GameOverScene: SKScene {
     var scoreLabel: SKLabelNode!
     var gameType: GameType = GameType.Classic
     
-    var coinLabel: LabelNode!
-    var coinImage: SKSpriteNode!
     var buttonsEnabled: Bool = false
-    var coinsAdded: Bool = false
     
     //MARK: Initializing Methods
     override func didMove(to view: SKView) {
@@ -55,32 +52,7 @@ class GameOverScene: SKScene {
         scoreLabel.text = "Score:"
         scoreLabel.position = highScoreLabel.position
         scoreLabel.position.y += scoreLabel.frame.height + highScoreLabel.frame.height * 0.5
-        
-        let coinSize: CGFloat = 44.0
-        coinImage = SKSpriteNode(imageNamed: "coin")
-        coinImage.size.width = coinSize
-        coinImage.size.height = coinSize
-        let coinImageX: CGFloat = center.x + coinSize * 0.5 + 5.0
-        let coinY: CGFloat = highScoreLabel.position.y - highScoreLabel.frame.height * 0.5 - 20.0
-        coinImage.position = CGPoint(x: coinImageX, y: coinY)
-        
-        coinLabel = LabelNode()
-        coinLabel.horizontalAlignmentMode = .right
-        let coinLabelX: CGFloat = center.x - 5.0
-        let numCoinsEarned: Int = 1 + highScore / 10
-        let coinLabelPos: CGPoint = CGPoint(x: coinLabelX, y: coinY)
-        coinLabel.setup(withText: "+\(numCoinsEarned)", withFontSize: 48.0, atPosition: coinLabelPos)
-        coinLabel.position.y -= coinLabel.frame.height * 0.5
-        
-        let leftCoinLabel: CGFloat = coinLabel.position.x - coinLabel.frame.width
-        let rightCoinImage: CGFloat = coinImage.position.x + coinImage.frame.width * 0.5
-        let centerCoin: CGFloat = 0.5 * leftCoinLabel + 0.5 * rightCoinImage
-        let offsetFromTrueCenter: CGFloat = center.x - centerCoin
-        coinLabel.position.x += offsetFromTrueCenter
-        coinImage.position.x += offsetFromTrueCenter
-        
-        self.addChild(coinImage)
-        self.addChild(coinLabel)
+
         self.addChild(replayButton)
         self.addChild(menuButton)
         self.addChild(highScoreLabel)
@@ -88,10 +60,13 @@ class GameOverScene: SKScene {
         
         switch gameType {
         case GameType.Arcade:
+            GameKitController.set(bestScore: highScore, andDate: Date(), arcade: true)
             GameKitController.report(highScore, toLeaderboard: .arcade)
         case GameType.Classic:
+            GameKitController.set(bestScore: highScore, andDate: Date(), arcade: false)
             GameKitController.report(highScore, toLeaderboard: .classic)
         }
+        
         
         reportScoreAchievements()
         GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.Committed)
@@ -202,11 +177,6 @@ class GameOverScene: SKScene {
         buttonsEnabled = true
         menuButton.alpha = 1.0
         replayButton.alpha = 1.0
-        if !coinsAdded {
-            let numCoinsEarned: Int = 1 + highScore / 10
-            StoreKitController.addCoins(numCoinsEarned)
-            coinsAdded = true
-        }
     }
     
     //MARK: Transition Methods

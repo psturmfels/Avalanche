@@ -179,6 +179,42 @@ class GameKitController: NSObject {
         }
     }
     
+    static func getBestScoreAndDate(arcade: Bool = false) -> (Int, Date) {
+        if arcade {
+            guard let bestScoreDate = mutableAchievementsDictionary["BestScoreDateArcade"] as? Date else {
+                return (0, Date())
+            }
+            guard let bestScore = mutableAchievementsDictionary["BestScoreArcade"] as? Int else {
+                return (0, Date())
+            }
+            return (bestScore, bestScoreDate)
+        } else {
+            guard let bestScoreDate = mutableAchievementsDictionary["BestScoreDate"] as? Date else {
+                return (0, Date())
+            }
+            guard let bestScore = mutableAchievementsDictionary["BestScore"] as? Int else {
+                return (0, Date())
+            }
+            return (bestScore, bestScoreDate)
+        }
+    }
+    
+    static func set(bestScore score: Int, andDate date: Date, arcade: Bool = false) {
+        let (currentBest, _): (Int, Date) = getBestScoreAndDate(arcade: arcade)
+        guard score > currentBest else {
+            return
+        }
+        
+        if arcade {
+            mutableAchievementsDictionary.setValue(date, forKey: "BestScoreDateArcade")
+            mutableAchievementsDictionary.setValue(score, forKey: "BestScoreArcade")
+        } else {
+            mutableAchievementsDictionary.setValue(date, forKey: "BestScoreDate")
+            mutableAchievementsDictionary.setValue(score, forKey: "BestScore")
+        }
+        mutableAchievementsDictionary.write(to: achievementDictionaryURL, atomically: true)
+    }
+    
     static func setAchievementStatus(achievementType: Achievement, isNew: Bool) {
         mutableAchievementStatusDictionary.setValue(isNew, forKey: achievementType.rawValue)
         mutableAchievementStatusDictionary.write(to: statusDictionaryURL, atomically: true)
@@ -423,10 +459,7 @@ class GameKitController: NSObject {
             
             
             if percentComplete == 100.0 {
-                GameKitController.updateAchievementProgress(achievementType: achievementType, percentComplete: percentComplete)
-                let amountEarned: Int = Achievement.getAchievementReward(type: achievementType)
-                StoreKitController.addCoins(amountEarned)
-            
+                GameKitController.updateAchievementProgress(achievementType: achievementType, percentComplete: percentComplete)            
                 GameKitController.setAchievementStatus(achievementType: achievementType, isNew: true)
             }
         }

@@ -32,7 +32,6 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
         interstitial = createAndLoadInterstitial()
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.displayDismissAlert(notification:)), name: NSNotification.Name(rawValue: "alertRequested"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.displayBuyCancelAlert(notification:)), name: NSNotification.Name(rawValue: "buyRequested"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.showInterstitialAd), name: NSNotification.Name(rawValue: "showInterstitialAd"), object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.presentGameCenterViewController), name: NSNotification.Name(rawValue: "presentScores"), object: nil)
         
@@ -118,36 +117,6 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
         let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
         let dismissAction: UIAlertAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil)
         alertView.addAction(dismissAction)
-        
-        self.present(alertView, animated: true, completion: nil)
-    }
-    
-    @objc func displayBuyCancelAlert(notification: Notification) {
-        guard let dictionary = notification.userInfo as? [String: String] else {
-            return
-        }
-        guard let title = dictionary["title"] else {
-            return
-        }
-        guard let message = dictionary["message"] else {
-            return
-        }
-        guard let purchaseName = dictionary["purchaseName"] else {
-            return
-        }
-        guard let purchaseType = Purchase(rawValue: purchaseName) else {
-            return
-        }
-        
-        
-        let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-        let buyAction: UIAlertAction = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default) { (action) in
-            StoreKitController.buy(purchaseType: purchaseType)
-            postNotification(withName: "ReloadStoreTable")
-        }
-        let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-        alertView.addAction(buyAction)
-        alertView.addAction(cancelAction)
         
         self.present(alertView, animated: true, completion: nil)
     }

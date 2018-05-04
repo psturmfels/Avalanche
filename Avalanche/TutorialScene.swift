@@ -172,7 +172,7 @@ class TutorialScene: GameScene {
             break
         }
         
-        self.resetLabel(withText: self.tutorialMessages[self.tutorialIndex + 1])
+        self.resetLabel(withText: self.tutorialMessages[min(self.tutorialIndex + 1, self.tutorialMessages.count - 1)])
     }
     
     func newTaskBegan() {

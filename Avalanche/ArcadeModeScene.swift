@@ -322,7 +322,6 @@ class ArcadeModeScene: GameScene {
         super.didMove(to: view)
         
         setMaxDifficulty(toLevel: 15)
-        setActivePowerUps()
         createWorld()
         let mellowPoint: CGPoint = CGPoint(x: 30, y: self.size.height * 0.5 - 50.0)
         createMellow(atPoint: mellowPoint)
@@ -343,13 +342,7 @@ class ArcadeModeScene: GameScene {
     func setMaxDifficulty(toLevel level: Int) {
         maxDifficulty = level
     }
-    
-    func setActivePowerUps() {
-        PowerUpTypes.allTypes = StoreKitController.getAllActivePowerUps()
-        PowerUpTypes.positiveTypes = StoreKitController.getPositiveActivePowerUps()
-        PowerUpTypes.negativeTypes = StoreKitController.getNegativeActivePowerUps()
-    }
-    
+
     //MARK: Overriden Touch Methods
     override func noButtonsTapped() {
         guard mellow != nil else {

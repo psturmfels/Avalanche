@@ -45,85 +45,19 @@ enum Achievement: String {
     case Jumper = "Jumper"
     case Octane = "Octane"
     case TimeWarp = "TimeWarp"
-    
-    static func getAchievementReward(type: Achievement) -> Int {
-        let tierOneReward: Int = 100
-        let tierTwoReward: Int = 200
-        let tierThreeReward: Int = 300
-        let tierFourReward: Int = 400
-        let tierFiveReward: Int = 500
-        switch type {
-        case .whatDoesThisDo, .Beginner, .Clueless, .EarthBound, .Smores, .Squashed, .AFK, .TestRun, .Student, .Gifted, .Izanagi:
-            return tierOneReward
-        case .Moderate, .Stoic, .Singed, .Flattened, .BlockHugger, .Interested, .ThirtyLives,
-             .Blessed, .Eclectic, .AntMan, .DayBreak, .Jumper, .Octane, .TimeWarp:
-            return tierTwoReward
-        case .Advanced, .Pyromaniac, .Pancaked, .Ninja, .Jackpot, .Dedicated, .Powered, .Collector:
-            return tierThreeReward
-        case .Pro, .Committed:
-            return tierFourReward
-        case .Legendary:
-            return tierFiveReward
-        }
-    }
 }
 
 enum Purchase: String {
-    case ArcadeMode = "ArcadeModePurchase"
-    case DayTime = "DayTimePurchase"
-    case DoubleRandom = "DoubleRandomPurchase"
-    case JetPack = "JetPackPurchase"
-    case PileOCoins = "PileOCoins"
-    case PowerBeGone = "PowerBeGonePurchase"
     case RemoveAds = "RemoveAds"
-    case Rewind = "RewindPurchase"
-    case Shrink = "ShrinkPurchase"
-    case StashOCoins = "StashOCoins"
-    case SupportTheDev = "SupportTheDev"
-    case Teleport = "TeleportPurchase"
-    case TreasureChest = "TreasureChest"
-    
-    static func getImage(ofPurchase type: Purchase) -> UIImage {
-        if let image = UIImage(named: type.rawValue) {
-            return image
-        } else {
-            return UIImage()
-        }
-    }
     static func readableName(ofPurchase type: Purchase) -> String {
         switch type {
-        case .ArcadeMode:
-            return "Arcade Mode"
-        case .DayTime:
-            return "Day Time"
-        case .DoubleRandom:
-            return "Double Random"
-        case .JetPack:
-            return "Jet Pack"
-        case .PileOCoins:
-            return "Pile O' Coins"
-        case .PowerBeGone:
-            return "Power-be-gone"
         case .RemoveAds:
             return "Remove Ads"
-        case .Rewind:
-            return "Rewind"
-        case .Shrink:
-            return "Shrink"
-        case .StashOCoins:
-            return "Stash O' Coins"
-        case .SupportTheDev:
-            return "Support thed dev"
-        case .Teleport:
-            return "Teleport"
-        case .TreasureChest:
-            return "Treasure Chest"
         }
     }
-    
-    static let allPurchases: [Purchase] = [Purchase.PowerBeGone, Purchase.Rewind, Purchase.DoubleRandom, Purchase.DayTime, Purchase.Shrink, Purchase.Teleport, Purchase.JetPack, Purchase.ArcadeMode, Purchase.RemoveAds, Purchase.TreasureChest, Purchase.PileOCoins, Purchase.StashOCoins]
 }
 
+    
 enum LeaderboardTypes: String {
     case classic = "classicModeLeaderboard"
     case arcade  = "arcadeModeLeaderboard"
@@ -138,7 +72,6 @@ enum MenuStates: Int {
     case menu = 1
     case settings = 2
     case scores = 3
-    case store = 4
 }
 
 enum GameStates: Int {
@@ -174,8 +107,7 @@ enum PowerUpTypes: String {
     
     static var positiveTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink, PowerUpTypes.teleport, PowerUpTypes.day]
     static var negativeTypes: [PowerUpTypes] = [PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain, PowerUpTypes.night, PowerUpTypes.grow, PowerUpTypes.flip]
-    static var doubleTypes: [PowerUpTypes] = [PowerUpTypes.resetPowerUps, PowerUpTypes.doubleRandom, PowerUpTypes.removeAll]
-    static var allTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink, PowerUpTypes.teleport, PowerUpTypes.day, PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain, PowerUpTypes.night, PowerUpTypes.grow, PowerUpTypes.flip, PowerUpTypes.resetPowerUps, PowerUpTypes.doubleRandom, PowerUpTypes.removeAll]
+    static var allTypes: [PowerUpTypes] = [PowerUpTypes.timeSlow, PowerUpTypes.jetPack, PowerUpTypes.shrink, PowerUpTypes.teleport, PowerUpTypes.day, PowerUpTypes.mellowSlow, PowerUpTypes.ballAndChain, PowerUpTypes.night, PowerUpTypes.grow, PowerUpTypes.flip]
     
     static func returnRandomFrom(array: [PowerUpTypes]) -> PowerUpTypes {
         let randomIndex: Int = RandomInt(min: 0, max: array.count - 1)
@@ -187,11 +119,11 @@ enum PowerUpTypes: String {
         case .timeSlow:
             return 7.0
         case .jetPack:
-            return 10.0
+            return 5.0
         case .shrink:
-            return 10.0
+            return 7.0
         case .teleport:
-            return 10.0
+            return 7.0
         case .day:
             return 10.0
         case .mellowSlow:
@@ -199,11 +131,11 @@ enum PowerUpTypes: String {
         case .ballAndChain:
             return 4.0
         case .night:
-            return 6.0
-        case .grow:
-            return 6.0
-        case .flip:
             return 5.0
+        case .grow:
+            return 7.0
+        case .flip:
+            return 4.0
         case .resetPowerUps:
             return 0.0
         case .doubleRandom:

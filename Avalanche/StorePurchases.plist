@@ -2,26 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>AdParity</key>
-	<integer>0</integer>
-	<key>TeleportPurchase</key>
-	<false/>
-	<key>ShrinkPurchase</key>
-	<false/>
-	<key>RewindPurchase</key>
-	<false/>
-	<key>PowerBeGonePurchase</key>
-	<false/>
-	<key>JetPackPurchase</key>
-	<false/>
-	<key>DoubleRandomPurchase</key>
-	<false/>
-	<key>DayTimePurchase</key>
-	<false/>
-	<key>ArcadeModePurchase</key>
-	<false/>
-	<key>numCoins</key>
-	<integer>0</integer>
 	<key>RemoveAds</key>
 	<false/>
 </dict>

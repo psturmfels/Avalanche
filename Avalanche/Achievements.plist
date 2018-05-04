@@ -74,5 +74,13 @@
 	<integer>0</integer>
 	<key>TimeWarp</key>
 	<integer>0</integer>
+	<key>BestScoreDate</key>
+	<date>2018-05-03T20:08:42Z</date>
+	<key>BestScore</key>
+	<integer>0</integer>
+	<key>BestScoreDateArcade</key>
+	<date>2018-05-03T20:48:42Z</date>
+	<key>BestScoreArcade</key>
+	<integer>0</integer>
 </dict>
 </plist>
