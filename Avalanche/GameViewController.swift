@@ -138,15 +138,17 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
         self.present(currentAlert!, animated: true, completion: nil)
         
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 10) { [unowned self] in
-            self.closeActivityView()
-            
-            let title: String = "Error"
-            let message: String = "Something went wrong with your purchase. Please try again."
-            let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-            let dismissAction: UIAlertAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil)
-            alertView.addAction(dismissAction)
-            
-            self.present(alertView, animated: true, completion: nil)
+            if let _ = self.currentAlert {
+                self.closeActivityView()
+                
+                let title: String = "Error"
+                let message: String = "Something went wrong with your purchase. Please try again."
+                let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+                let dismissAction: UIAlertAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil)
+                alertView.addAction(dismissAction)
+                
+                self.present(alertView, animated: true, completion: nil)
+            }
         }
     }
     
