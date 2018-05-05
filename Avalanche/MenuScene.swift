@@ -71,6 +71,15 @@ class MenuScene: SKScene {
             }
         }
     }
+    var canMakePurchases: Bool = false {
+        didSet {
+            if canMakePurchases {
+                storeButton.alpha = 1.0
+            } else {
+                storeButton.alpha = 0.5
+            }
+        }
+    }
     
     var currentState: MenuStates = MenuStates.menu
     
@@ -317,8 +326,10 @@ class MenuScene: SKScene {
     //MARK: View Methods
     override func didMove(to view: SKView) {
         NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.purchaseStatusDidChange(notification:)), name: NSNotification.Name(rawValue: "purchaseStatusDidChange"), object: nil)
         
         GameKitController.authenticateLocalPlayer()
+        StoreKitController.fetchAvailableProducts()
         
         createContainerNodes()
         createScoreButtons()
@@ -339,6 +350,15 @@ class MenuScene: SKScene {
             }
         }
     }
+    
+    @objc func purchaseStatusDidChange(notification: Notification) {
+        if let dictionary = notification.userInfo as? [String: Bool] {
+            if let newPurchaseStatus = dictionary["canMakePurchases"] {
+                canMakePurchases = newPurchaseStatus
+            }
+        }
+    }
+    
     
     //MARK: Creation Methods
     func createContainerNodes() {
@@ -543,6 +563,7 @@ class MenuScene: SKScene {
         storeButton.setup(atPosition: botRightCorner, withName: "Store", normalTextureName: "noAdsNormal", highlightedTextureName: "noAdsHighlighted")
         storeButton.position.x -= settingsButton.frame.width + 20
         storeButton.position.x -= storeButton.frame.width + 20
+        storeButton.alpha = 0.5
         
         self.menuNode.addChild(playButton)
         self.menuNode.addChild(arcadeButton)
@@ -766,8 +787,12 @@ class MenuScene: SKScene {
             menuButton.didRelease(didActivate: true)
             menuButtonPressed()
         } else if storeButton.isPressed {
-            storeButton.didRelease(didActivate: true)
-            StoreKitController.buyRemoveAds()
+            if canMakePurchases {
+                storeButton.didRelease(didActivate: true)
+                StoreKitController.buyRemoveAds()
+            } else {
+                storeButton.didRelease(didActivate: false)
+            }
         }
     }
     

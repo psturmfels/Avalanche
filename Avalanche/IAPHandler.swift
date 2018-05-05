@@ -17,6 +17,10 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
     var foundAdsProduct: Bool = false
     
     func fetchAvailableProducts() {
+        guard !foundAdsProduct else {
+            return
+        }
+        
         let productIdentifiers = NSSet(objects: productID)
         productRequest = SKProductsRequest(productIdentifiers: productIdentifiers as! Set<String>)
         productRequest.delegate = self
@@ -24,6 +28,8 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
     }
     
     func purchaseRemoveAds() {
+        postNotification(withName: "displayActivityView")
+        
         guard foundAdsProduct else {
             return
         }
@@ -32,7 +38,6 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
             return
         }
         
-        postNotification(withName: "displayActivityView")
         let payment: SKPayment = SKPayment(product: removeAdsProduct)
         SKPaymentQueue.default().add(self)
         SKPaymentQueue.default().add(payment)
@@ -79,11 +84,19 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
     
     //MARK: SKProductsRequestDelegate
     func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
+        var foundProduct: Bool = false
         if response.products.count == 1 {
             if let prod = response.products.first {
                 removeAdsProduct = prod
                 foundAdsProduct = true
+                if SKPaymentQueue.canMakePayments() {
+                    postNotification(withName: "purchaseStatusDidChange", andUserInfo: ["canMakePurchases": true])
+                    foundProduct = true
+                }
             }
+        }
+        if !foundProduct {
+            postNotification(withName: "purchaseStatusDidChange", andUserInfo: ["canMakePurchases": false])
         }
     }
 }

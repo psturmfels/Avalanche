@@ -71,6 +71,10 @@ class StoreKitController: NSObject {
             }
         }
 
+        self.fetchAvailableProducts()
+    }
+    
+    static func fetchAvailableProducts() {
         sharedIAPHandler.fetchAvailableProducts()
     }
     
