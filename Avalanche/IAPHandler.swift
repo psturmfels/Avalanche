@@ -32,6 +32,7 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
             return
         }
         
+        postNotification(withName: "displayActivityView")
         let payment: SKPayment = SKPayment(product: removeAdsProduct)
         SKPaymentQueue.default().add(self)
         SKPaymentQueue.default().add(payment)

@@ -26,6 +26,7 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
     var localPlayer: GKLocalPlayer!
     var menuScene: MenuScene!
     var interstitial: GADInterstitial!
+    var currentAlert: UIAlertController?
     
     //MARK: View Methods
     override func viewDidLoad() {
@@ -33,6 +34,8 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.displayDismissAlert(notification:)), name: NSNotification.Name(rawValue: "alertRequested"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.showInterstitialAd), name: NSNotification.Name(rawValue: "showInterstitialAd"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.displayActivityView), name: NSNotification.Name(rawValue: "displayActivityView"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.closeActivityView), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.presentGameCenterViewController), name: NSNotification.Name(rawValue: "presentScores"), object: nil)
         
         self.view = SKView(frame: UIScreen.main.bounds)
@@ -119,6 +122,39 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
         alertView.addAction(dismissAction)
         
         self.present(alertView, animated: true, completion: nil)
+    }
+    
+    @objc func displayActivityView() {
+        currentAlert = UIAlertController(title: nil, message: "", preferredStyle: .alert)
+
+        let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(frame: currentAlert!.view.bounds)
+        loadingIndicator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+        loadingIndicator.startAnimating()
+        loadingIndicator.isUserInteractionEnabled = false
+        
+        currentAlert!.view.addSubview(loadingIndicator)
+        self.present(currentAlert!, animated: true, completion: nil)
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 10) { [unowned self] in
+            self.closeActivityView()
+            
+            let title: String = "Error"
+            let message: String = "Something went wrong with your purchase. Please try again."
+            let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+            let dismissAction: UIAlertAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil)
+            alertView.addAction(dismissAction)
+            
+            self.present(alertView, animated: true, completion: nil)
+        }
+    }
+    
+    @objc func closeActivityView() {
+        if let currentAlert = currentAlert {
+            currentAlert.dismiss(animated: true, completion: nil)
+        }
+        currentAlert = nil
     }
     
     //MARK: GameKit Methods
