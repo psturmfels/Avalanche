@@ -3,55 +3,55 @@
     {
       "size" : "20x20",
       "idiom" : "iphone",
-      "filename" : "AvalancheAppIcon40.png",
+      "filename" : "AvalancheIcon40.png",
       "scale" : "2x"
     },
     {
       "size" : "20x20",
       "idiom" : "iphone",
-      "filename" : "AvalancheAppIcon60.png",
+      "filename" : "AvalancheIcon60.png",
       "scale" : "3x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "AvalancheAppIcon58.png",
+      "filename" : "AvalancheIcon58.png",
       "scale" : "2x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "AvalancheAppIcon87.png",
+      "filename" : "AvalancheIcon87.png",
       "scale" : "3x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "AvalancheAppIcon80.png",
+      "filename" : "AvalancheIcon80.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "AvalancheAppIcon120.png",
+      "filename" : "AvalancheIcon120.png",
       "scale" : "3x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "AvalancheAppIcon120-1.png",
+      "filename" : "AvalancheIcon120-1.png",
       "scale" : "2x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "AvalancheAppIcon180.png",
+      "filename" : "AvalancheIcon180.png",
       "scale" : "3x"
     },
     {
       "size" : "1024x1024",
       "idiom" : "ios-marketing",
-      "filename" : "AvalancheAppIcon1024.png",
+      "filename" : "AvalancheIcon1024.png",
       "scale" : "1x"
     },
     {

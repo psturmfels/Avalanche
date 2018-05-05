@@ -11,16 +11,7 @@ import StoreKit
 class StoreKitController: NSObject {
     static var mutableStoreDictionary: NSMutableDictionary!
     static var storeDictionaryURL: URL!
-    static var coinsName: String = "numCoins"
-    static let defaultCoinCost: Int = 2500
-        
-    static func getNumCoins() -> Int {
-        if let numCoins = mutableStoreDictionary[coinsName] as? Int {
-            return numCoins
-        } else {
-            return 0
-        }
-    }
+    static let sharedIAPHandler = IAPHandler()
     
     static func shouldShowAd() -> Bool {
         if StoreKitController.getPurchaseStatus(ofType: Purchase.RemoveAds) {
@@ -79,6 +70,16 @@ class StoreKitController: NSObject {
                 StoreKitController.mutableStoreDictionary = storeDefaultsDictionary.mutableCopy() as! NSMutableDictionary
             }
         }
+
+        sharedIAPHandler.fetchAvailableProducts()
+    }
+    
+    static func restoreInAppPurchases() {
+        sharedIAPHandler.restorePurchases()
+    }
+    
+    static func buyRemoveAds() {
+        sharedIAPHandler.purchaseRemoveAds()
     }
     
     static func resetStoreFile() {
@@ -91,7 +92,6 @@ class StoreKitController: NSObject {
         
         readPurchasesFromStore()
         postNotification(withName: "ReloadStoreTable")
-        postNotification(withName: "numCoinsChanged", andUserInfo: ["numCoins": 0])
         postNotification(withName: "arcadeModeStatusDidChange")
     }
 }

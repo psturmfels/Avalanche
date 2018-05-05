@@ -539,8 +539,8 @@ class MenuScene: SKScene {
         settingsButton.setup(atPosition: botRightCorner, withName: "Settings", normalTextureName: "settingsNormal", highlightedTextureName: "settingsHighlighted")
         settingsButton.position.x -= settingsButton.frame.width + 20
         
-        storeButton = ButtonNode(imageNamed: "storeNormal")
-        storeButton.setup(atPosition: botRightCorner, withName: "Store", normalTextureName: "storeNormal", highlightedTextureName: "storeHighlighted")
+        storeButton = ButtonNode(imageNamed: "noAdsNormal")
+        storeButton.setup(atPosition: botRightCorner, withName: "Store", normalTextureName: "noAdsNormal", highlightedTextureName: "noAdsHighlighted")
         storeButton.position.x -= settingsButton.frame.width + 20
         storeButton.position.x -= storeButton.frame.width + 20
         
@@ -767,6 +767,7 @@ class MenuScene: SKScene {
             menuButtonPressed()
         } else if storeButton.isPressed {
             storeButton.didRelease(didActivate: true)
+            StoreKitController.buyRemoveAds()
         }
     }
     
