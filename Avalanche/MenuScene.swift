@@ -41,7 +41,7 @@ class MenuScene: SKScene {
     var tutorialButton: ButtonNode!
     var settingsButton: ButtonNode!
     
-    var storeButton: ButtonNode!
+    var storeButton: ButtonNode?
     
     var audioButtonLabel: ButtonLabelNode!
     var soundEffectsButtonLabel: ButtonLabelNode!
@@ -73,10 +73,12 @@ class MenuScene: SKScene {
     }
     var canMakePurchases: Bool = false {
         didSet {
-            if canMakePurchases {
-                storeButton.alpha = 1.0
-            } else {
-                storeButton.alpha = 0.5
+            if let storeButton = storeButton {
+                if canMakePurchases {
+                    storeButton.alpha = 1.0
+                } else {
+                    storeButton.alpha = 0.5
+                }
             }
         }
     }
@@ -112,7 +114,9 @@ class MenuScene: SKScene {
         
         tutorialButton.name = ""
         settingsButton.name = ""
-        storeButton.name = ""
+        if let storeButton = storeButton {
+            storeButton.name = ""
+        }
         
         bottomMenuNode.run(moveRightSequence)
     }
@@ -133,7 +137,9 @@ class MenuScene: SKScene {
         bottomMenuNode.run(moveLeftSequence) { [unowned self] in
             self.tutorialButton.name = "Tutorial"
             self.settingsButton.name = "Settings"
-            self.storeButton.name = "Store"
+            if let storeButton = self.storeButton {
+                storeButton.name = "Store"
+            }
         }
     }
     
@@ -359,7 +365,6 @@ class MenuScene: SKScene {
         }
     }
     
-    
     //MARK: Creation Methods
     func createContainerNodes() {
         settingsNode = SKNode()
@@ -559,18 +564,21 @@ class MenuScene: SKScene {
         settingsButton.setup(atPosition: botRightCorner, withName: "Settings", normalTextureName: "settingsNormal", highlightedTextureName: "settingsHighlighted")
         settingsButton.position.x -= settingsButton.frame.width + 20
         
-        storeButton = ButtonNode(imageNamed: "noAdsNormal")
-        storeButton.setup(atPosition: botRightCorner, withName: "Store", normalTextureName: "noAdsNormal", highlightedTextureName: "noAdsHighlighted")
-        storeButton.position.x -= settingsButton.frame.width + 20
-        storeButton.position.x -= storeButton.frame.width + 20
-        storeButton.alpha = 0.5
+        if !StoreKitController.getPurchaseStatus(ofType: Purchase.RemoveAds) {
+            storeButton = ButtonNode(imageNamed: "noAdsNormal")
+            storeButton!.setup(atPosition: botRightCorner, withName: "Store", normalTextureName: "noAdsNormal", highlightedTextureName: "noAdsHighlighted")
+            storeButton!.position.x -= settingsButton.frame.width + 20
+            storeButton!.position.x -= storeButton!.frame.width + 20
+            storeButton!.alpha = 0.5
+            self.bottomMenuNode.addChild(storeButton!)
+        }
         
         self.menuNode.addChild(playButton)
         self.menuNode.addChild(arcadeButton)
         self.menuNode.addChild(scoresButton)
         self.bottomMenuNode.addChild(tutorialButton)
         self.bottomMenuNode.addChild(settingsButton)
-        self.bottomMenuNode.addChild(storeButton)
+        
     }
     
     func createBackground() {
@@ -733,7 +741,9 @@ class MenuScene: SKScene {
                     let dateText: String = DateFormatter.localizedString(from: bestDate, dateStyle: DateFormatter.Style.short, timeStyle: DateFormatter.Style.short)
                     bestDateNode.text = dateText
                 } else if object.name == "Store" {
-                    storeButton.didPress()
+                    if let storeButton = storeButton {
+                        storeButton.didPress()
+                    }
                 }
             }
         }
@@ -760,7 +770,9 @@ class MenuScene: SKScene {
             tutorialButton.didRelease()
             settingsButton.didRelease()
             menuButton.didRelease()
-            storeButton.didRelease()
+            if let storeButton = storeButton {
+                storeButton.didRelease()
+            }
         }
     }
     
@@ -786,12 +798,14 @@ class MenuScene: SKScene {
         } else if menuButton.isPressed {
             menuButton.didRelease(didActivate: true)
             menuButtonPressed()
-        } else if storeButton.isPressed {
-            if canMakePurchases {
-                storeButton.didRelease(didActivate: true)
-                StoreKitController.buyRemoveAds()
-            } else {
-                storeButton.didRelease(didActivate: false)
+        } else if let storeButton = storeButton {
+            if storeButton.isPressed {
+                if canMakePurchases {
+                    storeButton.didRelease(didActivate: true)
+                    StoreKitController.buyRemoveAds()
+                } else {
+                    storeButton.didRelease(didActivate: false)
+                }
             }
         }
     }
@@ -803,6 +817,8 @@ class MenuScene: SKScene {
         tutorialButton.didRelease()
         settingsButton.didRelease()
         menuButton.didRelease()
-        storeButton.didRelease()
+        if let storeButton = storeButton {
+            storeButton.didRelease()
+        }
     }
 }

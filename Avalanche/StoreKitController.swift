@@ -13,6 +13,24 @@ class StoreKitController: NSObject {
     static var storeDictionaryURL: URL!
     static let sharedIAPHandler = IAPHandler()
     
+    static func startedAd() {
+        mutableStoreDictionary.setValue(true, forKey: "AdStarted")
+        mutableStoreDictionary.write(to: storeDictionaryURL, atomically: true)
+    }
+    
+    static func endedAd() {
+        mutableStoreDictionary.setValue(false, forKey: "AdStarted")
+        mutableStoreDictionary.write(to: storeDictionaryURL, atomically: true)
+    }
+    
+    static func adInProgress() -> Bool {
+        if let adStarted = mutableStoreDictionary["AdStarted"] as? Bool {
+            return adStarted
+        }
+        
+        return false
+    }
+    
     static func shouldShowAd() -> Bool {
         if StoreKitController.getPurchaseStatus(ofType: Purchase.RemoveAds) {
             return false

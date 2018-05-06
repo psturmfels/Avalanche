@@ -66,6 +66,7 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
                 break
             
             case SKPaymentTransactionState.purchased:
+                StoreKitController.setPurchaseStatus(ofType: Purchase.RemoveAds, newStatus: true)
                 print("Payment for transaction \(transaction.payment.productIdentifier) completed")
                 SKPaymentQueue.default().finishTransaction(transaction)
                 break

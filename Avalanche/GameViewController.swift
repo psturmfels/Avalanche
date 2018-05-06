@@ -83,8 +83,15 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
     @objc func showInterstitialAd() {
         if interstitial.isReady {
             interstitial.present(fromRootViewController: self)
+            StoreKitController.startedAd()
         } else {
             postNotification(withName: "InterstitialAdFinished")
+        }
+    }
+    
+    func interstitialDidReceiveAd(_ ad: GADInterstitial) {
+        if StoreKitController.adInProgress() {
+            showInterstitialAd()
         }
     }
     
@@ -97,11 +104,13 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
     }
     
     func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        StoreKitController.endedAd()
         postNotification(withName: "InterstitialAdFinished")
         interstitial = createAndLoadInterstitial()
     }
     
     func interstitialDidFail(toPresentScreen ad: GADInterstitial) {
+        StoreKitController.endedAd()
         postNotification(withName: "InterstitialAdFinished")
     }
     
