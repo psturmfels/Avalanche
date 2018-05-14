@@ -65,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         loadStoreKitControllerClass()
         setMusicPreferences()
         
-        GADMobileAds.configure(withApplicationID: "ca-app-pub-4710510679535431~9029335450")
+        GADMobileAds.configure(withApplicationID: "ca-app-pub-4710510679535431/9978195868")
         
         //Bring up the gameViewController
         gameViewController = GameViewController()
