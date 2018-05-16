@@ -104,6 +104,10 @@ class StoreKitController: NSObject {
         sharedIAPHandler.purchaseRemoveAds()
     }
     
+    static func resetPurchaseUponFind() {
+        sharedIAPHandler.purchaseUponFind = false
+    }
+    
     static func resetStoreFile() {
         let fileManager: FileManager = FileManager.default
         do {

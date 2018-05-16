@@ -43,6 +43,7 @@ class MenuScene: SKScene {
     
     var storeButton: ButtonNode?
     
+    var restorePurchasesLabel: ButtonLabelNode!
     var audioButtonLabel: ButtonLabelNode!
     var soundEffectsButtonLabel: ButtonLabelNode!
     var menuButton: ButtonNode!
@@ -68,17 +69,6 @@ class MenuScene: SKScene {
                 scoresButton.alpha = 1.0
             } else {
                 scoresButton.alpha = 0.5
-            }
-        }
-    }
-    var canMakePurchases: Bool = false {
-        didSet {
-            if let storeButton = storeButton {
-                if canMakePurchases {
-                    storeButton.alpha = 1.0
-                } else {
-                    storeButton.alpha = 0.5
-                }
             }
         }
     }
@@ -272,6 +262,7 @@ class MenuScene: SKScene {
         settingsNode.run(moveLeftSequence) { [unowned self] in
             self.audioButtonLabel.buttonNode.name = "AudioButton"
             self.soundEffectsButtonLabel.buttonNode.name = "SoundEffects"
+            self.restorePurchasesLabel.buttonNode.name = "RestorePurchases"
         }
     }
     
@@ -280,6 +271,7 @@ class MenuScene: SKScene {
         let moveRightSequence: SKAction = SKAction.sequence([MenuScene.leftShudder1, MenuScene.leftShudder2, MenuScene.leftShudder3, rightSweep])
         audioButtonLabel.buttonNode.name = ""
         soundEffectsButtonLabel.buttonNode.name = ""
+        restorePurchasesLabel.buttonNode.name = ""
         
         settingsNode.run(moveRightSequence)
         
@@ -332,7 +324,7 @@ class MenuScene: SKScene {
     //MARK: View Methods
     override func didMove(to view: SKView) {
         NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.authenticationStatusDidChange), name: NSNotification.Name(rawValue: "authenticationStatusChanged"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.purchaseStatusDidChange(notification:)), name: NSNotification.Name(rawValue: "purchaseStatusDidChange"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MenuScene.removePurchaseButton), name: NSNotification.Name(rawValue: "removePurchaseButton"), object: nil)
         
         GameKitController.authenticateLocalPlayer()
         StoreKitController.fetchAvailableProducts()
@@ -357,12 +349,11 @@ class MenuScene: SKScene {
         }
     }
     
-    @objc func purchaseStatusDidChange(notification: Notification) {
-        if let dictionary = notification.userInfo as? [String: Bool] {
-            if let newPurchaseStatus = dictionary["canMakePurchases"] {
-                canMakePurchases = newPurchaseStatus
-            }
+    @objc func removePurchaseButton() {
+        if let storeButton = storeButton {
+             storeButton.removeFromParent()
         }
+        storeButton = nil
     }
     
     //MARK: Creation Methods
@@ -520,6 +511,12 @@ class MenuScene: SKScene {
         soundEffectsButtonLabel.position.y -= soundEffectsButtonLabel.height * 0.5 + 10
         self.settingsNode.addChild(soundEffectsButtonLabel)
         
+        restorePurchasesLabel = ButtonLabelNode()
+        restorePurchasesLabel.setup(withText: "Restore:", withFontSize: 48.0, withButtonName: "", normalTextureName: "storeNormal", highlightedTextureName: "storeHighlighted", atPosition: center)
+        let offset: CGFloat = soundEffectsButtonLabel.height + 20
+        restorePurchasesLabel.position.y = soundEffectsButtonLabel.position.y - offset
+        self.settingsNode.addChild(restorePurchasesLabel)
+        
         let audioIsOn: Bool = UserDefaults.standard.bool(forKey: "Audio")
         let soundEffectsAreOn: Bool = UserDefaults.standard.bool(forKey: "SoundEffects")
         if !audioIsOn {
@@ -569,7 +566,6 @@ class MenuScene: SKScene {
             storeButton!.setup(atPosition: botRightCorner, withName: "Store", normalTextureName: "noAdsNormal", highlightedTextureName: "noAdsHighlighted")
             storeButton!.position.x -= settingsButton.frame.width + 20
             storeButton!.position.x -= storeButton!.frame.width + 20
-            storeButton!.alpha = 0.5
             self.bottomMenuNode.addChild(storeButton!)
         }
         
@@ -680,6 +676,9 @@ class MenuScene: SKScene {
                         soundEffectsButtonLabel.didPress()
                     }
                     UserDefaults.standard.set(!soundEffectsButtonLabel.isPressed, forKey: "SoundEffects")
+                } else if object.name == "RestorePurchases" {
+                    restorePurchasesLabel.didPress()
+                    break
                 } else if object.name == "Achievement" {
                     achievementButton.didPress()
                     achievementButton.alpha = 1.0
@@ -756,7 +755,7 @@ class MenuScene: SKScene {
             let location = touch.location(in: self)
             let objects = nodes(at: location) as [SKNode]
             for object in objects {
-                if object.name == "Play" || object.name == "Arcade" || object.name == "Scores" || object.name == "Tutorial" || object.name == "Settings" || object.name == "Menu" || object.name == "Store" {
+                if object.name == "Play" || object.name == "Arcade" || object.name == "Scores" || object.name == "Tutorial" || object.name == "Settings" || object.name == "Menu" || object.name == "Store" || object.name == "RestorePurchases" {
                     movedOverButton = true
                     break
                 }
@@ -770,6 +769,7 @@ class MenuScene: SKScene {
             tutorialButton.didRelease()
             settingsButton.didRelease()
             menuButton.didRelease()
+            restorePurchasesLabel.didRelease()
             if let storeButton = storeButton {
                 storeButton.didRelease()
             }
@@ -798,14 +798,13 @@ class MenuScene: SKScene {
         } else if menuButton.isPressed {
             menuButton.didRelease(didActivate: true)
             menuButtonPressed()
+        } else if restorePurchasesLabel.isPressed {
+            restorePurchasesLabel.didRelease(didActivate: true)
+            StoreKitController.restoreInAppPurchases()
         } else if let storeButton = storeButton {
             if storeButton.isPressed {
-                if canMakePurchases {
-                    storeButton.didRelease(didActivate: true)
-                    StoreKitController.buyRemoveAds()
-                } else {
-                    storeButton.didRelease(didActivate: false)
-                }
+                storeButton.didRelease(didActivate: true)
+                StoreKitController.buyRemoveAds()
             }
         }
     }
@@ -817,6 +816,7 @@ class MenuScene: SKScene {
         tutorialButton.didRelease()
         settingsButton.didRelease()
         menuButton.didRelease()
+        restorePurchasesLabel.didRelease()
         if let storeButton = storeButton {
             storeButton.didRelease()
         }

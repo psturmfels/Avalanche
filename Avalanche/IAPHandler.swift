@@ -15,6 +15,7 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
     var productRequest: SKProductsRequest = SKProductsRequest()
     var removeAdsProduct: SKProduct = SKProduct()
     var foundAdsProduct: Bool = false
+    var purchaseUponFind: Bool = false
     
     func fetchAvailableProducts() {
         guard !foundAdsProduct else {
@@ -30,11 +31,15 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
     func purchaseRemoveAds() {
         postNotification(withName: "displayActivityView")
         
-        guard foundAdsProduct else {
+        guard SKPaymentQueue.canMakePayments() else {
+            postNotification(withName: "dismissActivityView")
+            displayDismissAlert(withTitle: "Error", andMessage: "It appears your account is not authorized to make payments. Please use a different account to make store purchases.")
             return
         }
         
-        guard SKPaymentQueue.canMakePayments() else {
+        guard foundAdsProduct else {
+            purchaseUponFind = true
+            fetchAvailableProducts()
             return
         }
         
@@ -44,11 +49,25 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
     }
     
     func restorePurchases() {
+        postNotification(withName: "displayActivityView")
+        
         SKPaymentQueue.default().add(self)
         SKPaymentQueue.default().restoreCompletedTransactions()
     }
     
     //MARK: SKPaymentTransactionObserver
+    func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
+        postNotification(withName: "dismissActivityView")
+        if !StoreKitController.getPurchaseStatus(ofType: Purchase.RemoveAds) {
+            displayDismissAlert(withTitle: "Error", andMessage: "No previous purchases found.")
+        }
+    }
+    
+    func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
+        postNotification(withName: "dismissActivityView")
+        displayDismissAlert(withTitle: "Error", andMessage: "Unable to restore purchases. Please check your connection and try again.")
+    }
+    
     func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch transaction.transactionState {
@@ -66,6 +85,7 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
                 break
             
             case SKPaymentTransactionState.purchased:
+                postNotification(withName: "removePurchaseButton")
                 StoreKitController.setPurchaseStatus(ofType: Purchase.RemoveAds, newStatus: true)
                 print("Payment for transaction \(transaction.payment.productIdentifier) completed")
                 SKPaymentQueue.default().finishTransaction(transaction)
@@ -76,8 +96,12 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
                 break
             
             case SKPaymentTransactionState.restored:
+                StoreKitController.setPurchaseStatus(ofType: Purchase.RemoveAds, newStatus: true)
                 print("Payment for transaction \(transaction.payment.productIdentifier) was restored")
                 SKPaymentQueue.default().finishTransaction(transaction)
+                postNotification(withName: "removePurchaseButton")
+                postNotification(withName: "dismissActivityView")
+                displayDismissAlert(withTitle: "Success", andMessage: "Your purchase removing advertisements has been restored.")
                 break
             }
         }
@@ -93,6 +117,10 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
                 if SKPaymentQueue.canMakePayments() {
                     postNotification(withName: "purchaseStatusDidChange", andUserInfo: ["canMakePurchases": true])
                     foundProduct = true
+                    if purchaseUponFind {
+                        purchaseUponFind = false
+                        purchaseRemoveAds()
+                    }
                 }
             }
         }

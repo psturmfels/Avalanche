@@ -36,6 +36,7 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.showInterstitialAd), name: NSNotification.Name(rawValue: "showInterstitialAd"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.displayActivityView), name: NSNotification.Name(rawValue: "displayActivityView"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.closeActivityView), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.closeActivityView), name: NSNotification.Name(rawValue: "dismissActivityView"), object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.presentGameCenterViewController), name: NSNotification.Name(rawValue: "presentScores"), object: nil)
         
         self.view = SKView(frame: UIScreen.main.bounds)
@@ -116,6 +117,11 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
     
     //MARK: Alert Methods
     @objc func displayDismissAlert(notification: Notification) {
+        if let currentAlert = currentAlert {
+            currentAlert.dismiss(animated: true, completion: nil)
+        }
+        currentAlert = nil
+        
         guard let dictionary = notification.userInfo as? [String: String] else {
             return
         }
@@ -149,9 +155,10 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 10) { [unowned self] in
             if let _ = self.currentAlert {
                 self.closeActivityView()
+                StoreKitController.resetPurchaseUponFind()
                 
                 let title: String = "Error"
-                let message: String = "Something went wrong with your purchase. Please try again."
+                let message: String = "Something went wrong with your purchase. Please check your connection and try again."
                 let alertView: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
                 let dismissAction: UIAlertAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil)
                 alertView.addAction(dismissAction)
