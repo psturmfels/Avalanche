@@ -65,6 +65,19 @@ class StoreKitController: NSObject {
         }
     }
     
+    static func hasPlayedTutorial() -> Bool {
+        var returnValue: Bool = true
+        
+        if let tutorialComplete = mutableStoreDictionary.value(forKey: "HasPlayedTutorial") as? Bool {
+            returnValue = tutorialComplete
+        }
+        if (!returnValue) {
+            mutableStoreDictionary.setValue(true, forKey: "HasPlayedTutorial")
+            mutableStoreDictionary.write(to: storeDictionaryURL, atomically: true)
+        }
+        return returnValue
+    }
+    
     static func readPurchasesFromStore() {
         guard let storeDefaultsFile: URL = Bundle.main.url(forResource: "StorePurchases", withExtension: "plist") else {
             NSLog("Unable to find default store file")

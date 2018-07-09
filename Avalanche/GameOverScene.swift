@@ -28,6 +28,9 @@ class GameOverScene: SKScene {
             disableButtons()
             postNotification(withName: "showInterstitialAd")
             NotificationCenter.default.addObserver(self, selector: #selector(GameOverScene.enableButtons), name: NSNotification.Name(rawValue: "InterstitialAdFinished"), object: nil)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [unowned self] in
+                self.enableButtons()
+            }
         } else {
             enableButtons()
         }

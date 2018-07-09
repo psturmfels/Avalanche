@@ -41,22 +41,24 @@ class GameViewController: UIViewController, GADInterstitialDelegate {
         
         self.view = SKView(frame: UIScreen.main.bounds)
         
-        //Load the menu scene on startup
-        menuScene = MenuScene(size: self.view.frame.size)
-        menuScene.scaleMode = .resizeFill
-        
-        //Load the leaderboard
-//        self.gameCenterVC = GKGameCenterViewController()
-//        self.gameCenterVC.gameCenterDelegate = self
-//        self.gameCenterVC.viewState = self.currentGameCenterViewControllerState
-//        self.gameCenterVC.leaderboardTimeScope = GKLeaderboardTimeScope.week
-        
         let skView = self.view as! SKView
         skView.showsPhysics = false
         skView.showsFPS = false
         skView.showsNodeCount = false
         skView.ignoresSiblingOrder = true
-        skView.presentScene(menuScene)
+        
+        if (StoreKitController.hasPlayedTutorial()) {
+            //Load the menu scene on startup
+            menuScene = MenuScene(size: self.view.frame.size)
+            menuScene.scaleMode = .resizeFill
+            
+            skView.presentScene(menuScene)
+        } else {
+            let tutorialScene: TutorialScene = TutorialScene(fileNamed: "GameScene")!
+            tutorialScene.size = self.view.frame.size
+            tutorialScene.scaleMode = .resizeFill
+            skView.presentScene(tutorialScene)
+        }
     }
     
     override var shouldAutorotate : Bool {
