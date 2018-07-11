@@ -12,8 +12,10 @@ import AVFoundation
 
 class ArcadeModeScene: GameScene {
     //MARK: Initializing Methods
+    var inContactWithOneWay: Bool = false
+    var currentOneWayBody: OneWayBridgeNode? = nil
     var eventIsOccuring: Bool = false
-    let platformProbability: CGFloat = 0.25
+    let platformProbability: CGFloat = 0.0
     let nextPowerUpMin: Int = 5
     let nextPowerUpMax: Int = 35
     var nextPowerUp: Int = 30
@@ -58,6 +60,7 @@ class ArcadeModeScene: GameScene {
             }
         }
     }
+
     
     //MARK: Block Generation Methods
     override func initBlocks(_ sec: TimeInterval, withRange durationRange: TimeInterval) {
@@ -400,6 +403,8 @@ class ArcadeModeScene: GameScene {
             let xPosDiff: CGFloat = abs(oneWayBody.relativePosition.x - mellow.position.x)
             let combinedWidths: CGFloat = oneWayBody.physicsSize.width * 0.5 + mellow.physicsSize.width * 0.5
             
+            inContactWithOneWay = false
+            currentOneWayBody = nil
             if mellow.bottomSideInContact > 0 && oneWayBotLessMellowTop && xPosDiff < combinedWidths {
                 mellow.bottomSideInContact -= 1
             }
@@ -484,6 +489,8 @@ class ArcadeModeScene: GameScene {
             
             if oneWayTopLessMellowBot && xPosDiff < combinedWidths {
                 mellow.bottomSideInContact += 1
+                inContactWithOneWay = true
+                currentOneWayBody = oneWayBody
             } else {
                 secondBody.collisionBitMask = CollisionTypes.oneWayDisabled.rawValue
             }
@@ -628,7 +635,6 @@ class ArcadeModeScene: GameScene {
             return
         }
         
-        
         if isJetPacking {
             let forceAction: SKAction = SKAction.applyForce(CGVector(dx: 0, dy: 5000), duration: 0.01)
             self.mellow.run(forceAction)
@@ -650,6 +656,21 @@ class ArcadeModeScene: GameScene {
                 if abs(jetpackTrail.position.x - newXPos) > 1.0 {
                     let moveAction: SKAction = SKAction.moveTo(x: newXPos, duration: 0.1)
                     jetpackTrail.run(moveAction)
+                }
+            }
+        }
+        
+        if inContactWithOneWay {
+            if let oneWayBody = currentOneWayBody {
+                print("Jumped out of one way")
+                let mellowBotEdge: CGFloat = mellow.position.y - mellow.physicsSize.height * 0.48
+                
+                let oneWayYPos: CGFloat = oneWayBody.relativePosition.y + worldNode.position.y
+                let oneWayTopEdge: CGFloat = oneWayYPos + oneWayBody.physicsSize.height * 0.5
+                
+                let oneWayTopLessMellowBot: Bool = oneWayTopEdge < mellowBotEdge
+                if (!oneWayTopLessMellowBot) {
+                    mellow.position.y = oneWayTopEdge + mellow.physicsSize.height + 0.5
                 }
             }
         }
