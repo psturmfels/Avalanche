@@ -78,6 +78,27 @@ class StoreKitController: NSObject {
         return returnValue
     }
     
+    static func getNumberTimesPlayed() -> Int {
+        var returnValue: Int = 0
+        
+        if let numberTimesPlayed = mutableStoreDictionary.value(forKey: "NumberTimesPlayed") as? Int {
+            returnValue = numberTimesPlayed
+        }
+        
+        return returnValue
+    }
+    
+    static func incrementNumberTimesPlayed() {
+        var writeValue: Int = 0
+        
+        if let numberTimesPlayed = mutableStoreDictionary.value(forKey: "NumberTimesPlayed") as? Int {
+            writeValue = numberTimesPlayed
+        }
+        
+        mutableStoreDictionary.setValue(writeValue + 1, forKey: "NumberTimesPlayed")
+        mutableStoreDictionary.write(to: storeDictionaryURL, atomically: true)
+    }
+    
     static func readPurchasesFromStore() {
         guard let storeDefaultsFile: URL = Bundle.main.url(forResource: "StorePurchases", withExtension: "plist") else {
             NSLog("Unable to find default store file")

@@ -7,6 +7,7 @@
 //
 
 import SpriteKit
+import StoreKit
 
 class GameOverScene: SKScene {
     var replayButton: ButtonLabelNode!
@@ -20,6 +21,7 @@ class GameOverScene: SKScene {
     
     //MARK: Initializing Methods
     override func didMove(to view: SKView) {
+        StoreKitController.incrementNumberTimesPlayed()
         
         /* Setup your scene here */
         replayButton = ButtonLabelNode()
@@ -33,6 +35,10 @@ class GameOverScene: SKScene {
             }
         } else {
             enableButtons()
+            let numberTimesPlayed: Int = StoreKitController.getNumberTimesPlayed()
+            if numberTimesPlayed == 10 || numberTimesPlayed % 100 == 0 {
+                tryToRequestReview()
+            }
         }
         
         let center: CGPoint = CGPoint(x: self.frame.midX, y: self.frame.midY)
@@ -73,6 +79,21 @@ class GameOverScene: SKScene {
         
         reportScoreAchievements()
         GameKitController.madeProgressTowardsAchievement(achievementType: Achievement.Committed)
+    }
+    
+    func tryToRequestReview() {
+        if #available(iOS 10.3, *) {
+            let infoDictionaryKey = kCFBundleVersionKey as String
+            guard let currentVersion = Bundle.main.object(forInfoDictionaryKey: infoDictionaryKey) as? String
+                else { fatalError("Expected to find a bundle version in the info dictionary") }
+            
+            let lastVersionPromptedForReview = UserDefaults.standard.string(forKey: "LastRequestedVersion")
+            
+            if currentVersion != lastVersionPromptedForReview {
+                SKStoreReviewController.requestReview()
+                UserDefaults.standard.set(currentVersion, forKey: "LastRequestedVersion")
+            }
+        }
     }
     
     //MARK: Achievements
