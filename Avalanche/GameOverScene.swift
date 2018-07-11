@@ -36,7 +36,7 @@ class GameOverScene: SKScene {
         } else {
             enableButtons()
             let numberTimesPlayed: Int = StoreKitController.getNumberTimesPlayed()
-            if numberTimesPlayed == 10 || numberTimesPlayed % 100 == 0 {
+            if numberTimesPlayed % 10 == 0 {
                 tryToRequestReview()
             }
         }
