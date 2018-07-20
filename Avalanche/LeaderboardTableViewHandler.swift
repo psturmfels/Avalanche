@@ -29,13 +29,21 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     func setDelegateAndSource(forTable table: UITableView) {
         table.delegate = self
         table.dataSource = self
-        table.refreshControl = self.refreshControl
+        if #available(iOS 10.0, *) {
+            table.refreshControl = self.refreshControl
+            self.refreshControl.tintColor = UIColor.white
+            self.refreshControl.addTarget(self, action: #selector(self.viewRefreshed), for: UIControlEvents.valueChanged)
+        } else {
+            // Fallback on earlier versions
+        }
         self.tableView = table
-        self.refreshControl.tintColor = UIColor.white
-        self.refreshControl.addTarget(self, action: #selector(self.viewRefreshed), for: UIControlEvents.valueChanged)
     }
     
     @objc func viewRefreshed() {
+        guard #available(iOS 10.0, *) else {
+            return
+        }
+        
         let dateAhead: DispatchTime = DispatchTime.now() + .seconds(1)
         
         DispatchQueue.main.asyncAfter(deadline: dateAhead) {
