@@ -118,6 +118,10 @@ class LeaderboardTableViewHandler: NSObject, UITableViewDelegate, UITableViewDat
     }
     
     //MARK: UITableViewDelegate Methods
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return  LeaderboardTableViewCell.defaultHeight
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let expandedPath = self.expandedPath else {
             return LeaderboardTableViewCell.defaultHeight

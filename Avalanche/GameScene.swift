@@ -28,20 +28,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var pauseScreen: PauseNode!
     var controlButton: ButtonNode!
     
-    var bestLabel: SKLabelNode!
-    var currentLabel: SKLabelNode!
+    var bestLabel: SKLabelNode?
+    var currentLabel: SKLabelNode?
     
     var maxDifficulty: Int = 10
     
     //MARK: Game Properties
     var bestSoFar: Int = 0 {
         didSet {
-            bestLabel.text = "\(bestSoFar) ft"
+            if let bestLabel = bestLabel {
+                bestLabel.text = "\(bestSoFar) ft"
+            }
         }
     }
     var current: Int = 0 {
         didSet {
-            currentLabel.text = "\(current) ft"
+            if let currentLabel = currentLabel {
+                currentLabel.text = "\(current) ft"
+            }
         }
     }
     
@@ -203,8 +207,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             generationPoint = CGPoint(x: randomXVal, y: yPoint + 200.0)
         }
         
+        var roundedBlock: RoundedBlockNode!
+        
         let randomColor: Int = RandomInt(min: 1, max: 8)
-        let roundedBlock: RoundedBlockNode = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
+        if let textureImage: UIImage = UIImage(named: "RoundedBlock\(randomColor)") {
+            let texture = SKTexture(image: textureImage)
+            roundedBlock = RoundedBlockNode(texture: texture)
+        }
+        else {
+            roundedBlock = RoundedBlockNode(imageNamed: "RoundedBlock\(randomColor)")
+        }
         
         //Set the physics and scale of the block
         roundedBlock.setup(minFallSpeed, maxFallSpeed: maxFallSpeed)
@@ -474,9 +486,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func createMellow(atPoint point: CGPoint) {
         //Create the hero of the game!
-        mellow = MellowNode(imageNamed: "standing")
+        if let textureImage: UIImage = UIImage(named: "standing") {
+            let texture = SKTexture(image: textureImage)
+            mellow = MellowNode(texture: texture)
+        }
+        else {
+            mellow = MellowNode(imageNamed: "standing")
+        }
         let mellowPos: CGPoint = point
-        //Most of the initialization of the mellow is done in setup()
+        //Most of the initialization of the mellow is done in
         mellow.setup(mellowPos)
         self.addChild(mellow)
     }
@@ -531,21 +549,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func createLabels() {
         //Displays highest height climbed so far
         bestLabel = SKLabelNode(fontNamed: "Arial")
-        bestLabel.text = "0 ft"
-        bestLabel.fontSize = 36.0
-        bestLabel.position = CGPoint(x: self.frame.width * 0.94, y: self.frame.height * 0.93)
-        bestLabel.zPosition = 30.0
-        bestLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
-        self.addChild(bestLabel)
+        bestLabel!.text = "0 ft"
+        bestLabel!.fontSize = 36.0
+        bestLabel!.position = CGPoint(x: self.frame.width * 0.94, y: self.frame.height * 0.93)
+        bestLabel!.zPosition = 30.0
+        bestLabel!.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
+        self.addChild(bestLabel!)
         
         //Displays current height
         currentLabel = SKLabelNode(fontNamed: "Arial")
-        currentLabel.text = "0 ft"
-        currentLabel.fontSize = 30.0
-        currentLabel.position = CGPoint(x: self.frame.width * 0.94, y: self.frame.height * 0.88)
-        currentLabel.zPosition = 30.0
-        currentLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
-        self.addChild(currentLabel)
+        currentLabel!.text = "0 ft"
+        currentLabel!.fontSize = 30.0
+        currentLabel!.position = CGPoint(x: self.frame.width * 0.94, y: self.frame.height * 0.88)
+        currentLabel!.zPosition = 30.0
+        currentLabel!.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
+        self.addChild(currentLabel!)
     }
     
     //MARK: Contact Methods

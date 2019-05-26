@@ -449,7 +449,9 @@ class MenuScene: SKScene {
         let midX: CGFloat = -self.frame.width * 0.5
         let newRightX: CGFloat = midX + arcadeLeaderboardButton.frame.width * 0.5 + 10
         let newLeftX: CGFloat = midX - classicLeaderboardButton.frame.width * 0.5 - 10
-        let newTopY: CGFloat = topY - leaderboardButton.frame.height * 0.5 - arcadeLeaderboardButton.frame.height * 0.5 - 20
+        let halfLeaderboardHeight: CGFloat = arcadeLeaderboardButton.frame.height * 0.5
+        let halfButtonHeight: CGFloat = leaderboardButton.frame.height * 0.5
+        let newTopY: CGFloat = topY - halfButtonHeight - halfLeaderboardHeight - 20
         
         let arcadeLeaderboardButtonPos: CGPoint = CGPoint(x: newRightX, y: newTopY)
         let classicLeaderboardButtonPos: CGPoint = CGPoint(x: newLeftX, y: newTopY)

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0208198D1E6A5BC70089C151 /* AchievementImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0208198C1E6A5BC70089C151 /* AchievementImages.xcassets */; };
+		020988612299BC7C0068B2A8 /* sprites.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 020988602299BC7C0068B2A8 /* sprites.xcassets */; };
 		020A37231E91E5C200CBB595 /* JetpackTrail.sks in Resources */ = {isa = PBXBuildFile; fileRef = 020A37211E91E5C200CBB595 /* JetpackTrail.sks */; };
 		020C08471E7F5E4800561BA6 /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020C08461E7F5E4800561BA6 /* PowerUp.swift */; };
 		020C08491E7F75AB00561BA6 /* PowerUpImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */; };
@@ -67,6 +68,7 @@
 
 /* Begin PBXFileReference section */
 		0208198C1E6A5BC70089C151 /* AchievementImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = AchievementImages.xcassets; path = ../AchievementImages.xcassets; sourceTree = "<group>"; };
+		020988602299BC7C0068B2A8 /* sprites.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = sprites.xcassets; sourceTree = "<group>"; };
 		020A37211E91E5C200CBB595 /* JetpackTrail.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = JetpackTrail.sks; sourceTree = "<group>"; };
 		020C08461E7F5E4800561BA6 /* PowerUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerUp.swift; sourceTree = "<group>"; };
 		020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = PowerUpImages.xcassets; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 				0208198C1E6A5BC70089C151 /* AchievementImages.xcassets */,
 				0241597C1EE7A69400AFB848 /* ArcadeBlocks.xcassets */,
 				020C08481E7F75AB00561BA6 /* PowerUpImages.xcassets */,
+				020988602299BC7C0068B2A8 /* sprites.xcassets */,
 				1AAFB4CD1CA07D6100E7472B /* LaunchScreen.storyboard */,
 				1AAFB4D01CA07D6100E7472B /* Info.plist */,
 				1A84D9671DD2577A00E9273C /* DefaultPreferences.plist */,
@@ -343,7 +346,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = LooseFuzz;
 				TargetAttributes = {
 					1AAFB4BC1CA07D6100E7472B = {
@@ -364,7 +367,7 @@
 			};
 			buildConfigurationList = 1AAFB4B81CA07D6100E7472B /* Build configuration list for PBXProject "Avalanche" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -387,6 +390,7 @@
 			files = (
 				02AFC1971F37E1F20021765B /* StorePurchases.plist in Resources */,
 				1A0E90C81CE8E3BC00ED018E /* MellowBurned.sks in Resources */,
+				020988612299BC7C0068B2A8 /* sprites.xcassets in Resources */,
 				1AAFB4CF1CA07D6100E7472B /* LaunchScreen.storyboard in Resources */,
 				1A9017B31CD171EB00F31C1E /* GameScene.sks in Resources */,
 				1A51C6B61D722D8F005F6D1A /* spark.png in Resources */,
@@ -563,7 +567,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -611,7 +615,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";

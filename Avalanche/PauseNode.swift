@@ -49,7 +49,8 @@ class PauseNode: SKNode {
         
         
         menuButton = ButtonNode(imageNamed: "menuNormal")
-        let menuX: CGFloat = -size.width * 0.5 + 1.5 * self.menuButton.frame.width + 40
+        let menuFrameOneFive: CGFloat = self.menuButton.frame.width * 1.5
+        let menuX: CGFloat = -size.width * 0.5 + menuFrameOneFive + 40
         let menuY: CGFloat = size.height * 0.5 - self.menuButton.frame.height * 0.5 - 20
         let menuPos: CGPoint = CGPoint(x: menuX, y: menuY)
         
